@@ -3,9 +3,14 @@
  * When you're ready to start on your site, clear the file. Happy hacking!
  **/
 
-import confetti from 'canvas-confetti';
+import confetti from 'canvas-confetti'
+import Wire from './wire'
+
+const wireInstance = new Wire<number>(this, 'SIGNAL', (payload: number, wireId: number) => {
+
+})
 
 confetti.create(document.getElementById('canvas') as HTMLCanvasElement, {
   resize: true,
   useWorker: true,
-})({ particleCount: 200, spread: 200 });
+})({ particleCount: 200, spread: 200 })
