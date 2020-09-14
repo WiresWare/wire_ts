@@ -1,4 +1,5 @@
 import { Wire, WireListener } from './wire'
+import { WireData } from './data'
 
 export class WireCommunicateLayer {
   private _wireById:Map<number, Wire> = new Map()
@@ -117,5 +118,24 @@ export class WireCommunicateLayer {
     wire.clear()
 
     return noMoreSignals
+  }
+}
+
+export class WireDataContainerLayer {
+  private _map = new Map<String, WireData>();
+
+  get(key:String):WireData | undefined {
+    if (!this._map.has(key)) {
+      this._map.set(key, new WireData(key, this._map.delete))
+    }
+
+    return this._map.get(key)
+  }
+
+  clear():void {
+    this._map.forEach((wireData) => {
+      wireData.remove();
+    })
+    this._map.clear();
   }
 }
