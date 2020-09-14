@@ -1,13 +1,13 @@
-export type WireListener<T> = (payload: T, wireId: number) => void;
+export type WireListener = (payload:any, wireId: number) => void;
 
 export interface WireMiddleware {
-  onAdd<T>(wire: Wire<T>):void
+  onAdd(wire: Wire):void
   onSend(signal: String, payload?:any, scope?:Object):void
-  onRemove<T>(signal:String, scope?:Object, listener?:WireListener<T>):void
+  onRemove(signal:String, scope?:Object, listener?:WireListener):void
   onData(key:String, prevValue?:any, nextValue?:any):void
 }
 
-export default class Wire<T> {
+class wire {
   static _INDEX:number = 0
 
   private readonly _id:number
@@ -19,27 +19,29 @@ export default class Wire<T> {
   private readonly _signal:String
   get signal() { return this._signal }
 
-  private _listener?:WireListener<T>;
+  private _listener?:WireListener;
   get listener() { return this._listener }
 
   public replies:number;
 
-  constructor(scope:Object, signal:String, listener:WireListener<T>, replies?:number) {
+  constructor(scope:Object, signal:String, listener:WireListener, replies:number = 0) {
     this._scope = scope
     this._signal = signal
     this._listener = listener
-    this.replies = replies || 0;
-    this._id = ++Wire._INDEX
+    this.replies = replies;
+    this._id = ++wire._INDEX
   }
 
   transfer(payload?:any):void {
     if (this._listener == undefined) return;
-    else if (payload as T || payload == null) {
-      this._listener(payload, this._id);
-    }
+
+    this._listener(payload, this._id);
   }
+
   clear():void {
     this._scope = undefined;
     this._listener = undefined;
   }
 }
+
+export type Wire = wire
