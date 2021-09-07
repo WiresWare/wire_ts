@@ -4,9 +4,9 @@
  **/
 
 import confetti from 'canvas-confetti'
-import { Wire } from './wire'
+import Wire from './wire'
 
-export type { Wire }
+// export type { Wire }
 
 const wireInstance = new Wire(this, 'SIGNAL', (payload: number, wireId: number) => {
 

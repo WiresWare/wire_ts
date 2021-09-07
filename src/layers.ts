@@ -1,16 +1,17 @@
-import { Wire, WireListener } from './wire'
+import Wire, { WireListener } from './wire'
 import { WireData } from './data'
+import { ERROR__WIRE_ALREADY_REGISTERED } from './const'
 
 export class WireCommunicateLayer {
-  private _wireById:Map<number, Wire> = new Map()
+  private _wireById:Map<number, Wire<any>> = new Map()
   private _wireIdsBySignal:Map<String, Array<number>> = new Map()
 
-  add(wire:Wire) {
+  add(wire:Wire<any>) {
     const wireId = wire.id;
     const signal = wire.signal;
 
     if (this._wireById.has(wireId)) {
-      throw 'ERROR__WIRE_ALREADY_REGISTERED' + wireId.toString()
+      throw new Error(ERROR__WIRE_ALREADY_REGISTERED + wireId.toString())
     }
 
     this._wireById.set(wireId, wire)
@@ -28,30 +29,30 @@ export class WireCommunicateLayer {
     return this._wireIdsBySignal.has(signal)
   }
 
-  hasWire(wire:Wire):boolean {
+  hasWire(wire:Wire<any>):boolean {
     return this._wireById.has(wire.id)
   }
 
   send(signal:String, payload?:any, scope?:Object):boolean {
     let noMoreSubscribers = true
     if (this.hasSignal(signal)) {
-      const WiresToRemove = new Array<Wire>()
+      const wiresToRemove = new Array<Wire<any>>()
       this._wireIdsBySignal.get(signal)?.forEach((wireId) => {
-        const wire = this._wireById.get(wireId) as Wire;
+        const wire = this._wireById.get(wireId) as Wire<any>;
         if (scope != null && wire.scope != scope) return;
         noMoreSubscribers = wire.replies > 0 && --wire.replies == 0;
-        if (noMoreSubscribers) WiresToRemove.push(wire);
+        if (noMoreSubscribers) wiresToRemove.push(wire);
         wire.transfer(payload);
       })
-      WiresToRemove.forEach((w) => { noMoreSubscribers = this._removeWire(w) });
+      wiresToRemove.forEach((w) => { noMoreSubscribers = this._removeWire(w) });
     }
-    return true
+    return noMoreSubscribers
   }
 
-  remove(signal:String, scope?:Object, listener?:WireListener):boolean {
+  remove(signal:String, scope?:Object, listener?:WireListener<any>):boolean {
     let exists = this.hasSignal(signal)
     if (exists) {
-      const wiresToRemove = new Array<Wire>()
+      const wiresToRemove = new Array<Wire<any>>()
       this._wireIdsBySignal.get(signal)?.forEach((wireId) => {
         const wire = this._wireById.get(wireId)
         if (wire == undefined) return;
@@ -66,42 +67,42 @@ export class WireCommunicateLayer {
   }
 
   clear():void {
-    const wireToRemove = new Array<Wire>()
+    const wireToRemove = new Array<Wire<any>>()
     this._wireById.forEach((wire, _) => wireToRemove.push(wire))
     wireToRemove.forEach(this._removeWire)
     this._wireById.clear()
     this._wireIdsBySignal.clear()
   }
 
-  getBySignal(signal:String):(Wire | undefined)[] {
+  getBySignal(signal:String):(Wire<any> | undefined)[] {
     if (this.hasSignal(signal) && this._wireIdsBySignal.get(signal))
       return this._wireIdsBySignal.get(signal)?.map(
-        (wireId) => this._wireById.get(wireId)) || new Array<Wire>()
+        (wireId) => this._wireById.get(wireId)) || new Array<Wire<any>>()
 
-    return new Array<Wire>()
+    return new Array<Wire<any>>()
   }
 
-  getByScope(scope:Object):Array<Wire> | undefined {
-    const result = new Array<Wire>();
+  getByScope(scope:Object):Array<Wire<any>> | undefined {
+    const result = new Array<Wire<any>>();
     this._wireById.forEach((wire) => {
       if (wire.scope == scope) result.push(wire)
     });
     return result
   }
 
-  getByListener(listener:WireListener):Array<Wire> | undefined {
-    const result = new Array<Wire>()
+  getByListener(listener:WireListener<any>):Array<Wire<any>> | undefined {
+    const result = new Array<Wire<any>>()
     this._wireById.forEach((wire) => {
       if (wire.listener == listener) result.push(wire)
     })
     return result
   }
 
-  getByWID(wid:number):Wire | undefined {
-    return this._wireById.get(wid)
-}
+  getByWID(wireId:number):Wire<any> | undefined {
+    return this._wireById.get(wireId)
+  }
 
-  _removeWire(wire:Wire):boolean {
+  _removeWire(wire:Wire<any>):boolean {
     const wireId = wire.id
     const signal = wire.signal
 
@@ -122,20 +123,17 @@ export class WireCommunicateLayer {
 }
 
 export class WireDataContainerLayer {
-  private _map = new Map<String, WireData>();
+  private _dataMap = new Map<String, WireData<any>>();
 
-  get(key:String):WireData | undefined {
-    if (!this._map.has(key)) {
-      this._map.set(key, new WireData(key, this._map.delete))
-    }
-
-    return this._map.get(key)
-  }
+  has(key:String):boolean { return this._dataMap.has(key)!; }
+  get<T>(key:String):WireData<T> | undefined { return this._dataMap.get(key)!; }
+  create<T>(key:String):WireData<T> { return new WireData<T>(key, this.remove); }
+  remove(key:String):boolean { return this._dataMap.delete(key); }
 
   clear():void {
-    this._map.forEach((wireData) => {
+    this._dataMap.forEach((wireData) => {
       wireData.remove();
     })
-    this._map.clear();
+    this._dataMap.clear();
   }
 }
