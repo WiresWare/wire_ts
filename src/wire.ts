@@ -1,18 +1,18 @@
-import { WireCommunicateLayer, WireDataContainerLayer } from './layers'
+import { WireCommunicateLayer, WireDataContainerLayer } from './layers';
 import {
   ERROR__LISTENER_IS_NULL,
   ERROR__MIDDLEWARE_EXISTS,
-  ERROR__VALUE_IS_NOT_ALLOWED_TOGETHER_WITH_GETTER
-} from './const'
-import { WireData, WireDataLockToken, WireDataGetter } from './data'
+  ERROR__VALUE_IS_NOT_ALLOWED_TOGETHER_WITH_GETTER,
+} from './const';
+import { WireData, WireDataLockToken, WireDataGetter } from './data';
 
-export type WireListener<T> = (payload:T, wireId: number) => void;
+export type WireListener<T> = (payload: T, wireId: number) => void;
 
 export interface WireMiddleware {
-  onAdd(wire:Wire<any>):void
-  onSend(signal:String, payload?:any | null, scope?:Object | null):void
-  onRemove(signal:String, scope?:Object | null, listener?:WireListener<any> | null):void
-  onData(key:String, prevValue?:any | null, nextValue?:any | null):void
+  onAdd(wire: Wire<any>): Promise<void>;
+  onSend(signal: string, payload?: any | null, scope?: object | null): Promise<void>;
+  onRemove(signal: string, scope?: object | null, listener?: WireListener<any> | null): Promise<void>;
+  onData(key: string, prevValue?: any | null, nextValue?: any | null): Promise<void>;
 }
 
 export default class Wire<T> {
@@ -21,7 +21,7 @@ export default class Wire<T> {
   /// Used to generate Wire wid
   ///
   /// @private
-  static _INDEX:number = 0;
+  static _INDEX = 0;
   private static readonly _COMMUNICATION_LAYER = new WireCommunicateLayer();
   private static readonly _DATA_CONTAINER_LAYER = new WireDataContainerLayer();
   private static readonly _MIDDLEWARE_LIST = new Array<WireMiddleware>();
@@ -35,38 +35,46 @@ export default class Wire<T> {
   /// The SIGNAL associated with this Wire.
   ///
   /// @private
-  private readonly _signal:String
-  get signal() { return this._signal }
+  private readonly _signal: string;
+  get signal() {
+    return this._signal;
+  }
 
   ///
   /// [read-only]
   /// The closure method, reaction to the Wire instance changes.
   ///
   /// @private
-  private _listener?:WireListener<T> | null;
-  get listener():WireListener<T> | undefined | null { return this._listener }
+  private _listener?: WireListener<T> | null;
+  get listener(): WireListener<T> | undefined | null {
+    return this._listener;
+  }
 
   ///
   /// [read-only] [internal use]
   /// Unique identification for wire instance.
   ///
   /// @private
-  private readonly _id:number
-  get id():number { return this._id }
+  private readonly _id: number;
+  get id(): number {
+    return this._id;
+  }
 
   ///
   /// [read-only] [internal use]
   /// Scope to which wire belongs to
   ///
   /// @private
-  private _scope:Object
-  get scope():Object { return this._scope }
+  private _scope: Object;
+  get scope(): Object {
+    return this._scope;
+  }
 
   ///
   /// The number of times that wire instance will respond on signal before being removed.
   /// Default is 0 that means infinity times.
   ///
-  public replies:number;
+  public replies: number;
 
   /// Wire object is a communication unit of the system, each instance associated with a signal
   ///
@@ -74,28 +82,23 @@ export default class Wire<T> {
   /// But it wont react on signal until it is attached to the communication layer with [attach]
   /// However you still can send data through it by calling [transfer]
   ///
-  constructor(
-    scope:Object,
-    signal:String,
-    listener:WireListener<T>,
-    replies:number = 0
-  ) {
-    this._scope = scope
-    this._signal = signal
-    this._listener = listener
+  constructor(scope: Object, signal: string, listener: WireListener<T>, replies = 0) {
+    this._scope = scope;
+    this._signal = signal;
+    this._listener = listener;
     this.replies = replies;
-    this._id = ++Wire._INDEX
+    this._id = ++Wire._INDEX;
   }
 
   /// Call associated WireListener with data.
-  transfer(payload?:any):void {
+  transfer(payload?: any): void {
     if (!this._listener) throw new Error(ERROR__LISTENER_IS_NULL);
     // Call a listener in this Wire only in case data type match it's listener type.
-    const filterByPayloadType:boolean = typeof payload === T || payload == null;
+    const filterByPayloadType: boolean = typeof payload === T || payload == null;
     if (filterByPayloadType) this._listener(payload, this._id);
   }
 
-  clear():void {
+  clear(): void {
     this._scope = undefined;
     this._listener = undefined;
   }
@@ -107,35 +110,29 @@ export default class Wire<T> {
   ///**********************************************************************************************************
 
   /// Add wire object to the communication layer
-  static attach(wire:Wire<any>):void {
+  static attach(wire: Wire<any>): void {
     this._COMMUNICATION_LAYER.add(wire);
   }
 
   /// Remove wire object from communication layer, then inform all middlewares with
   /// Returns existence of another wires with that signal.
-  static detach(wire:Wire<any>):boolean {
+  static detach(wire: Wire<any>): boolean {
     return this.remove(wire.signal, wire.scope, wire.listener);
   }
 
   /// Create wire object from params and [attach] it to the communication layer
   /// All middleware will be informed from [WireMiddleware.onAdd] before wire is attached to the layer
-  static add<T>(
-    scope:Object,
-    signal:String,
-    listener:WireListener<T>,
-    replies:number = 0
-  ):Wire<T> {
+  static add<T>(scope: Object, signal: string, listener: WireListener<T>, replies = 0): Wire<T> {
     const wire = new Wire<T>(scope, signal, listener, replies);
-    this._MIDDLEWARE_LIST.forEach((middleware) =>
-      middleware.onAdd(wire));
+    this._MIDDLEWARE_LIST.forEach((middleware) => middleware.onAdd(wire));
     this.attach(wire);
     return wire;
   }
 
   /// Check if signal string or wire instance exists in communication layer
-  static has(signal?:String | null, wire?:Wire<any> | null):boolean {
-    if (!!signal) return this._COMMUNICATION_LAYER.hasSignal(signal);
-    if (!!wire) return this._COMMUNICATION_LAYER.hasWire(wire);
+  static has(signal?: string | null, wire?: Wire<any> | null): boolean {
+    if (signal) return this._COMMUNICATION_LAYER.hasSignal(signal);
+    if (wire) return this._COMMUNICATION_LAYER.hasWire(wire);
     return false;
   }
 
@@ -145,36 +142,32 @@ export default class Wire<T> {
   /// All middleware will be informed from [WireMiddleware.onSend] before signal sent on wires
   ///
   /// Returns true when no wire for the signal has found
-  static send(signal:String, payload?:any | null, scope?:Object | null):boolean {
-    this._MIDDLEWARE_LIST.forEach((middleware) =>
-      middleware.onSend(signal, payload));
+  static send(signal: string, payload?: any | null, scope?: Object | null): boolean {
+    this._MIDDLEWARE_LIST.forEach((middleware) => middleware.onSend(signal, payload));
     return this._COMMUNICATION_LAYER.send(signal, payload, scope);
   }
 
   /// Remove all entities from Communication Layer and Data Container Layer
   /// @param [withMiddleware] used to remove all middleware
-  static purge(withMiddleware:Boolean = false):void {
+  static purge(withMiddleware = false): void {
     this._COMMUNICATION_LAYER.clear();
     this._DATA_CONTAINER_LAYER.clear();
-    if (withMiddleware)
-      this._MIDDLEWARE_LIST.splice(0,
-        this._MIDDLEWARE_LIST.length);
+    if (withMiddleware) this._MIDDLEWARE_LIST.splice(0, this._MIDDLEWARE_LIST.length);
   }
 
   /// Remove all wires for specific signal, for more precise target to remove add scope and/or listener
   /// All middleware will be informed from [WireMiddleware.onRemove] after signal removed, only if existed
   /// Returns [bool] telling signal existed in communication layer
-  static remove(signal:String, scope?:Object, listener?:WireListener<any>):boolean {
+  static remove(signal: string, scope?: Object, listener?: WireListener<any>): boolean {
     const existed = this._COMMUNICATION_LAYER.remove(signal, scope, listener);
     if (existed) {
-      this._MIDDLEWARE_LIST.forEach((m) =>
-        m.onRemove(signal, scope, listener));
+      this._MIDDLEWARE_LIST.forEach((m) => m.onRemove(signal, scope, listener));
     }
     return existed;
   }
 
   /// Class extending [WireMiddleware] can listen to all processes in side Wire
-  static middleware(value:WireMiddleware):void {
+  static middleware(value: WireMiddleware): void {
     if (this._MIDDLEWARE_LIST.indexOf(value) < 0) {
       this._MIDDLEWARE_LIST.push(value);
     } else {
@@ -185,26 +178,26 @@ export default class Wire<T> {
   /// When you need Wires associated with signal or scope or listener
   /// Returns [List<Wire>]
   static get(
-    signal?:String | null,
-    scope?:Object | null,
-    listener?:WireListener<any> | null,
-    wireId?:number | null
-  ):Array<Wire<any> | undefined> {
+    signal?: string | null,
+    scope?: Object | null,
+    listener?: WireListener<any> | null,
+    wireId?: number | null,
+  ): Array<Wire<any> | undefined> {
     let result = new Array<Wire<any> | undefined>();
-    if (!!signal) {
-      let instances = this._COMMUNICATION_LAYER.getBySignal(signal);
+    if (signal) {
+      const instances = this._COMMUNICATION_LAYER.getBySignal(signal);
       instances && (result = [...result, ...instances]);
     }
-    if (!!scope) {
-      let instances = this._COMMUNICATION_LAYER.getByScope(scope);
+    if (scope) {
+      const instances = this._COMMUNICATION_LAYER.getByScope(scope);
       instances && (result = [...result, ...instances]);
     }
-    if (!!listener) {
-      let instances = this._COMMUNICATION_LAYER.getByListener(listener);
+    if (listener) {
+      const instances = this._COMMUNICATION_LAYER.getByListener(listener);
       instances && (result = [...result, ...instances]);
     }
-    if (!!wireId) {
-      let instance = this._COMMUNICATION_LAYER.getByWID(wireId);
+    if (wireId) {
+      const instance = this._COMMUNICATION_LAYER.getByWID(wireId);
       instance && result.push(instance);
     }
     return result;
@@ -228,19 +221,19 @@ export default class Wire<T> {
   /// void remove()
   /// ```
   /// Returns [WireData]
-  static data<T>(key:String, value?:any | null, getter:WireDataGetter<T> = null):WireData<T> {
-    const wireData:WireData<T> | undefined = this._DATA_CONTAINER_LAYER.has(key)
+  static data<T>(key: string, value?: any | null, getter: WireDataGetter<T> = null): WireData<T> {
+    const wireData: WireData<T> | undefined = this._DATA_CONTAINER_LAYER.has(key)
       ? this._DATA_CONTAINER_LAYER.get<T>(key)
       : this._DATA_CONTAINER_LAYER.create<T>(key);
 
-    if (!!getter) {
+    if (getter) {
       wireData!.value = getter;
       wireData!.lock(new WireDataLockToken());
     }
-    if (!!value) {
+    if (value) {
       if (wireData!.isGetter) throw new Error(ERROR__VALUE_IS_NOT_ALLOWED_TOGETHER_WITH_GETTER);
       const prevValue = wireData!.value;
-      const nextValue = (typeof value === 'function') ? value(prevValue) : value;
+      const nextValue = typeof value === 'function' ? value(prevValue) : value;
       wireData!.value = nextValue;
       this._MIDDLEWARE_LIST.forEach((m) => m.onData(key, prevValue, nextValue));
     }

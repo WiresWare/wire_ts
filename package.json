@@ -1,20 +1,93 @@
 {
+  "name": "wire_ts",
+  "version": "1.1.0",
+  "type": "module",
   "scripts": {
-    "start": "snowpack dev",
-    "build": "snowpack build",
-    "test": "echo \"This template does not include a test runner by default.\" && exit 1",
-    "format": "prettier --write \"src/**/*.{ts,js}\"",
-    "lint": "prettier --check \"src/**/*.{ts,js}\""
+    "dev": "vite",
+    "test": "vitest",
+    "build": "tsc && vite build && mv dist/src dist/types",
+    "preview": "vite preview",
+    "coverage": "vitest run --coverage"
   },
-  "dependencies": {
-    "canvas-confetti": "^1.2.0"
+  "module": "./dist/wires.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/wires.es.js",
+      "require": "./dist/wires.umd.js"
+    }
   },
+  "files": ["dist"],
+  "types": "./dist/types/index.d.ts",
   "devDependencies": {
-    "@snowpack/plugin-run-script": "^2.1.1",
-    "@types/canvas-confetti": "^1.0.0",
-    "@types/snowpack-env": "^2.3.0",
-    "prettier": "^2.0.5",
-    "snowpack": "^2.10.3",
-    "typescript": "^3.9.7"
+    "@typescript-eslint/eslint-plugin": "^5.41.0",
+    "@typescript-eslint/parser": "^5.41.0",
+    "eslint": "^8.26.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.7.1",
+    "typescript": "^4.6.4",
+    "vite": "^3.2.0",
+    "vite-plugin-eslint": "^1.8.1",
+    "vitest": "^0.24.4"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true,
+      "es2021": true,
+      "browser": true
+    },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module",
+      "project": [
+        "./tsconfig.json"
+      ]
+    },
+    "settings": {
+      "import/resolver": {
+        "node": {
+          "paths": [
+            "src"
+          ],
+          "extensions": [
+            ".js",
+            ".jsx",
+            ".ts",
+            ".tsx"
+          ]
+        }
+      }
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:import/recommended",
+      "plugin:@typescript-eslint/recommended",
+      "prettier"
+    ],
+    "plugins": [
+      "import",
+      "@typescript-eslint",
+      "prettier"
+    ],
+    "rules": {
+      "prettier/prettier": [
+        "error",
+        {
+          "printWidth": 120,
+          "singleQuote": true,
+          "singleAttributePerLine": true,
+          "trailingComma": "all",
+          "bracketSpacing": true,
+          "arrowParens": "always"
+        }
+      ],
+      "@typescript-eslint/no-non-null-assertion": 0,
+      "@typescript-eslint/no-unused-vars": "error",
+      "@typescript-eslint/explicit-function-return-type": 0,
+      "@typescript-eslint/no-explicit-any": 0
+    }
   }
 }

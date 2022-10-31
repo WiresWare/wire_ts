@@ -1,139 +1,223 @@
-import Wire, { WireListener } from './wire'
-import { WireData } from './data'
-import { ERROR__WIRE_ALREADY_REGISTERED } from './const'
+///
+/// Created by Vladimir Cores (Minkin) on 31/10/22.
+/// Github: https://github.com/vladimircores
+/// License: APACHE LICENSE, VERSION 2.0
+///
+
+import Wire, { WireListener, WireMiddleware } from './wire';
+import { WireData, WireDataOnReset } from './data';
+import { WireSendResults } from './results';
+import { ERROR__WIRE_ALREADY_REGISTERED } from './const';
 
 export class WireCommunicateLayer {
-  private _wireById:Map<number, Wire<any>> = new Map()
-  private _wireIdsBySignal:Map<String, Array<number>> = new Map()
+  private _wireById = new Map<number, Wire<any>>();
+  private _wireIdsBySignal = new Map<string, Array<number>>();
 
-  add(wire:Wire<any>) {
+  add(wire: Wire<any>): Wire<any> {
     const wireId = wire.id;
     const signal = wire.signal;
 
     if (this._wireById.has(wireId)) {
-      throw new Error(ERROR__WIRE_ALREADY_REGISTERED + wireId.toString())
+      throw new Error(ERROR__WIRE_ALREADY_REGISTERED + wireId.toString());
     }
 
-    this._wireById.set(wireId, wire)
+    this._wireById.set(wireId, wire);
 
     if (!this._wireIdsBySignal.has(signal)) {
       this._wireIdsBySignal.set(signal, new Array<number>());
     }
 
-    this._wireIdsBySignal.get(signal)?.push(wireId)
+    this._wireIdsBySignal.get(signal)!.push(wireId);
 
     return wire;
   }
 
-  hasSignal(signal:String):boolean {
-    return this._wireIdsBySignal.has(signal)
+  hasSignal(signal: string): boolean {
+    return this._wireIdsBySignal.has(signal);
   }
 
-  hasWire(wire:Wire<any>):boolean {
-    return this._wireById.has(wire.id)
+  hasWire(wire: Wire<any>): boolean {
+    return this._wireById.has(wire.id);
   }
 
-  send(signal:String, payload?:any, scope?:Object):boolean {
-    let noMoreSubscribers = true
+  async send(signal: string, payload?: any, scope?: object): Promise<WireSendResults> {
+    let noMoreSubscribers = true;
+    const results: any[] = [];
     if (this.hasSignal(signal)) {
-      const wiresToRemove = new Array<Wire<any>>()
-      this._wireIdsBySignal.get(signal)?.forEach((wireId) => {
-        const wire = this._wireById.get(wireId) as Wire<any>;
-        if (scope != null && wire.scope != scope) return;
-        noMoreSubscribers = wire.replies > 0 && --wire.replies == 0;
-        if (noMoreSubscribers) wiresToRemove.push(wire);
-        wire.transfer(payload);
-      })
-      wiresToRemove.forEach((w) => { noMoreSubscribers = this._removeWire(w) });
+      const hasWires = this._wireIdsBySignal.has(signal);
+      if (hasWires) {
+        const wiresToRemove: Wire<any>[] = [];
+        for await (const wireId of this._wireIdsBySignal.get(signal)!) {
+          const wire = this._wireById.get(wireId) as Wire<any>;
+          if (scope != null && wire.scope != scope) continue;
+          noMoreSubscribers = wire.replies > 0 && --wire.replies == 0;
+          if (noMoreSubscribers) wiresToRemove.push(wire);
+          await wire.transfer(payload);
+        }
+        if (wiresToRemove.length > 0)
+          for await (const wire of wiresToRemove) {
+            noMoreSubscribers = await this._removeWire(wire);
+          }
+      }
     }
-    return noMoreSubscribers
+    return new WireSendResults(results, noMoreSubscribers);
   }
 
-  remove(signal:String, scope?:Object, listener?:WireListener<any>):boolean {
-    let exists = this.hasSignal(signal)
+  async remove(signal: string, scope?: object, listener?: WireListener<any>): Promise<boolean> {
+    const exists = this.hasSignal(signal);
     if (exists) {
-      const wiresToRemove = new Array<Wire<any>>()
-      this._wireIdsBySignal.get(signal)?.forEach((wireId) => {
-        const wire = this._wireById.get(wireId)
-        if (wire == undefined) return;
-        const isWrongScope = scope != null && scope != wire.scope
-        const isWrongListener = listener != null && listener != wire.listener
-        if (isWrongScope || isWrongListener) return
-        wiresToRemove.push(wire)
-      })
-      wiresToRemove.forEach((wire) => this._removeWire(wire))
+      const withScope = scope != null;
+      const withListener = listener != null;
+      const toRemoveList: Wire<any>[] = [];
+      const hasWires = this._wireIdsBySignal.has(signal);
+      if (hasWires) {
+        for await (const wireId of this._wireIdsBySignal.get(signal)!) {
+          if (this._wireById.has(wireId)) {
+            const wire = this._wireById.get(wireId) as Wire<any>;
+            const isWrongScope = withScope && scope != wire.scope;
+            const isWrongListener = withListener && listener != wire.listener;
+            if (isWrongScope || isWrongListener) continue;
+            toRemoveList.push(wire);
+          }
+        }
+      }
+      if (toRemoveList.length > 0)
+        for await (const wire of toRemoveList) {
+          await this._removeWire(wire);
+        }
     }
-    return exists
+    return exists;
   }
 
-  clear():void {
-    const wireToRemove = new Array<Wire<any>>()
-    this._wireById.forEach((wire, _) => wireToRemove.push(wire))
-    wireToRemove.forEach(this._removeWire)
-    this._wireById.clear()
-    this._wireIdsBySignal.clear()
+  async clear(): Promise<void> {
+    const wireToRemove = new Array<Wire<any>>();
+    this._wireById.forEach((wire) => wireToRemove.push(wire));
+    if (wireToRemove.length > 0)
+      for await (const wire of wireToRemove) {
+        await this._removeWire(wire);
+      }
+    this._wireById.clear();
+    this._wireIdsBySignal.clear();
   }
 
-  getBySignal(signal:String):(Wire<any> | undefined)[] {
+  getBySignal(signal: string): (Wire<any> | undefined)[] {
     if (this.hasSignal(signal) && this._wireIdsBySignal.get(signal))
-      return this._wireIdsBySignal.get(signal)?.map(
-        (wireId) => this._wireById.get(wireId)) || new Array<Wire<any>>()
-
-    return new Array<Wire<any>>()
+      return (
+        this._wireIdsBySignal.get(signal)!.map((wireId) => {
+          return this._wireById.get(wireId);
+        }) || []
+      );
+    return [];
   }
 
-  getByScope(scope:Object):Array<Wire<any>> | undefined {
-    const result = new Array<Wire<any>>();
+  getByScope(scope: object): Array<Wire<any>> | undefined {
+    const result: Wire<any>[] = [];
     this._wireById.forEach((wire) => {
-      if (wire.scope == scope) result.push(wire)
+      if (wire.scope == scope) result.push(wire);
     });
-    return result
+    return result;
   }
 
-  getByListener(listener:WireListener<any>):Array<Wire<any>> | undefined {
-    const result = new Array<Wire<any>>()
+  getByListener(listener: WireListener<any>): Array<Wire<any>> | undefined {
+    const result: Wire<any>[] = [];
     this._wireById.forEach((wire) => {
-      if (wire.listener == listener) result.push(wire)
-    })
-    return result
+      if (wire.listener == listener) result.push(wire);
+    });
+    return result;
   }
 
-  getByWID(wireId:number):Wire<any> | undefined {
-    return this._wireById.get(wireId)
+  getByWID(wireId: number): Wire<any> | undefined {
+    return this._wireById.get(wireId);
   }
 
-  _removeWire(wire:Wire<any>):boolean {
-    const wireId = wire.id
-    const signal = wire.signal
+  ///
+  /// Exclude a Wire based on a signal.
+  ///
+  /// @param    The Wire to remove.
+  /// @return If there is no ids (no Wires) for that SIGNAL stop future perform
+  ///
+  async _removeWire(wire: Wire<any>): Promise<boolean> {
+    const wireId = wire.id;
+    const signal = wire.signal;
 
     // Remove Wire by wid
-    this._wireById.delete(wireId)
+    this._wireById.delete(wireId);
 
     // Remove wid for Wire signal
-    const wireIdsForSignal:Array<number> = this._wireIdsBySignal.get(signal) || []
-    wireIdsForSignal.splice(wireIdsForSignal.indexOf(wireId), 1)
+    const wireIdsForSignal: Array<number> = this._wireIdsBySignal.get(signal) || [];
+    wireIdsForSignal.splice(wireIdsForSignal.indexOf(wireId), 1);
 
-    const noMoreSignals = wireIdsForSignal.length == 0
-    if (noMoreSignals) this._wireIdsBySignal.delete(signal)
+    const noMoreSignals = wireIdsForSignal.length == 0;
+    if (noMoreSignals) this._wireIdsBySignal.delete(signal);
 
-    wire.clear()
+    await wire.clear();
 
-    return noMoreSignals
+    return noMoreSignals;
+  }
+}
+
+export class WireMiddlewaresLayer {
+  private readonly _MIDDLEWARE_LIST: WireMiddleware[] = [];
+
+  has(middleware: WireMiddleware): boolean {
+    return this._MIDDLEWARE_LIST.indexOf(middleware) > 0;
+  }
+  add(middleware: WireMiddleware): void {
+    this._MIDDLEWARE_LIST.push(middleware);
+  }
+  clear() {
+    this._MIDDLEWARE_LIST.splice(0, this._MIDDLEWARE_LIST.length);
+  }
+  onData(key: string, prevValue: any, nextValue: any) {
+    this._process((m: WireMiddleware) => m.onData(key, prevValue, nextValue));
+  }
+  onReset(key: string, prevValue: any) {
+    this._process((m: WireMiddleware) => m.onData(key, prevValue, null));
+  }
+  onRemove(signal: string, scope?: object, listener?: WireListener<any>) {
+    this._process((m: WireMiddleware) => m.onRemove(signal, scope, listener));
+  }
+  onSend(signal: string, payload: any) {
+    this._process((m: WireMiddleware) => m.onSend(signal, payload));
+  }
+  onAdd(wire: Wire<any>) {
+    this._process((m: WireMiddleware) => m.onAdd(wire));
+  }
+
+  _process(p: (mw: WireMiddleware) => void): void {
+    if (this._MIDDLEWARE_LIST.length > 0) {
+      for (const mw of this._MIDDLEWARE_LIST) {
+        p(mw);
+      }
+    }
   }
 }
 
 export class WireDataContainerLayer {
-  private _dataMap = new Map<String, WireData<any>>();
+  private _dataMap = new Map<string, WireData<any>>();
 
-  has(key:String):boolean { return this._dataMap.has(key)!; }
-  get<T>(key:String):WireData<T> | undefined { return this._dataMap.get(key)!; }
-  create<T>(key:String):WireData<T> { return new WireData<T>(key, this.remove); }
-  remove(key:String):boolean { return this._dataMap.delete(key); }
+  has(key: string): boolean {
+    return this._dataMap.has(key)!;
+  }
+  get<T>(key: string): WireData<T> | undefined {
+    return this._dataMap.get(key)!;
+  }
+  create<T>(key: string, onReset: WireDataOnReset<any>): WireData<T> {
+    return new WireData<T>(key, this.remove, onReset);
+  }
+  remove(key: string): boolean {
+    return this._dataMap.delete(key);
+  }
 
-  clear():void {
+  async clear(): Promise<void> {
+    const wireDataToRemove: WireData<any>[] = [];
     this._dataMap.forEach((wireData) => {
-      wireData.remove();
-    })
+      wireDataToRemove.push(wireData);
+    });
+    if (wireDataToRemove.length > 0)
+      for await (const wireData of wireDataToRemove) {
+        await wireData.remove(true);
+      }
     this._dataMap.clear();
   }
 }
