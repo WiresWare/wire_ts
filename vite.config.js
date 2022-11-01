@@ -12,9 +12,14 @@ export default defineConfig({
   },
   plugins: [eslint()],
   build: {
+    target: 'esnext',
     lib: {
-      entry: path.resolve(__dirname, 'src/index.ts'),
+      minify: true,
+      emptyOutDir: true,
+      copyPublicDir: true,
+      entry: resolve(__dirname, 'src/index.ts'),
       name: 'wires',
+      formats: ['es', 'umd'],
       fileName: (format) => `wires.${format}.js`,
     },
     rollupOptions: {

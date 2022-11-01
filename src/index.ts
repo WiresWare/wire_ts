@@ -1,2 +1,2 @@
 import Wire from './wire';
-export type { Wire };
+export { Wire };

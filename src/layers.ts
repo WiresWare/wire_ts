@@ -40,7 +40,7 @@ export class WireCommunicateLayer {
     return this._wireById.has(wire.id);
   }
 
-  async send(signal: string, payload?: any, scope?: object): Promise<WireSendResults> {
+  async send(signal: string, payload?: any, scope?: object | null): Promise<WireSendResults> {
     let noMoreSubscribers = true;
     const results: any[] = [];
     if (this.hasSignal(signal)) {
@@ -160,7 +160,7 @@ export class WireMiddlewaresLayer {
   private readonly _MIDDLEWARE_LIST: WireMiddleware[] = [];
 
   has(middleware: WireMiddleware): boolean {
-    return this._MIDDLEWARE_LIST.indexOf(middleware) > 0;
+    return this._MIDDLEWARE_LIST.indexOf(middleware) > -1;
   }
   add(middleware: WireMiddleware): void {
     this._MIDDLEWARE_LIST.push(middleware);
@@ -169,25 +169,25 @@ export class WireMiddlewaresLayer {
     this._MIDDLEWARE_LIST.splice(0, this._MIDDLEWARE_LIST.length);
   }
   onData(key: string, prevValue: any, nextValue: any) {
-    this._process((m: WireMiddleware) => m.onData(key, prevValue, nextValue));
+    return this._process((m: WireMiddleware) => m.onData(key, prevValue, nextValue));
   }
   onReset(key: string, prevValue: any) {
-    this._process((m: WireMiddleware) => m.onData(key, prevValue, null));
+    return this._process((m: WireMiddleware) => m.onData(key, prevValue, null));
   }
   onRemove(signal: string, scope?: object, listener?: WireListener<any>) {
-    this._process((m: WireMiddleware) => m.onRemove(signal, scope, listener));
+    return this._process((m: WireMiddleware) => m.onRemove(signal, scope, listener));
   }
   onSend(signal: string, payload: any) {
-    this._process((m: WireMiddleware) => m.onSend(signal, payload));
+    return this._process((m: WireMiddleware) => m.onSend(signal, payload));
   }
   onAdd(wire: Wire<any>) {
-    this._process((m: WireMiddleware) => m.onAdd(wire));
+    return this._process((m: WireMiddleware) => m.onAdd(wire));
   }
 
-  _process(p: (mw: WireMiddleware) => void): void {
+  async _process(p: (mw: WireMiddleware) => void): Promise<void> {
     if (this._MIDDLEWARE_LIST.length > 0) {
-      for (const mw of this._MIDDLEWARE_LIST) {
-        p(mw);
+      for await (const mw of this._MIDDLEWARE_LIST) {
+        await p(mw);
       }
     }
   }
