@@ -1,2 +1,3 @@
 import Wire from './wire';
-export { Wire };
+import { WireData, WireDataLockToken } from './data';
+export { Wire, WireData, WireDataLockToken };
