@@ -11,6 +11,16 @@ import { WireSendResults } from './results';
 
 export type WireListener<T> = (payload: T, wireId: number) => void;
 export type WireValueFunction<T> = (prevValue: T | null | undefined) => void;
+export interface WireCommand<T> {
+  execute(): Promise<T>;
+}
+export interface WireDatabaseService {
+  init(key: string): Promise<boolean>;
+  exist(key: string): boolean;
+  retrieve(key: string): Promise<any>;
+  save(key: string, data: any): void;
+  delete(key: string): void;
+}
 
 export interface WireMiddleware {
   onAdd(wire: Wire<any>): Promise<void>;
@@ -127,6 +137,7 @@ export default class Wire<PayloadType> {
   ///**********************************************************************************************************
 
   /// Add wire object to the communication layer
+  /// This method won't call middleware
   static attach(wire: Wire<any>): void {
     this._COMMUNICATION_LAYER.add(wire);
   }

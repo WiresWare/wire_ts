@@ -10,6 +10,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
+    "types": ["vitest/globals"],
     "allowJs": true,
     "target": "ESNext",
     "useDefineForClassFields": true,
@@ -29,5 +30,5 @@
   "exclude": [
     "node_modules"
   ],
-  "include": ["src"]
+  "include": ["src", "test"]
 }
