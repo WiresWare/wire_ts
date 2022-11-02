@@ -8,9 +8,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@": ["./src"]
+      "@/*": ["./src/*"]
     },
-    "types": ["vitest/globals"],
     "allowJs": true,
     "target": "ESNext",
     "useDefineForClassFields": true,
@@ -19,7 +18,7 @@
     "moduleResolution": "Node",
     "strict": true,
     "resolveJsonModule": true,
-    "isolatedModules": true,
+    "isolatedModules": false,
     "esModuleInterop": true,
     "noEmit": true,
     "noUnusedLocals": true,

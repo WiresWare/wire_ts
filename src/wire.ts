@@ -11,9 +11,7 @@ import { WireSendResults } from './results';
 
 export type WireListener<T> = (payload: T, wireId: number) => void;
 export type WireValueFunction<T> = (prevValue: T | null | undefined) => void;
-export interface WireCommand<T> {
-  execute(): Promise<T>;
-}
+
 export interface WireDatabaseService {
   init(key: string): Promise<boolean>;
   exist(key: string): boolean;
@@ -21,7 +19,6 @@ export interface WireDatabaseService {
   save(key: string, data: any): void;
   delete(key: string): void;
 }
-
 export interface WireMiddleware {
   onAdd(wire: Wire<any>): Promise<void>;
   onSend(signal: string, payload?: any | null, scope?: object | null): Promise<void>;
