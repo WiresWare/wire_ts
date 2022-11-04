@@ -266,17 +266,18 @@ export default class Wire<PayloadType> {
   /// ```
   /// Returns [WireData]
   static data<T>(key: string, value?: any | null, getter?: WireDataGetter<T> | null | undefined): WireData<T> {
+    console.log(`> Wire.data -> key = ${key}`);
     const wireData: WireData<T> | undefined = this._DATA_CONTAINER_LAYER.has(key)
       ? this._DATA_CONTAINER_LAYER.get<T>(key)
       : this._DATA_CONTAINER_LAYER.create<T>(key, this._MIDDLEWARE_LAYER.onReset);
-
     if (getter) {
       wireData!.getter = getter!;
       wireData!.lock(new WireDataLockToken());
     }
     if (value) {
       if (wireData!.isGetter) throw new Error(ERROR__VALUE_IS_NOT_ALLOWED_TOGETHER_WITH_GETTER);
-      const prevValue = wireData!.value;
+      const prevValue = wireData!.isSet ? wireData!.value : null;
+      console.log(`> Wire.data -> prev = ${prevValue}`);
       const nextValue = typeof value === 'function' ? (value as WireValueFunction<T>)(prevValue) : value;
       wireData!.value = nextValue;
       this._MIDDLEWARE_LAYER.onData(key, prevValue, nextValue);
@@ -286,16 +287,24 @@ export default class Wire<PayloadType> {
 
   /// Store an instance of the object by its type, and lock it, so it can't be overwritten
   static put<T>(instance: object, lock?: WireDataLockToken): T {
-    const key = instance.constructor.name;
-    if (Wire.data(key).isLocked) throw new Error(ERROR__CANT_PUT_ALREADY_EXISTING_INSTANCE);
-    Wire.data(key, instance).lock(lock ?? new WireDataLockToken());
+    const key = instance.constructor.name.toString();
+    console.log(`> Wire.put: ${key} (typeof key: ${typeof key})`);
+    const wireData = Wire.data(key);
+    if (wireData?.isLocked) throw new Error(ERROR__CANT_PUT_ALREADY_EXISTING_INSTANCE);
+    console.log(`> Wire.put: set value = ${instance}`);
+    wireData.value = instance;
+    wireData.lock(lock ?? new WireDataLockToken());
     return instance as T;
   }
 
   /// Return an instance of an object by its type, throw an error in case it is not set
-  static find(instanceType: object): any {
-    const key = instanceType.constructor.name;
-    if (!Wire.data(key).isSet) throw new Error(ERROR__CANT_FIND_INSTANCE_NULL);
-    return Wire.data(key).value!;
+  static find(instanceType: any): any {
+    const key = instanceType.name?.toString();
+    console.log(`> Wire.find: ${key} (typeof key: ${typeof key})`);
+    const wireData = Wire.data(key);
+    const isSet = wireData?.isSet;
+    console.log(`> \t is set = ${isSet}`);
+    if (!isSet) throw new Error(ERROR__CANT_FIND_INSTANCE_NULL);
+    return wireData.value!;
   }
 }

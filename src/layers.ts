@@ -197,13 +197,18 @@ export class WireDataContainerLayer {
   private _dataMap = new Map<string, WireData<any>>();
 
   has(key: string): boolean {
-    return this._dataMap.has(key)!;
+    const result = this._dataMap.has(key);
+    console.log(`> Wire -> _DATA_CONTAINER_LAYER: has ${key} = ${result}`);
+    return result!;
   }
   get<T>(key: string): WireData<T> | undefined {
     return this._dataMap.get(key)!;
   }
   create<T>(key: string, onReset: WireDataOnReset<any>): WireData<T> {
-    return new WireData<T>(key, this.remove, onReset);
+    console.log(`> Wire -> _DATA_CONTAINER_LAYER: create ${key}`);
+    const wireData = new WireData<T>(key, this.remove, onReset);
+    this._dataMap.set(key, wireData);
+    return wireData;
   }
   remove(key: string): boolean {
     return this._dataMap.delete(key);

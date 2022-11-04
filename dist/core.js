@@ -1,4 +1,4 @@
-const E = "WR:1001 - Wire already registered, wireId: ", w = "WR:2001 - Middleware already registered, middleware: ", I = "WR:3000 - Listener is null", A = "WR:3001 - WireData value change not allowed - data modification locked with token", g = "WR:3003 - WireData is a getter - it cannot be modified only accessed", f = "WR:3004 - WireData is a getter - setting value together with getter is not allowed", L = "WR:4001 - Cant put already existing instance (unlock first)", y = "WR:4002 - Cant find instance its not set";
+const R = "WR:1001 - Wire already registered, wireId: ", E = "WR:2001 - Middleware already registered, middleware: ", I = "WR:3000 - Listener is null", g = "WR:3001 - WireData value change not allowed - data modification locked with token", f = "WR:3003 - WireData is a getter - it cannot be modified only accessed", A = "WR:3004 - WireData is a getter - setting value together with getter is not allowed", L = "WR:4001 - Cant put already existing instance (unlock first)", y = "WR:4002 - Cant find instance its not set";
 class d {
   equal(t) {
     return this === t;
@@ -59,7 +59,7 @@ class D {
   }
   _guardian() {
     if (this.isLocked)
-      throw new Error(this.isGetter ? g : A);
+      throw new Error(this.isGetter ? f : g);
   }
   subscribe(t) {
     return this.hasListener(t) || this._listeners.push(t), this;
@@ -97,7 +97,7 @@ class p {
   add(t) {
     const e = t.id, s = t.signal;
     if (this._wireById.has(e))
-      throw new Error(E + e.toString());
+      throw new Error(R + e.toString());
     return this._wireById.set(e, t), this._wireIdsBySignal.has(s) || this._wireIdsBySignal.set(s, new Array()), this._wireIdsBySignal.get(s).push(e), t;
   }
   hasSignal(t) {
@@ -112,8 +112,8 @@ class p {
     if (this.hasSignal(t) && this._wireIdsBySignal.has(t)) {
       const _ = [];
       for await (const c of this._wireIdsBySignal.get(t)) {
-        const a = this._wireById.get(c);
-        s != null && a.scope != s || (i = a.replies > 0 && --a.replies == 0, i && _.push(a), await a.transfer(e));
+        const n = this._wireById.get(c);
+        s != null && n.scope != s || (i = n.replies > 0 && --n.replies == 0, i && _.push(n), await n.transfer(e));
       }
       if (_.length > 0)
         for await (const c of _)
@@ -124,19 +124,19 @@ class p {
   async remove(t, e, s) {
     const i = this.hasSignal(t);
     if (i) {
-      const r = e != null, n = s != null, _ = [];
+      const r = e != null, a = s != null, _ = [];
       if (this._wireIdsBySignal.has(t)) {
-        for await (const a of this._wireIdsBySignal.get(t))
-          if (this._wireById.has(a)) {
-            const l = this._wireById.get(a), u = r && e != l.scope, R = n && s != l.listener;
-            if (u || R)
+        for await (const n of this._wireIdsBySignal.get(t))
+          if (this._wireById.has(n)) {
+            const l = this._wireById.get(n), u = r && e != l.scope, w = a && s != l.listener;
+            if (u || w)
               continue;
             _.push(l);
           }
       }
       if (_.length > 0)
-        for await (const a of _)
-          await this._removeWire(a);
+        for await (const n of _)
+          await this._removeWire(n);
     }
     return i;
   }
@@ -174,7 +174,7 @@ class p {
     return r && this._wireIdsBySignal.delete(s), await t.clear(), r;
   }
 }
-class T {
+class v {
   _MIDDLEWARE_LIST = [];
   has(t) {
     return this._MIDDLEWARE_LIST.indexOf(t) > -1;
@@ -215,7 +215,8 @@ class M {
     return this._dataMap.get(t);
   }
   create(t, e) {
-    return new D(t, this.remove, e);
+    const s = new D(t, this.remove, e);
+    return this._dataMap.set(t, s), s;
   }
   remove(t) {
     return this._dataMap.delete(t);
@@ -237,7 +238,7 @@ class o {
   static _INDEX = 0;
   static _COMMUNICATION_LAYER = new p();
   static _DATA_CONTAINER_LAYER = new M();
-  static _MIDDLEWARE_LAYER = new T();
+  static _MIDDLEWARE_LAYER = new v();
   _signal;
   get signal() {
     return this._signal;
@@ -314,25 +315,25 @@ class o {
     if (!this._MIDDLEWARE_LAYER.has(t))
       this._MIDDLEWARE_LAYER.add(t);
     else
-      throw new Error(`${w} ${t.toString()}`);
+      throw new Error(`${E} ${t.toString()}`);
   }
   static get(t, e, s, i) {
     let r = new Array();
     if (t) {
-      const n = this._COMMUNICATION_LAYER.getBySignal(t);
-      n && (r = [...r, ...n]);
+      const a = this._COMMUNICATION_LAYER.getBySignal(t);
+      a && (r = [...r, ...a]);
     }
     if (e) {
-      const n = this._COMMUNICATION_LAYER.getByScope(e);
-      n && (r = [...r, ...n]);
+      const a = this._COMMUNICATION_LAYER.getByScope(e);
+      a && (r = [...r, ...a]);
     }
     if (s) {
-      const n = this._COMMUNICATION_LAYER.getByListener(s);
-      n && (r = [...r, ...n]);
+      const a = this._COMMUNICATION_LAYER.getByListener(s);
+      a && (r = [...r, ...a]);
     }
     if (i) {
-      const n = this._COMMUNICATION_LAYER.getByWID(i);
-      n && r.push(n);
+      const a = this._COMMUNICATION_LAYER.getByWID(i);
+      a && r.push(a);
     }
     return r;
   }
@@ -340,25 +341,79 @@ class o {
     const i = this._DATA_CONTAINER_LAYER.has(t) ? this._DATA_CONTAINER_LAYER.get(t) : this._DATA_CONTAINER_LAYER.create(t, this._MIDDLEWARE_LAYER.onReset);
     if (s && (i.getter = s, i.lock(new d())), e) {
       if (i.isGetter)
-        throw new Error(f);
-      const r = i.value, n = typeof e == "function" ? e(r) : e;
-      i.value = n, this._MIDDLEWARE_LAYER.onData(t, r, n);
+        throw new Error(A);
+      const r = i.isSet ? i.value : null, a = typeof e == "function" ? e(r) : e;
+      i.value = a, this._MIDDLEWARE_LAYER.onData(t, r, a);
     }
     return i;
   }
   static put(t, e) {
-    const s = t.constructor.name;
-    if (o.data(s).isLocked)
+    const s = t.constructor.name.toString(), i = o.data(s);
+    if (i?.isLocked)
       throw new Error(L);
-    return o.data(s, t).lock(e ?? new d()), t;
+    return i.value = t, i.lock(e ?? new d()), t;
   }
   static find(t) {
-    const e = t.constructor.name;
-    if (!o.data(e).isSet)
+    const e = t.name?.toString(), s = o.data(e);
+    if (!s?.isSet)
       throw new Error(y);
-    return o.data(e).value;
+    return s.value;
+  }
+}
+class T {
+  databaseService;
+  constructor(t) {
+    this.databaseService = t;
+  }
+  exist(t) {
+    return this.databaseService.exist(t);
+  }
+  async retrieve(t) {
+    return this.databaseService.retrieve(t);
+  }
+  persist(t, e) {
+    this.databaseService.save(t, JSON.stringify(e));
+  }
+  delete(t) {
+    this.exist(t) && this.databaseService.delete(t);
+  }
+}
+class W {
+  getData(t) {
+    return o.data(t);
+  }
+  has(t) {
+    return o.data(t).isSet;
+  }
+  hasNot(t) {
+    return !this.has(t);
+  }
+  async get(t) {
+    return new Promise((e, s) => {
+      this.has(t) ? e(this.getData(t).value) : s(`Error: missing data on key - ${t}`);
+    });
+  }
+  async getMany(t) {
+    const e = /* @__PURE__ */ new Map();
+    for await (const s of t)
+      e.set(s, await this.get(s));
+    return e;
+  }
+  async update(t, e, s = !0) {
+    e != null ? o.data(t, e) : s && await this.getData(t).refresh();
+  }
+  async reset(t) {
+    this.has(t) && await this.getData(t).reset();
+  }
+  async remove(t) {
+    this.has(t) && await this.getData(t).remove();
   }
 }
 export {
-  o as Wire
+  o as Wire,
+  D as WireData,
+  d as WireDataLockToken,
+  S as WireSendResults,
+  T as WireWithDatabase,
+  W as WireWithWireData
 };

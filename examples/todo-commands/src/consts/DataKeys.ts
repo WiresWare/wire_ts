@@ -1,0 +1,10 @@
+class DataKeys {
+  static LIST_OF_IDS = 'DATA_TODO__ALL_LIST';
+  static COUNT = 'DATA_TODO__NOT_COMPLETED_COUNT';
+  static GET_COUNT_COMPLETED = 'DATA_TODO__GET_COMPLETED_COUNT';
+  static FILTER = 'DATA_TODO__FILTER';
+  static COMPLETE_ALL = 'DATA_TODO__COMPLETE_ALL';
+  static STATE = 'DATA_TODO__STATE';
+}
+
+export default DataKeys;

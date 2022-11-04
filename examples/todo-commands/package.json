@@ -14,10 +14,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^18.11.9",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
     "@vitest/ui": "^0.24.5",
+    "@wire/core": "file:./../../../wire_ts",
     "eslint": "^8.26.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
@@ -26,8 +26,7 @@
     "typescript": "^4.6.4",
     "vite": "^3.2.0",
     "vite-plugin-eslint": "^1.8.1",
-    "vitest": "^0.24.4",
-    "wire_ts": "file:./../../../wire_ts"
+    "vitest": "^0.24.4"
   },
   "eslintConfig": {
     "root": true,
@@ -46,22 +45,18 @@
     },
     "settings": {
       "import/resolver": {
+        "alias": {
+          "map": [["@", "src"]],
+          "extensions": [".js", ".jsx", ".ts", ".tsx"]
+        },
         "node": {
-          "paths": [
-            "src"
-          ],
-          "extensions": [
-            ".js",
-            ".jsx",
-            ".ts",
-            ".tsx"
-          ]
+          "paths": ["src"],
+          "extensions": [".js", ".jsx", ".ts", ".tsx"]
         }
       }
     },
     "extends": [
       "eslint:recommended",
-      "plugin:import/recommended",
       "plugin:@typescript-eslint/recommended",
       "prettier"
     ],

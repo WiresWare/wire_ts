@@ -1,10 +1,18 @@
 {
-  "name": "wire_ts",
-  "version": "1.1.0",
+  "name": "@wire/core",
+  "version": "0.0.1",
   "type": "module",
   "files": [
     "dist"
   ],
+  "main": "./dist/wire.js",
+  "module": "./dist/wire.js",
+  "exports": {
+    ".": {
+      "import": "./dist/wire.js",
+      "require": "./dist/wire.js"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "test": "vitest",
@@ -12,17 +20,9 @@
     "preview": "vite preview",
     "coverage": "vitest run --coverage"
   },
-  "main": "./dist/wires.umd.js",
-  "module": "./dist/wires.es.js",
-  "exports": {
-    ".": {
-      "import": "./dist/wires.es.js",
-      "require": "./dist/wires.umd.js"
-    }
-  },
-  "types": "./dist/types/index.d.ts",
+  "types": "./dist/types",
   "devDependencies": {
-    "@types/node": "^18.11.9",
+    "@babel/eslint-parser": "^7.19.1",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
     "@vitest/ui": "^0.24.5",
@@ -33,7 +33,9 @@
     "prettier": "^2.7.1",
     "typescript": "^4.6.4",
     "vite": "^3.2.0",
+    "vite-plugin-dts": "^1.6.6",
     "vite-plugin-eslint": "^1.8.1",
+    "vite-plugin-remove-console": "^1.1.0",
     "vitest": "^0.24.4"
   },
   "eslintConfig": {

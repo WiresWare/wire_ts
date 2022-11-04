@@ -49,9 +49,11 @@ export class WireData<T> {
     return this._key;
   }
   get value(): T | null | undefined {
+    console.log(`> WireData -> get value: ${this._value}`);
     return this._value;
   }
   set value(input: T | null | undefined) {
+    console.log(`> WireData -> set value: ${input} (typeof value ${typeof input}) : isLocked = ${this.isLocked}`);
     this._guardian();
     this._value = input;
     this.refresh();

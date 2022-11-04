@@ -1,6 +1,8 @@
 import { expect, test, describe } from 'vitest';
 import Wire from '../src/wire';
 
+class PutFindTestObject {}
+
 describe('1. Subscriptions', async () => {
   const SIGNAL_G1 = 'SIGNAL';
   // const SIGNAL_COUNTER = 'SIGNAL_COUNTER';
@@ -53,5 +55,14 @@ describe('1. Subscriptions', async () => {
     expect((await Wire.send(SIGNAL_NOT_REGISTERED)).signalHasNoSubscribers).toBeTruthy();
     print('> 1.2.2 -> Wire.send("RANDOM") == isTrue');
     expect((await Wire.send('RANDOM')).signalHasNoSubscribers).toBeTruthy();
+  });
+
+  test('1.5. Test put/find', async () => {
+    print('> TEST put/find instances by their type, the instance should be preserved');
+    const putFindTestObject = new PutFindTestObject();
+    print(`> 1.5.1 -> Put object of type ${putFindTestObject.constructor.name} to Wire`);
+    Wire.put(putFindTestObject);
+    print(`> 1.5.2 -> Find object of type ${PutFindTestObject.name.toString()}`);
+    expect(Wire.find(PutFindTestObject)).toBe(putFindTestObject);
   });
 });

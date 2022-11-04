@@ -1,7 +1,11 @@
 import { WireDataGetter, WireDataLockToken } from "@/data";
+import { WireDatabaseService, WireMiddleware } from '@/wire'
+import { WireWithWhenReady } from '@/with'
+import { WireCommand } from '@/command'
 
-declare module 'wires'{
-  interface WireData {
+declare module '@wire/core'{
+  export type { WireDatabaseService, WireMiddleware, WireWithWhenReady, WireDataGetter, WireCommand }
+  export interface WireData {
     get isSet(): boolean;
     get isLocked(): boolean;
     get isGetter(): boolean;

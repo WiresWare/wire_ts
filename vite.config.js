@@ -1,39 +1,35 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
-import eslint from 'vite-plugin-eslint'
+import eslint from 'vite-plugin-eslint';
+import dts from 'vite-plugin-dts';
+import removeConsole from 'vite-plugin-remove-console';
 
 export default defineConfig({
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src')
-    }
+      '@': resolve(__dirname, 'src'),
+    },
   },
   test: {
     globals: true,
   },
-  plugins: [eslint()],
+  plugins: [
+    eslint(),
+    removeConsole(),
+    // dts({ outputDir: 'dist/types' })
+  ],
   build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+    copyPublicDir: false,
     target: 'esnext',
+    minify: true,
     lib: {
-      minify: true,
-      emptyOutDir: true,
-      copyPublicDir: true,
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'wires',
-      formats: ['es', 'umd'],
-      fileName: (format) => `wires.${format}.js`,
+      name: 'wire',
+      formats: ['es'],
+      // fileName: (format) => `wire.${format}.js`,
     },
-    rollupOptions: {
-      // make sure to externalize deps that shouldn't be bundled
-      // into your library
-      // external: ['vue'],
-      output: {
-        // Provide global variables to use in the UMD build
-        // for externalized deps
-        globals: {
-          // vue: 'Vue',
-        },
-      },
-    },
+    write: true,
   },
-})
+});
