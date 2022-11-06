@@ -1,11 +1,11 @@
-import Wire, { WireMiddleware } from '@wire/core/dist/types/wire';
-import { WireWithDatabase } from '@wire/core/dist/types/with';
-import { WireDatabaseService } from '@wire/core/src/wire';
+import { Wire, WireWithDatabase } from 'wire.cores';
+import { IWireDatabaseService, IWireMiddleware } from 'wire.cores/dist/interfaces';
+
 import WebDatabaseService from '@/service/WebDatabaseService';
 
-class StorageMiddleware extends WireWithDatabase implements WireMiddleware {
+class StorageMiddleware extends WireWithDatabase implements IWireMiddleware {
   constructor() {
-    super(Wire.find(WebDatabaseService) as WireDatabaseService);
+    super(Wire.find(WebDatabaseService) as IWireDatabaseService);
   }
   onAdd(): Promise<void> {
     return Promise.resolve(undefined);

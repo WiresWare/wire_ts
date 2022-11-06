@@ -1,16 +1,12 @@
-import { WireData } from './data';
-import Wire, { WireDatabaseService } from './wire';
+import { IWireData, IWireDatabaseService, IWireWithDatabase, IWireWithWireData } from './interfaces';
+import Wire from './wire';
 
-export interface WireWithWhenReady {
-  whenReady: Promise<boolean>;
-}
-
-export class WireWithDatabase {
-  private readonly databaseService: WireDatabaseService;
-  constructor(databaseService: WireDatabaseService) {
+export class WireWithDatabase implements IWireWithDatabase {
+  private readonly databaseService: IWireDatabaseService;
+  constructor(databaseService: IWireDatabaseService) {
     this.databaseService = databaseService;
   }
-  exist(key: string) {
+  exist(key: string): boolean {
     return this.databaseService.exist(key);
   }
   async retrieve(key: string): Promise<any> {
@@ -24,8 +20,9 @@ export class WireWithDatabase {
     if (this.exist(key)) this.databaseService.delete(key);
   }
 }
-export class WireWithWireData {
-  getData<T>(dataKey: string): WireData<T> {
+
+export class WireWithWireData implements IWireWithWireData {
+  getData<T>(dataKey: string): IWireData<T> {
     return Wire.data<T>(dataKey);
   }
   has(dataKey: string): boolean {
@@ -58,6 +55,6 @@ export class WireWithWireData {
     if (this.has(dataKey)) await this.getData(dataKey).reset();
   }
   async remove(dataKey: string): Promise<void> {
-    if (this.has(dataKey)) await this.getData(dataKey).remove();
+    if (this.has(dataKey)) await this.getData(dataKey).remove(false);
   }
 }

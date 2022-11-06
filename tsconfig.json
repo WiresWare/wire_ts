@@ -6,6 +6,7 @@
     "node"
   ],
   "compilerOptions": {
+    "declaration": true,
     "baseUrl": ".",
     "paths": {
       "@": ["./src"]

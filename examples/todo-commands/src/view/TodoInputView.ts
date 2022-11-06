@@ -1,4 +1,4 @@
-import Wire from '@wire/core/src/wire';
+import { Wire } from 'wire.cores';
 
 import DomElement from '@/view/base/DomElement';
 import ViewSignals from '@/consts/ViewSignals';

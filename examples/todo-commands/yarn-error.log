@@ -1,8 +1,8 @@
 Arguments: 
-  /home/vladimir/Documents/SDKs/Node/bin/node /home/vladimir/Documents/SDKs/Node/bin/yarn add -D @types/wire__core
+  /home/vladimir/Documents/SDKs/Node/bin/node /home/vladimir/Documents/SDKs/Node/bin/yarn add -D @types/wire.cores
 
 PATH: 
-  /home/vladimir/Documents/Programs/GitSubrepo/lib:/home/vladimir/.cargo/bin:/home/vladimir/Documents/SDKs/Subrepo/lib:/app/bin:/usr/bin:/home/vladimir/.var/app/com.jetbrains.WebStorm/data/node/bin:/home/vladimir/.var/app/com.jetbrains.WebStorm/data/cargo/bin:/home/vladimir/.var/app/com.jetbrains.WebStorm/data/python/bin:/home/vladimir/Documents/Projects/_/Wire/wire_ts/examples/todo-commands/node_modules/.bin:/home/vladimir/Documents/SDKs/Node/bin:/home/vladimir/Documents/SDKs/Flutter/bin/cache/dart-sdk/bin:/home/vladimir/Documents/SDKs/Flutter/bin:/home/vladimir/.pub-cache/bin:/home/vladimir/Documents/SDKs/Android/platform-tools:/home/vladimir/Documents/SDKs/Android/tools:/opt/apps/cn.google.chrome/files:/home/vladimir/Documents/SDKs/NHost
+  /home/vladimir/Documents/Programs/GitSubrepo/lib:/home/vladimir/.cargo/bin:/home/vladimir/Documents/SDKs/Subrepo/lib:/app/bin:/usr/bin:/home/vladimir/.var/app/com.jetbrains.WebStorm/data/node/bin:/home/vladimir/.var/app/com.jetbrains.WebStorm/data/cargo/bin:/home/vladimir/.var/app/com.jetbrains.WebStorm/data/python/bin:/home/vladimir/Documents/SDKs/Node/bin:/home/vladimir/Documents/SDKs/Flutter/bin/cache/dart-sdk/bin:/home/vladimir/Documents/SDKs/Flutter/bin:/home/vladimir/.pub-cache/bin:/home/vladimir/Documents/SDKs/Android/platform-tools:/home/vladimir/Documents/SDKs/Android/tools:/opt/apps/cn.google.chrome/files:/home/vladimir/Documents/SDKs/NHost
 
 Yarn version: 
   1.22.19
@@ -14,17 +14,8 @@ Platform:
   linux x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/@types%2fwire__core: Not found
-      at Request.params.callback [as _callback] (/home/vladimir/Documents/SDKs/Node/lib/node_modules/yarn/lib/cli.js:66145:18)
-      at Request.self.callback (/home/vladimir/Documents/SDKs/Node/lib/node_modules/yarn/lib/cli.js:140890:22)
-      at Request.emit (node:events:513:28)
-      at Request.<anonymous> (/home/vladimir/Documents/SDKs/Node/lib/node_modules/yarn/lib/cli.js:141862:10)
-      at Request.emit (node:events:513:28)
-      at IncomingMessage.<anonymous> (/home/vladimir/Documents/SDKs/Node/lib/node_modules/yarn/lib/cli.js:141784:12)
-      at Object.onceWrapper (node:events:627:28)
-      at IncomingMessage.emit (node:events:525:35)
-      at endReadableNT (node:internal/streams/readable:1358:12)
-      at processTicksAndRejections (node:internal/process/task_queues:83:21)
+  Error: getaddrinfo EAI_AGAIN registry.yarnpkg.com
+      at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26)
 
 npm manifest: 
   {
@@ -43,7 +34,6 @@ npm manifest:
     "author": "",
     "license": "ISC",
     "devDependencies": {
-      "@types/node": "^18.11.9",
       "@typescript-eslint/eslint-plugin": "^5.41.0",
       "@typescript-eslint/parser": "^5.41.0",
       "@vitest/ui": "^0.24.5",
@@ -56,7 +46,7 @@ npm manifest:
       "vite": "^3.2.0",
       "vite-plugin-eslint": "^1.8.1",
       "vitest": "^0.24.4",
-      "@wire/core": "file:./../../../wire_ts"
+      "wire.cores": "^0.0.5"
     },
     "eslintConfig": {
       "root": true,
@@ -75,6 +65,20 @@ npm manifest:
       },
       "settings": {
         "import/resolver": {
+          "alias": {
+            "map": [
+              [
+                "@",
+                "src"
+              ]
+            ],
+            "extensions": [
+              ".js",
+              ".jsx",
+              ".ts",
+              ".tsx"
+            ]
+          },
           "node": {
             "paths": [
               "src"
@@ -90,7 +94,6 @@ npm manifest:
       },
       "extends": [
         "eslint:recommended",
-        "plugin:import/recommended",
         "plugin:@typescript-eslint/recommended",
         "prettier"
       ],
@@ -240,7 +243,7 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
     integrity sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==
   
-  "@types/node@*", "@types/node@^18.11.9":
+  "@types/node@*":
     version "18.11.9"
     resolved "https://registry.yarnpkg.com/@types/node/-/node-18.11.9.tgz#02d013de7058cea16d36168ef2fc653464cfbad4"
     integrity sha512-CRpX21/kGdzjOpFsZSkcrXMGIBWMGNIHXXBVFSH+ggkftxg+XYP20TESbh+zFvFj3EQOl5byk0HTRn1IL6hbqg==
@@ -339,9 +342,6 @@ Lockfile:
     integrity sha512-hdj6cmlrVPt3Mpgn0ITytTqnxQLGB4hRgueFuzlKSrqAG30wUrrxQjrW55krE1NR15r1c2jzUBwjzvIJsyoUwg==
     dependencies:
       sirv "^2.0.2"
-  
-  "@wire/core@file:../..":
-    version "1.1.0"
   
   acorn-jsx@^5.3.2:
     version "5.3.2"
@@ -1849,6 +1849,11 @@ Lockfile:
     integrity sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==
     dependencies:
       isexe "^2.0.0"
+  
+  wire.cores@^0.0.5:
+    version "0.0.5"
+    resolved "https://registry.yarnpkg.com/wire.cores/-/wire.cores-0.0.5.tgz#1e6874323e783dc29497c1225b2afb0bfe0ce2a0"
+    integrity sha512-Cmdu+Vjw4VgVnwvK8j8Y7cxBreV686PZ/8MZwHZ2ADMd/gG3aTrPp+eCR+mpYNRFWY6AEs2XFsN8c6ZbFS224Q==
   
   word-wrap@^1.2.3:
     version "1.2.3"

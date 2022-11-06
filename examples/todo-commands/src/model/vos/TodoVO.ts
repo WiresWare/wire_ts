@@ -14,16 +14,16 @@ class TodoVO {
   get title(): string {
     return this._title;
   }
-  get id(): number {
+  get id(): string {
     return this._id;
   }
 
-  private readonly _id: number;
+  private readonly _id: string;
   private readonly _date: Date;
   private _title: string;
   private _isCompleted: boolean;
 
-  constructor(id: number, title: string, date = new Date()) {
+  constructor(id: string, title: string, date = new Date()) {
     this._id = id;
     this._title = title;
     this._date = date;
