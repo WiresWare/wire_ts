@@ -1,11 +1,11 @@
-import { Wire } from 'wire.cores';
+import { Wire } from 'cores.wire';
 
-import TodoInputView from '@/view/TodoInputView';
+import TodoInputView from './view/TodoInputView';
 import DataKeys from './consts/DataKeys';
 import ViewSignals from './consts/ViewSignals';
 import TodoVO from './model/vos/TodoVO';
 
-const todoVO = new TodoVO(`${Date.now()}`, 'Title', new Date());
+const todoVO = new TodoVO(`${Date.now()}`, 'Title', '', new Date());
 const scope = {};
 
 Wire.data(todoVO.id, todoVO);

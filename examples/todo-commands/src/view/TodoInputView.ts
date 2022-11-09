@@ -1,7 +1,8 @@
-import { Wire } from 'wire.cores';
+import { Wire } from 'cores.wire';
 
 import DomElement from '@/view/base/DomElement';
 import ViewSignals from '@/consts/ViewSignals';
+import InputDTO from '@/model/dto/InputDTO';
 
 class TodoInputView extends DomElement {
   constructor(dom: HTMLElement) {
@@ -9,15 +10,14 @@ class TodoInputView extends DomElement {
     Wire.add(this, ViewSignals.CLEAR_INPUT, async () => {
       (dom as HTMLInputElement).value = '';
     });
-    this.dom.value = '';
+    (this.dom as HTMLInputElement).value = '';
     this.dom.onkeyup = async (e) => {
-      if (e.key === 'Enter') {
-        await Wire.send(ViewSignals.INPUT, this.dom.value);
+      const isEnterPressed = e.key === 'Enter';
+      console.log('> TodoInputView -> onkeyup:', { isEnterPressed });
+      if (isEnterPressed) {
+        await Wire.send(ViewSignals.INPUT, new InputDTO((this.dom as HTMLInputElement).value, ''));
       }
     };
-  }
-  get dom(): HTMLInputElement {
-    return super.dom as HTMLInputElement;
   }
 }
 

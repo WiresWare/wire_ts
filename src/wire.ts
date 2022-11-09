@@ -6,19 +6,18 @@ import {
   ERROR__CANT_PUT_ALREADY_EXISTING_INSTANCE,
   ERROR__CANT_FIND_INSTANCE_NULL,
 } from './const';
-import { IWire, IWireCommand, IWireData, IWireDataLockToken, IWireMiddleware, IWireSendResults } from './interfaces';
+import { IWire, IWireData, IWireDataLockToken, IWireMiddleware, IWireSendResults } from './interfaces';
 import { WireDataGetter, WireListener, WireValueFunction } from './types';
 import { WireDataLockToken } from './data';
-import { WireWithWireData } from './with';
 
-export default class Wire<T> implements IWire<T> {
+export default class Wire implements IWire {
   /// Wire object is a communication unit of the system, each instance associated with a signal
   ///
   /// Wire object can be passed as a reference to any component of the system
   /// But it won't react on signal until it is attached to the communication layer with [attach]
   /// However you still can send data through it by calling [transfer]
   ///
-  constructor(scope: object, signal: string, listener: WireListener<T>, replies = 0) {
+  constructor(scope: object, signal: string, listener: WireListener, replies = 0) {
     this._scope = scope;
     this._signal = signal;
     this._listener = listener;
@@ -34,11 +33,9 @@ export default class Wire<T> implements IWire<T> {
   private static readonly _COMMUNICATION_LAYER = new WireCommunicateLayer();
   private static readonly _DATA_CONTAINER_LAYER = new WireDataContainerLayer();
   private static readonly _MIDDLEWARE_LAYER = new WireMiddlewaresLayer();
-
   ///**************************************************
   ///  Protected / Private Properties
   ///**************************************************
-
   ///
   /// [read-only]
   /// The SIGNAL associated with this Wire.
@@ -48,17 +45,15 @@ export default class Wire<T> implements IWire<T> {
   get signal() {
     return this._signal;
   }
-
   ///
   /// [read-only]
   /// The closure method, reaction to the Wire instance changes.
   ///
   /// @private
-  private _listener?: WireListener<T> | null | undefined;
-  get listener(): WireListener<T> | undefined | null {
+  private _listener?: WireListener | null | undefined;
+  get listener(): WireListener | undefined | null {
     return this._listener;
   }
-
   ///
   /// [read-only] [internal use]
   /// Unique identification for wire instance.
@@ -68,7 +63,6 @@ export default class Wire<T> implements IWire<T> {
   get id(): number {
     return this._id;
   }
-
   ///
   /// [read-only] [internal use]
   /// Scope to which wire belongs to
@@ -78,7 +72,6 @@ export default class Wire<T> implements IWire<T> {
   get scope(): object {
     return this._scope!;
   }
-
   ///
   /// The number of times that wire instance will respond on signal before being removed.
   /// Default is 0 that means infinity times.
@@ -91,12 +84,10 @@ export default class Wire<T> implements IWire<T> {
     this._withReplies = value > 0;
     this._replies = value;
   }
-
   private _withReplies = false;
   get withReplies(): boolean {
     return this._withReplies;
   }
-
   /// Call associated WireListener with data.
   async transfer(payload?: any): Promise<void> {
     if (!this._listener) throw new Error(ERROR__LISTENER_IS_NULL);
@@ -106,53 +97,45 @@ export default class Wire<T> implements IWire<T> {
     // if (filterByPayloadType)
     return this._listener(payload, this._id);
   }
-
   clear(): void {
     this._scope = undefined;
     this._listener = undefined;
   }
-
   ///**********************************************************************************************************
   ///
   ///  Public Static Methods - API
   ///
   ///**********************************************************************************************************
-
   /// Add wire object to the communication layer
   /// This method won't call middleware
-  static attach(wire: Wire<any>): void {
+  static attach(wire: IWire): void {
     this._COMMUNICATION_LAYER.add(wire);
   }
-
   /// Remove wire object from communication layer, then inform all middlewares with
   /// Returns existence of another wires with that signal.
-  static async detach(wire: Wire<any>): Promise<boolean> {
+  static async detach(wire: IWire): Promise<boolean> {
     return this.remove(wire.signal, wire.scope, wire.listener!);
   }
-
   /// Create wire object from params and [attach] it to the communication layer
   /// All middleware will be informed from [WireMiddleware.onAdd] before wire is attached to the layer
-  static async add<T>(scope: object, signal: string, listener: WireListener<T>, replies = 0): Promise<Wire<T>> {
-    const wire = new Wire<T>(scope, signal, listener, replies);
+  static async add(scope: object, signal: string, listener: WireListener, replies = 0): Promise<IWire> {
+    const wire = new Wire(scope, signal, listener, replies);
     await this._MIDDLEWARE_LAYER.onAdd(wire);
     this.attach(wire);
     return wire;
   }
-
   /// Register many signals at once
-  static async addMany(scope: object, signalToHandlerMap: Map<string, WireListener<any>>) {
+  static async addMany(scope: object, signalToHandlerMap: Map<string, WireListener>) {
     for await (const [key, value] of signalToHandlerMap) {
       await Wire.add(scope, key, value);
     }
   }
-
   /// Check if signal string or wire instance exists in communication layer
-  static has(signal?: string | null, wire?: Wire<any> | null): boolean {
+  static has(signal?: string | null, wire?: IWire | null): boolean {
     if (signal) return this._COMMUNICATION_LAYER.hasSignal(signal);
     if (wire) return this._COMMUNICATION_LAYER.hasWire(wire);
     return false;
   }
-
   /// Send signal through all wires has the signal string value
   /// Payload is optional, default is null, passed to WireListener from [transfer]
   /// If you use scope then only wire with this scope value will receive the payload
@@ -163,7 +146,6 @@ export default class Wire<T> implements IWire<T> {
     await this._MIDDLEWARE_LAYER.onSend(signal, payload);
     return this._COMMUNICATION_LAYER.send(signal, payload, scope);
   }
-
   /// Remove all entities from Communication Layer and Data Container Layer
   /// @param [withMiddleware] used to remove all middleware
   static async purge(withMiddleware = false): Promise<void> {
@@ -171,22 +153,19 @@ export default class Wire<T> implements IWire<T> {
     await this._DATA_CONTAINER_LAYER.clear();
     if (withMiddleware) this._MIDDLEWARE_LAYER.clear();
   }
-
   /// Remove all wires for specific signal, for more precise target to remove add scope and/or listener
   /// All middleware will be informed from [WireMiddleware.onRemove] after signal removed, only if existed
   /// Returns [bool] telling signal existed in communication layer
-  static async remove(signal: string, scope?: object, listener?: WireListener<any>): Promise<boolean> {
+  static async remove(signal: string, scope?: object, listener?: WireListener): Promise<boolean> {
     const existed = await this._COMMUNICATION_LAYER.remove(signal, scope, listener);
     if (existed) await this._MIDDLEWARE_LAYER.onRemove(signal, scope, listener);
     return existed;
   }
-
-  static async _removeAllBySignal(signal: string, scope?: object, listener?: WireListener<any>): Promise<boolean> {
+  static async _removeAllBySignal(signal: string, scope?: object, listener?: WireListener): Promise<boolean> {
     const existed = await this._COMMUNICATION_LAYER.remove(signal, scope, listener);
     if (existed) await this._MIDDLEWARE_LAYER.onRemove(signal, scope, listener);
     return existed;
   }
-
   static async _removeAllByScope(scope: object): Promise<Array<boolean>> {
     const results: boolean[] = [];
     for await (const wire of this._COMMUNICATION_LAYER.getByScope(scope)!) {
@@ -194,7 +173,6 @@ export default class Wire<T> implements IWire<T> {
     }
     return results;
   }
-
   /// Class extending [IWireMiddleware] can listen to all processes in side Wire
   static middleware(value: IWireMiddleware): void {
     if (!this._MIDDLEWARE_LAYER.has(value)) {
@@ -203,16 +181,15 @@ export default class Wire<T> implements IWire<T> {
       throw new Error(`${ERROR__MIDDLEWARE_EXISTS} ${value.toString()}`);
     }
   }
-
   /// When you need Wires associated with signal or scope or listener
   /// Returns [List<Wire>]
   static get(
     signal?: string | null,
     scope?: object | null,
-    listener?: WireListener<any> | null,
+    listener?: WireListener | null,
     wireId?: number | null,
-  ): Array<IWire<any> | undefined> {
-    let result = new Array<IWire<any> | undefined>();
+  ): Array<IWire | undefined> {
+    let result = new Array<IWire | undefined>();
     if (signal) {
       const instances = this._COMMUNICATION_LAYER.getBySignal(signal);
       instances && (result = [...result, ...instances]);
@@ -231,7 +208,6 @@ export default class Wire<T> implements IWire<T> {
     }
     return result;
   }
-
   /// Access to the data container, retrieve WireData object when value is null and set when is not
   /// [WireData] is a data container to changes of which anyone can subscribe/unsubscribe.
   /// It's associated with string key.
@@ -250,26 +226,26 @@ export default class Wire<T> implements IWire<T> {
   /// void remove()
   /// ```
   /// Returns [WireData]
-  static data<T>(key: string, value?: any | null, getter?: WireDataGetter<T> | null | undefined): IWireData<T> {
+  static data(key: string, value?: any | null, getter?: WireDataGetter | null | undefined): IWireData {
     console.log(`> Wire.data -> key = ${key}`);
-    const wireData: IWireData<T> | undefined = this._DATA_CONTAINER_LAYER.has(key)
-      ? this._DATA_CONTAINER_LAYER.get<T>(key)
-      : this._DATA_CONTAINER_LAYER.create<T>(key, this._MIDDLEWARE_LAYER.onReset);
+    const wireData: IWireData | undefined = this._DATA_CONTAINER_LAYER.has(key)
+      ? this._DATA_CONTAINER_LAYER.get(key)
+      : this._DATA_CONTAINER_LAYER.create(key, this._MIDDLEWARE_LAYER.onReset);
     if (getter) {
       wireData!.getter = getter!;
       wireData!.lock(new WireDataLockToken());
     }
-    if (value) {
+    if (value !== undefined && value !== null) {
       if (wireData!.isGetter) throw new Error(ERROR__VALUE_IS_NOT_ALLOWED_TOGETHER_WITH_GETTER);
       const prevValue = wireData!.isSet ? wireData!.value : null;
+      const isValueFunction: boolean = typeof value === 'function';
       console.log(`> Wire.data -> prev = ${prevValue}`);
-      const nextValue = typeof value === 'function' ? (value as WireValueFunction<T>)(prevValue) : value;
+      const nextValue = isValueFunction ? (value as WireValueFunction)(prevValue) : value;
       wireData!.value = nextValue;
       this._MIDDLEWARE_LAYER.onData(key, prevValue, nextValue).then();
     }
     return wireData!;
   }
-
   /// Store an instance of the object by its type, and lock it, so it can't be overwritten
   static put(instance: object, lock?: IWireDataLockToken): any {
     const key = instance.constructor.name.toString();
@@ -281,7 +257,6 @@ export default class Wire<T> implements IWire<T> {
     wireData.lock(lock ?? new WireDataLockToken());
     return instance;
   }
-
   /// Return an instance of an object by its type, throw an error in case it is not set
   static find(instanceType: any): any {
     const key = instanceType.name?.toString();
@@ -291,38 +266,5 @@ export default class Wire<T> implements IWire<T> {
     console.log(`> \t is set = ${isSet}`);
     if (!isSet) throw new Error(ERROR__CANT_FIND_INSTANCE_NULL);
     return wireData.value!;
-  }
-}
-
-export class WireSendResults implements IWireSendResults {
-  constructor(dataList: Array<any>, noSubscribers = false) {
-    this._dataList = dataList;
-    this._noSubscribers = noSubscribers;
-  }
-
-  private readonly _dataList: Array<any>;
-  private readonly _noSubscribers: boolean;
-
-  get dataList() {
-    return this._dataList;
-  }
-  get signalHasNoSubscribers() {
-    return this._noSubscribers;
-  }
-}
-
-export class WireCommandWithRequiredData<T> extends WireWithWireData implements IWireCommand<T> {
-  get whenReady(): Promise<Map<string, any>> {
-    return this._whenRequiredDataReady;
-  }
-  private readonly _whenRequiredDataReady: Promise<Map<string, any>>;
-  constructor(requiredDataKeys: any[] = []) {
-    super();
-    this._whenRequiredDataReady = new Promise((resolve) => {
-      this.getMany(requiredDataKeys).then(resolve);
-    });
-  }
-  async execute(): Promise<T | null> {
-    return null;
   }
 }

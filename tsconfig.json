@@ -1,17 +1,16 @@
 {
   "outDir": "dist",
-  "declaration": true,
   "types": [
     "chrome",
     "node"
   ],
   "compilerOptions": {
+    "rootDir": "./src",
     "declaration": true,
     "baseUrl": ".",
     "paths": {
       "@": ["./src"]
     },
-    "types": ["vitest/globals"],
     "allowJs": true,
     "target": "ESNext",
     "useDefineForClassFields": true,
@@ -33,5 +32,5 @@
     "examples",
     "dist"
   ],
-  "include": ["src", "test", "vite.config.js"]
+  "include": ["src"]
 }

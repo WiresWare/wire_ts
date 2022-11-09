@@ -8,6 +8,8 @@ export const ERROR__DATA_IS_LOCKED = `WR:3001 - WireData value change not allowe
 export const ERROR__DATA_ALREADY_LOCKED = `WR:3002 - WireData already locked with token - call unlock method first with proper token`;
 export const ERROR__DATA_CANNOT_BE_OPEN = `WR:3002 - WireData tokens do not match - to unlock data for modification use proper token`;
 export const ERROR__DATA_IS_GETTER = `WR:3003 - WireData is a getter - it cannot be modified only accessed`;
+export const ERROR__SUBSCRIBE_TO_DATA_GETTER =
+  'WR:3005 - WireData is a getter - you can not subscribe/unsubscribe to getter, its locked hence setter is prohibited';
 
 export const ERROR__VALUE_IS_NOT_ALLOWED_TOGETHER_WITH_GETTER = `WR:3004 - WireData is a getter - setting value together with getter is not allowed`;
 

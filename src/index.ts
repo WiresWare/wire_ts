@@ -1,19 +1,23 @@
 import * as types from './types';
 import * as interfaces from './interfaces';
 
-import Wire, { WireCommandWithRequiredData, WireSendResults } from './wire';
-import { WireData, WireDataLockToken } from './data';
+import Wire from './wire';
+import { WireData, WireDataLockToken, WireDatabaseService, WireSendResults } from './data';
+import { WireCommandWithRequiredData, WireCommand } from './command';
 
-import { WireWithDatabase, WireWithWireData } from './with';
+import { WireWithDatabase, WireWithWireData, WireWithWhenReady } from './with';
 
 export type { types };
 export type { interfaces };
 export {
   Wire,
   WireData,
+  WireCommand,
+  WireCommandWithRequiredData,
   WireDataLockToken,
+  WireSendResults,
   WireWithDatabase,
   WireWithWireData,
-  WireCommandWithRequiredData,
-  WireSendResults,
+  WireWithWhenReady,
+  WireDatabaseService,
 };

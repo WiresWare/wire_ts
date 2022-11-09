@@ -1,29 +1,41 @@
 import { IWireData, IWireDatabaseService, IWireWithDatabase, IWireWithWireData } from './interfaces';
 import Wire from './wire';
 
+export class WireWithWhenReady {
+  get whenReady(): Promise<any> | null | undefined {
+    return this._whenReady;
+  }
+  private readonly _whenReady: Promise<any> | null | undefined;
+  constructor(whenReady: Promise<any> | null | undefined) {
+    this._whenReady = whenReady;
+  }
+}
+
 export class WireWithDatabase implements IWireWithDatabase {
   private readonly databaseService: IWireDatabaseService;
   constructor(databaseService: IWireDatabaseService) {
     this.databaseService = databaseService;
   }
-  exist(key: string): boolean {
-    return this.databaseService.exist(key);
+  async exist(key: string): Promise<boolean> {
+    return await this.databaseService.exist(key);
   }
   async retrieve(key: string): Promise<any> {
     return this.databaseService.retrieve(key);
   }
   // Stringify value before sends to database
-  persist(key: string, value: any): void {
-    this.databaseService.save(key, JSON.stringify(value));
+  async persist(key: string, value: any): Promise<void> {
+    await this.databaseService.save(key, JSON.stringify(value));
   }
-  delete(key: string): void {
-    if (this.exist(key)) this.databaseService.delete(key);
+  async delete(key: string): Promise<void> {
+    if (await this.exist(key)) {
+      await this.databaseService.delete(key);
+    }
   }
 }
 
 export class WireWithWireData implements IWireWithWireData {
-  getData<T>(dataKey: string): IWireData<T> {
-    return Wire.data<T>(dataKey);
+  getData(dataKey: string): IWireData {
+    return Wire.data(dataKey);
   }
   has(dataKey: string): boolean {
     return Wire.data(dataKey).isSet;
@@ -31,10 +43,10 @@ export class WireWithWireData implements IWireWithWireData {
   hasNot(dataKey: string): boolean {
     return !this.has(dataKey);
   }
-  async get<T>(dataKey: string): Promise<T> {
+  async get(dataKey: string): Promise<any> {
     return new Promise((resolve, rejects) => {
       if (this.has(dataKey)) {
-        resolve(this.getData(dataKey).value as T);
+        resolve(this.getData(dataKey).value);
       } else {
         rejects(`Error: missing data on key - ${dataKey}`);
       }

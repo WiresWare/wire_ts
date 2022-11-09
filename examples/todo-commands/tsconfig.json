@@ -1,6 +1,5 @@
 {
   "outDir": "dist",
-  "declaration": true,
   "types": [
     "chrome",
     "node"
@@ -8,8 +7,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src"]
     },
+    "types": ["vite/client"],
     "allowJs": true,
     "target": "esnext",
     "module": "esnext",
@@ -18,7 +18,7 @@
     "strict": true,
     "useDefineForClassFields": true,
     "resolveJsonModule": true,
-    "isolatedModules": false,
+    "isolatedModules": true,
     "esModuleInterop": true,
     "noEmit": true,
     "noUnusedLocals": true,
@@ -27,5 +27,5 @@
     "skipLibCheck": true,
   },
   "exclude": ["node_modules"],
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "main.ts"]
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "main.ts", "vite.config.js"]
 }
