@@ -1,4 +1,11 @@
 class TodoVO {
+  static fromJSON(raw: any) {
+    const result = new TodoVO(raw.id, raw.text, raw.note, new Date(raw.date), raw.completed);
+    result.visible = raw.visible;
+    console.log(`> TodoVO -> fromJSON:`, result);
+    return result;
+  }
+
   get date(): Date {
     return this._date;
   }
@@ -15,12 +22,12 @@ class TodoVO {
 
   public visible: boolean;
 
-  constructor(id: string, title: string, note: string, date = new Date()) {
+  constructor(id: string, title: string, note: string, date = new Date(), completed = false) {
     this._id = id;
     this._date = date;
     this.text = title;
     this.note = note;
-    this.completed = false;
+    this.completed = completed;
     this.visible = true;
   }
 }

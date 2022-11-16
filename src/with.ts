@@ -5,30 +5,34 @@ export class WireWithWhenReady {
   get whenReady(): Promise<any> | null | undefined {
     return this._whenReady;
   }
-  private readonly _whenReady: Promise<any> | null | undefined;
-  constructor(whenReady: Promise<any> | null | undefined) {
+  protected _whenReady: Promise<any> | null | undefined;
+  constructor(whenReady?: Promise<any> | null | undefined) {
     this._whenReady = whenReady;
   }
 }
 
-export class WireWithDatabase implements IWireWithDatabase {
-  private readonly databaseService: IWireDatabaseService;
+export class WireWithDatabase extends WireWithWhenReady implements IWireWithDatabase {
+  private readonly _databaseService: IWireDatabaseService;
   constructor(databaseService: IWireDatabaseService) {
-    this.databaseService = databaseService;
+    super();
+    this._databaseService = databaseService;
+  }
+  get databaseService(): IWireDatabaseService {
+    return this._databaseService;
   }
   async exist(key: string): Promise<boolean> {
-    return await this.databaseService.exist(key);
+    return await this._databaseService.exist(key);
   }
   async retrieve(key: string): Promise<any> {
-    return this.databaseService.retrieve(key);
+    return this._databaseService.retrieve(key);
   }
   // Stringify value before sends to database
   async persist(key: string, value: any): Promise<void> {
-    await this.databaseService.save(key, JSON.stringify(value));
+    await this._databaseService.save(key, JSON.stringify(value));
   }
   async delete(key: string): Promise<void> {
     if (await this.exist(key)) {
-      await this.databaseService.delete(key);
+      await this._databaseService.delete(key);
     }
   }
 }

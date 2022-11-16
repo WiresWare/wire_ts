@@ -1,9 +1,9 @@
 import { WireWithWireData } from './with';
 import { IWireCommand } from './interfaces';
 
-export class WireCommand implements IWireCommand {
-  async execute() {
-    return Promise.resolve();
+export class WireCommand<T> implements IWireCommand {
+  async execute(): Promise<T | null> {
+    return Promise.resolve(null);
   }
 }
 

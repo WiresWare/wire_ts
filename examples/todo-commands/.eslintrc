@@ -19,8 +19,9 @@
   ],
   "extends": [
     "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
+    "plugin:import/recommended",
     "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
     "prettier"
   ],
   "settings": {
@@ -28,18 +29,24 @@
       "@typescript-eslint/parser": [".ts"]
     },
     "import/resolver": {
-      "typescript": {}
+      "typescript": {},
+      "alias": {
+        "map": [
+          ["@", "./src"]
+        ],
+        "extensions": [".ts"]
+      }
     }
   },
   "rules": {
-    "prettier/prettier": ["error", {
-      "printWidth": 120,
-      "singleQuote": true,
-      "singleAttributePerLine": true,
-      "trailingComma": "all",
-      "bracketSpacing": true,
-      "arrowParens": "always"
-    }],
+    "import/named": 0,
+    "import/default": 0,
+    "import/namespace": 0,
+    "import/no-unresolved": 0,
+    "import/no-duplicates": 0,
+    "import/no-named-as-default": 0,
+    "import/no-named-as-default-member": 0,
+    "prettier/prettier": "error",
     "@typescript-eslint/no-non-null-assertion": 0,
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/explicit-function-return-type": 0,

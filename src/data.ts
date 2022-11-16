@@ -160,7 +160,7 @@ export class WireSendResults implements IWireSendResults {
 }
 
 export class WireDatabaseService implements IWireDatabaseService {
-  async init(key: string): Promise<any> {
+  async init(key?: string | undefined): Promise<any> {
     return key;
   }
   async exist(key: string): Promise<boolean> {

@@ -1,5 +1,5 @@
-import { Wire } from 'wire.cores';
-import { IWireData } from 'wire.cores/dist/src/interfaces';
+import { Wire } from 'cores.wire';
+import { IWireData } from 'cores.wire/dist/interfaces';
 
 import DomElement from '@/view/base/DomElement';
 import ViewSignals from '@/consts/ViewSignals';
@@ -13,11 +13,11 @@ const createWithClass = (tag: string, className: string) => {
 };
 
 class TodoListItemView extends DomElement {
-  private lblContent: HTMLLabelElement;
-  private btnDelete: HTMLButtonElement;
-  private inpEdit: HTMLInputElement;
-  private inpToggle: HTMLInputElement;
-  private container: HTMLDivElement;
+  private readonly lblContent: HTMLLabelElement;
+  private readonly btnDelete: HTMLButtonElement;
+  private readonly inpEdit: HTMLInputElement;
+  private readonly inpToggle: HTMLInputElement;
+  private readonly container: HTMLDivElement;
 
   constructor(id: string) {
     super(document.createElement('li'));
@@ -51,7 +51,7 @@ class TodoListItemView extends DomElement {
     todoWD.subscribe((todoVO) => this._OnDataChanged(todoVO));
     console.log(`> TodoListItemView(${id}) -> isSet = ${todoWD.isSet}`);
     if (todoWD.isSet) {
-      this._OnDataChanged(todoWD.value).then(() => {});
+      this._OnDataChanged(todoWD.value);
     }
   }
   async _OnDataChanged(todoVO: TodoVO) {

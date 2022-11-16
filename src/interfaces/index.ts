@@ -30,7 +30,7 @@ export interface IWireData {
 }
 
 export interface IWireDatabaseService {
-  init(key: string): Promise<boolean>;
+  init(key?: string | undefined): Promise<boolean>;
   exist(key: string): Promise<boolean>;
   retrieve(key: string): Promise<any>;
   save(key: string, data: any): Promise<void>;

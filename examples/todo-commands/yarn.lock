@@ -359,10 +359,10 @@ concat-map@0.0.1:
   resolved "https://registry.npmjs.org/concat-map/-/concat-map-0.0.1.tgz"
   integrity sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==
 
-cores.wire@^0.0.19:
-  version "0.0.19"
-  resolved "https://registry.yarnpkg.com/cores.wire/-/cores.wire-0.0.19.tgz#1aa68c8da96f39c6aeb4ee6e97aa0f05d4d8517f"
-  integrity sha512-wro9Sw7y+31BmOrfdlzmXtE0LwsvFyINm2iubE4DZ4lpJBzd3nLejpaa6dEyTtXn2hdjmwQOgIR8SZm7qhiyhw==
+cores.wire@^0.0.22:
+  version "0.0.22"
+  resolved "https://registry.yarnpkg.com/cores.wire/-/cores.wire-0.0.22.tgz#5f2cf916bb77c3cb6dbab7ca7c80a2e06bf230f2"
+  integrity sha512-d6dYX8GfITAfNVn59gEOdPag/Xd0dhZH6imUzfR36O2+Ash9n/Mr9Xz1Gt8zU7vn6yVcS1Die4wmkMyDc4mJwg==
 
 cross-spawn@^7.0.2:
   version "7.0.3"
@@ -618,6 +618,11 @@ eslint-config-prettier@^8.5.0:
   version "8.5.0"
   resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-8.5.0.tgz#5a81680ec934beca02c7b1a61cf8ca34b66feab1"
   integrity sha512-obmWKLUNCnhtQRKc+tmnYuQl0pFU1ibYJQ5BGhTVB08bHe9wC8qUeG7c08dj9XX+AuPj1YSGSQIHl1pnDHZR0Q==
+
+eslint-import-resolver-alias@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/eslint-import-resolver-alias/-/eslint-import-resolver-alias-1.1.2.tgz#297062890e31e4d6651eb5eba9534e1f6e68fc97"
+  integrity sha512-WdviM1Eu834zsfjHtcGHtGfcu+F30Od3V7I9Fi57uhBEwPkjDcii7/yW8jAT+gOhn4P/vOxxNAXbFAKsrrc15w==
 
 eslint-import-resolver-node@^0.3.6:
   version "0.3.6"

@@ -1,4 +1,4 @@
-import { Wire } from 'wire.cores';
+import { Wire } from 'cores.wire';
 
 import DataKeys from '@/consts/DataKeys';
 import DomElement from '@/view/base/DomElement';
@@ -12,7 +12,7 @@ class TodoListView extends DomElement {
 
     if (todoList.length > 0) todoList.forEach((id: string) => this.append(id));
 
-    todoListWD.subscribe(async (list) => {
+    todoListWD.subscribe(async (list: any) => {
       console.log(`> TodoListView -> list update ${list}`);
       for (const id of list as Array<string>) {
         if (!document.getElementById(id)) {
@@ -20,6 +20,7 @@ class TodoListView extends DomElement {
         }
       }
     });
+    console.log(`> TodoListView -> initialized with ${todoList.length} items`);
   }
 
   append(id: string) {

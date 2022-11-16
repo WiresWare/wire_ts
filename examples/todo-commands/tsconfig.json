@@ -7,9 +7,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src"]
+      "@/*": ["src/*"]
     },
-    "types": ["vite/client"],
+    "types": ["vite/client", "node"],
     "allowJs": true,
     "target": "esnext",
     "module": "esnext",
@@ -26,6 +26,6 @@
     "noImplicitReturns": true,
     "skipLibCheck": true,
   },
-  "exclude": ["node_modules"],
+//  "exclude": ["node_modules"],
   "include": ["src/**/*.ts", "src/**/*.d.ts", "main.ts", "vite.config.js"]
 }

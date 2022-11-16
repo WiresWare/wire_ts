@@ -1,7 +1,7 @@
 class InputDTO {
-  private _note: string;
-  private _text: string;
-  private _completed: boolean;
+  private readonly _note: string;
+  private readonly _text: string;
+  private readonly _completed: boolean;
 
   get note(): string {
     return this._note;

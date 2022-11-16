@@ -1,19 +1,33 @@
 import { Wire } from 'cores.wire';
 
-import TodoInputView from './view/TodoInputView';
-import DataKeys from './consts/DataKeys';
-import ViewSignals from './consts/ViewSignals';
-import TodoVO from './model/vos/TodoVO';
+import DataKeys from '@/consts/DataKeys';
 
-const todoVO = new TodoVO(`${Date.now()}`, 'Title', '', new Date());
-const scope = {};
+import WebDatabaseService from '@/service/WebDatabaseService';
+import TodoStorageMiddleware from '@/middleware/TodoStorageMiddleware';
 
-Wire.data(todoVO.id, todoVO);
-Wire.data(DataKeys.LIST_OF_IDS, [todoVO.id]);
-Wire.add(scope, ViewSignals.TOGGLE, (payload: any, wid: number) => {
-  console.log('> ViewSignals.TOGGLE', payload, wid);
-}).then();
+import TodoInputView from '@/view/TodoInputView';
+import TodoListView from '@/view/TodoListView';
+import TodoCountView from '@/view/TodoCountView';
+import CompleteAllView from '@/view/CompleteAllView';
+import ClearCompletedView from '@/view/ClearCompletedView';
+import TodoFilterView from '@/view/TodoFilterView';
 
-new TodoInputView(document.querySelector('.new-todo')!);
+async function main() {
+  console.log('Initialize');
 
-document.querySelector('#loading')?.remove();
+  Wire.put(new WebDatabaseService());
+  Wire.middleware(await new TodoStorageMiddleware().whenReady);
+
+  console.log('> init: ', Wire.data(DataKeys.LIST_OF_IDS).value);
+
+  new TodoInputView(document.querySelector('.new-todo')!);
+  new TodoListView(document.querySelector('.todo-list')!);
+  new TodoCountView(document.querySelector('.todo-count')!.firstChild!);
+  new CompleteAllView(document.querySelector('.toggle-all')!);
+  new TodoFilterView(document.querySelector('.filters')!);
+  new ClearCompletedView(document.querySelector('.clear-completed')!);
+}
+
+main().then(() => {
+  document.querySelector('#loading')?.remove();
+});

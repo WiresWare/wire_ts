@@ -18,6 +18,7 @@ class TodoInputView extends DomElement {
         await Wire.send(ViewSignals.INPUT, new InputDTO((this.dom as HTMLInputElement).value, ''));
       }
     };
+    console.log('> TodoInputView -> initialized');
   }
 }
 

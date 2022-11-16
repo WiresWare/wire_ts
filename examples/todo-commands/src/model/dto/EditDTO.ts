@@ -1,8 +1,7 @@
 class EditDTO {
-
-  private _id: string;
-  private _text: string;
-  private _note: string;
+  private readonly _id: string;
+  private readonly _text: string;
+  private readonly _note: string;
 
   get id(): string {
     return this._id;
