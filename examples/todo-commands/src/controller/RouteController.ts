@@ -6,6 +6,7 @@ class RouteController {
   constructor() {
     window.onhashchange = this.checkFilterRouterChanged;
     this.checkFilterRouterChanged();
+    console.log(`> RouteController -> initialized`);
   }
   checkFilterRouterChanged() {
     let filter = null;

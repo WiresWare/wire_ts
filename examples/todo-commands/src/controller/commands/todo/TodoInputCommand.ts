@@ -1,47 +1,59 @@
 import { Wire, WireCommand } from 'cores.wire';
 
 import DataKeys from '@/consts/DataKeys';
-import ViewSignals from '@/consts/ViewSignals';
 
 import InputDTO from '@/model/dto/InputDTO';
 import TodoVO from '@/model/vos/TodoVO';
+import FilterValues from '@/consts/FilterValues';
 
-class TodoInputCommand extends WireCommand {
-  private inputDTO: InputDTO;
+class TodoInputCommand extends WireCommand<boolean> {
+  private readonly _inputDTO: InputDTO;
   constructor(inputDTO: InputDTO) {
     super();
-    this.inputDTO = inputDTO;
+    this._inputDTO = inputDTO;
   }
 
-  async execute() {
-    const text = this.inputDTO.text;
-    if (text?.length > 0) {
-      const note = this.inputDTO.note;
-      const completed = this.inputDTO.completed;
+  async execute(): Promise<boolean> {
+    const text = this._inputDTO.text;
+    const isNotEmpty = text?.length > 0;
+    if (isNotEmpty) {
+      const note = this._inputDTO.note;
+      const completed = this._inputDTO.completed;
 
       const newTodoId = `todo-${Date.now().toString()}`;
       const newTodoVO = new TodoVO(newTodoId, text, note, new Date(), completed);
 
-      const todoIdsList = Wire.data(DataKeys.LIST_OF_IDS).value || [];
-      const currentCount = Wire.data(DataKeys.NOT_COMPLETED_COUNT).value || 0;
+      const listOfTodoIds = Wire.data(DataKeys.LIST_OF_IDS).value;
+      const listOfVisibleTodoIds = Wire.data(DataKeys.LIST_OF_IDS_VISIBLE).value;
+      const currentCount = Wire.data(DataKeys.NOT_COMPLETED_COUNT).value;
+      const currentFilter = Wire.data(DataKeys.FILTER).value;
+
       const notCompletedCount = currentCount + (completed ? 0 : 1);
 
-      todoIdsList.push(newTodoVO.id);
+      listOfTodoIds.push(newTodoVO.id);
+      if (currentFilter !== FilterValues.COMPLETED) {
+        listOfVisibleTodoIds.push(newTodoVO.id);
+      }
 
       console.log(`> TodoInputCommand -> execute: currentCount = ${currentCount}`);
-      console.log(`> TodoInputCommand -> execute: todoIdsList = ${todoIdsList}`);
+      console.log(`> TodoInputCommand -> execute: listOfTodoIds.length = ${listOfTodoIds}`);
 
       // Add object to data layer by id
       Wire.data(newTodoVO.id, newTodoVO);
       // Update TodoList in data layer
-      Wire.data(DataKeys.LIST_OF_IDS, todoIdsList);
+      Wire.data(DataKeys.LIST_OF_IDS, listOfTodoIds);
+      // Update TodoList in data layer
+      Wire.data(DataKeys.LIST_OF_IDS_VISIBLE, listOfVisibleTodoIds);
       // Update counter
       Wire.data(DataKeys.NOT_COMPLETED_COUNT, notCompletedCount);
-      // Send signal to clean input
-      await Wire.send(ViewSignals.CLEAR_INPUT);
+      // Reset complete all if it was enabled
+      if (Wire.data(DataKeys.COMPLETE_ALL).value) {
+        Wire.data(DataKeys.COMPLETE_ALL, false);
+      }
     } else {
       // Signalise about error or wrong input
     }
+    return isNotEmpty;
   }
 }
 

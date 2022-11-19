@@ -22,7 +22,7 @@ export interface IWireData {
 
   refresh(): Promise<void>;
   reset(): Promise<void>;
-  remove(clean: boolean): Promise<void>;
+  remove(clean?: boolean | false): Promise<void>;
 
   subscribe(listener: WireDataListener): IWireData;
   unsubscribe(listener?: WireDataListener): IWireData;

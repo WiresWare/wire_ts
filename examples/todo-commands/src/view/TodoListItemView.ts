@@ -5,6 +5,7 @@ import DomElement from '@/view/base/DomElement';
 import ViewSignals from '@/consts/ViewSignals';
 import TodoVO from '@/model/vos/TodoVO';
 import EditDTO from '@/model/dto/EditDTO';
+import { WireDataListener } from 'cores.wire/dist/types';
 
 const createWithClass = (tag: string, className: string) => {
   const result = document.createElement(tag);
@@ -19,9 +20,12 @@ class TodoListItemView extends DomElement {
   private readonly inpToggle: HTMLInputElement;
   private readonly container: HTMLDivElement;
 
+  private readonly wireDataListener: WireDataListener;
+
   constructor(id: string) {
     super(document.createElement('li'));
     this.dom.id = id;
+
     this.lblContent = createWithClass('label', 'todo-content') as HTMLLabelElement;
     this.btnDelete = createWithClass('btn', 'destroy') as HTMLButtonElement;
     this.inpEdit = createWithClass('input', 'edit') as HTMLInputElement;
@@ -36,59 +40,71 @@ class TodoListItemView extends DomElement {
     this.dom.append(this.inpEdit);
     this.dom.append(this.container);
 
+    this.dom.addEventListener('DOMNodeRemoved', (e) => this._onDomRemoved(e));
     this.inpToggle.onclick = () => Wire.send(ViewSignals.TOGGLE, id);
     this.btnDelete.onclick = () => Wire.send(ViewSignals.DELETE, id);
-    this.inpEdit.onkeydown = (e) => {
-      console.log('> TodoListItemView -> inpEdit.onkeydown', e);
-      if (e.key === 'Enter') {
-        Wire.send(ViewSignals.EDIT, this.getEditData()).then(() => this._OnEditCancel());
-      } else if (e.key === 'Escape') this._OnEditCancel();
-    };
+    this.inpEdit.onkeydown = (e) => this._onInputEditKeyboardKey(e.key);
     this.lblContent.ondblclick = () => this._OnEditBegin();
     this.inpEdit.onblur = () => this._OnEditCancel();
 
+    this.wireDataListener = async (todoVO) => this._OnWireDataValueChanged(todoVO);
+
     const todoWD = Wire.data(id) as IWireData;
-    todoWD.subscribe((todoVO) => this._OnDataChanged(todoVO));
+    todoWD.subscribe(this.wireDataListener);
+
     console.log(`> TodoListItemView(${id}) -> isSet = ${todoWD.isSet}`);
-    if (todoWD.isSet) {
-      this._OnDataChanged(todoWD.value);
-    }
+    this._OnWireDataValueChanged(todoWD.value);
   }
-  async _OnDataChanged(todoVO: TodoVO) {
-    console.log(`> TodoListItemView -> _OnTodoDataChanged: id = ${todoVO?.id}`);
-    if (todoVO == null) {
-      this.remove();
-    } else {
-      this.update(todoVO);
-    }
+  updateDom({ completed, text }: TodoVO) {
+    console.log(`> TodoListItemView(${this.dom.id}) -> updateDom`, { text, completed });
+    this.dom.className = completed ? 'completed' : '';
+    this.inpToggle.checked = completed;
+    this.lblContent.innerText = text;
+    this.inpEdit.value = text;
+    this.inpEdit.selectionStart = text.length;
   }
-  getEditData() {
-    return new EditDTO(this.dom.id, this.inpEdit.value.trim(), '');
-  }
-  update(todoVO: TodoVO) {
-    console.log(`> TodoListItemView(${this.dom.id}) -> update`, todoVO);
-    this.dom.id = todoVO.id;
-    this.dom.style.display = todoVO.visible ? 'block' : 'none';
-    if (todoVO.visible) {
-      const text = todoVO.text;
-      this.dom.className = todoVO.completed ? 'completed' : '';
-      this.inpToggle.checked = todoVO.completed;
-      this.lblContent.innerText = text;
-      this.inpEdit.value = text;
-      this.inpEdit.selectionStart = text.length;
-    }
-  }
-  remove() {
-    console.log(`> TodoListItemView(${this.dom.id}) -> remove`);
+  cleanup() {
     const todoWD = Wire.data(this.dom.id);
-    todoWD.unsubscribe(this._OnDataChanged);
-    // listeners.removeWhere((element) { element.cancel(); return true; });
+    const hasWireDataListener = todoWD.hasListener(this.wireDataListener);
+    console.log(`> TodoListItemView(${this.dom.id}) -> cleanup`, { hasWireDataListener });
+    todoWD.unsubscribe(this.wireDataListener);
     this.inpToggle.onclick = null;
     this.btnDelete.onclick = null;
     this.inpEdit.onkeydown = null;
     this.lblContent.ondblclick = null;
     this.inpEdit.onblur = null;
+    this.dom.removeEventListener('DOMNodeRemoved', this._onDomRemoved);
+  }
+  removeDom() {
+    console.log(`> TodoListItemView(${this.dom.id}) -> removeDom`);
     this.dom.remove();
+  }
+  _onDomRemoved(e: any) {
+    const isDomRemoved = e.target === this.dom;
+    console.log(`> TodoListItemView(${this.dom.id}) -> _onDomRemoved`, { isDomRemoved, e });
+    if (isDomRemoved) this.cleanup();
+  }
+  _onInputEditKeyboardKey(key: string) {
+    // console.log('> TodoListItemView -> _onInputEditKeyboardKey:', { key });
+    if (key === 'Enter') {
+      const editValue = this.inpEdit.value.trim();
+      const editData = new EditDTO(this.dom.id, editValue, '');
+      console.log('> TodoListItemView -> _onInputEditKeyboardKey:', { editValue });
+      (this.inpEdit as HTMLInputElement).disabled = true;
+      Wire.send(ViewSignals.EDIT, editData).then(() => {
+        (this.inpEdit as HTMLInputElement).disabled = false;
+        this._OnEditCancel();
+      });
+    } else if (key === 'Escape') this._OnEditCancel();
+  }
+  _OnWireDataValueChanged(todoVO: TodoVO) {
+    const isEmpty = todoVO == null;
+    console.log(`> TodoListItemView -> _OnTodoDataChanged: id = ${this.dom.id}, isEmpty = ${isEmpty}`);
+    if (isEmpty) {
+      this.removeDom();
+    } else {
+      this.updateDom(todoVO);
+    }
   }
   _OnEditBegin() {
     this.dom.classList.add('editing');

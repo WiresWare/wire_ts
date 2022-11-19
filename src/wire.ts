@@ -230,7 +230,7 @@ export default class Wire implements IWire {
     console.log(`> Wire.data -> key = ${key}`);
     const wireData: IWireData | undefined = this._DATA_CONTAINER_LAYER.has(key)
       ? this._DATA_CONTAINER_LAYER.get(key)
-      : this._DATA_CONTAINER_LAYER.create(key, this._MIDDLEWARE_LAYER.onReset);
+      : this._DATA_CONTAINER_LAYER.create(key, this._MIDDLEWARE_LAYER.onReset.bind(this._MIDDLEWARE_LAYER));
     if (getter) {
       wireData!.getter = getter!;
       wireData!.lock(new WireDataLockToken());
@@ -241,8 +241,9 @@ export default class Wire implements IWire {
       const isValueFunction: boolean = typeof value === 'function';
       console.log(`> Wire.data -> prev = ${prevValue}`);
       const nextValue = isValueFunction ? (value as WireValueFunction)(prevValue) : value;
-      wireData!.value = nextValue;
-      this._MIDDLEWARE_LAYER.onData(key, prevValue, nextValue).then();
+      this._MIDDLEWARE_LAYER.onData(key, prevValue, nextValue).then(() => {
+        wireData!.value = nextValue;
+      });
     }
     return wireData!;
   }

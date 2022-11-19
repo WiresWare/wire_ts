@@ -10,8 +10,8 @@ class TodoFilterView extends DomElement {
   constructor(dom: HTMLElement) {
     super(dom);
     const filterWD = Wire.data(DataKeys.FILTER);
-    filterWD.subscribe(this.processFilter);
-    this.processFilter(filterWD.value);
+    filterWD.subscribe((value) => this.processFilter(value));
+    this.processFilter(filterWD.value).then();
     console.log('> TodoFilterView -> initialized');
   }
 
@@ -19,7 +19,7 @@ class TodoFilterView extends DomElement {
     if (filter == null) return;
 
     console.log(`> TodoFilterView -> DataKeys.FILTER subscribe: ${filter}`);
-    (this.dom as HTMLMapElement).querySelector(`.${SELECTED_CLASS}`)!.className = '';
+    (this.dom as HTMLElement).querySelector(`.${SELECTED_CLASS}`)!.className = '';
     this.dom.children[filter].children[0].className = SELECTED_CLASS;
   }
 }

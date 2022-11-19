@@ -13,9 +13,11 @@ class TodoInputView extends DomElement {
     (this.dom as HTMLInputElement).value = '';
     this.dom.onkeyup = async (e) => {
       const isEnterPressed = e.key === 'Enter';
-      console.log('> TodoInputView -> onkeyup:', { isEnterPressed });
       if (isEnterPressed) {
-        await Wire.send(ViewSignals.INPUT, new InputDTO((this.dom as HTMLInputElement).value, ''));
+        console.log('> TodoInputView -> onkeyup:', { isEnterPressed });
+        const text = (this.dom as HTMLInputElement).value;
+        const payload = new InputDTO(text, '');
+        await Wire.send(ViewSignals.INPUT, payload);
       }
     };
     console.log('> TodoInputView -> initialized');

@@ -5,22 +5,32 @@ import DomElement from '@/view/base/DomElement';
 import TodoListItemView from '@/view/TodoListItemView';
 
 class TodoListView extends DomElement {
+  private listOfVisibleTodoIds: Array<string>;
+
   constructor(dom: HTMLElement) {
     super(dom);
-    const todoListWD = Wire.data(DataKeys.LIST_OF_IDS);
-    const todoList = todoListWD.value;
-
-    if (todoList.length > 0) todoList.forEach((id: string) => this.append(id));
-
-    todoListWD.subscribe(async (list: any) => {
-      console.log(`> TodoListView -> list update ${list}`);
-      for (const id of list as Array<string>) {
-        if (!document.getElementById(id)) {
-          this.append(id);
-        }
+    const listOfVisibleTodoIdsWD = Wire.data(DataKeys.LIST_OF_IDS_VISIBLE);
+    this.listOfVisibleTodoIds = listOfVisibleTodoIdsWD.value;
+    listOfVisibleTodoIdsWD.subscribe(async (list) => this.onListUpdated(list));
+    console.log(`> TodoListView -> initialized with ${this.listOfVisibleTodoIds.length} items`);
+    this.renderList();
+  }
+  onListUpdated(listOfTodoIds: Array<string>) {
+    const isNewList = this.listOfVisibleTodoIds != listOfTodoIds;
+    console.log(`> TodoListView -> onListUpdated:`, { isNewList, listOfTodoIds });
+    if (isNewList) this.resetListTo(listOfTodoIds);
+    this.renderList();
+  }
+  resetListTo(newList: Array<string>) {
+    this.dom.innerHTML = '';
+    this.listOfVisibleTodoIds = newList;
+  }
+  renderList() {
+    for (const id of this.listOfVisibleTodoIds) {
+      if (!this.dom.querySelector(`#${id}`)) {
+        this.append(id);
       }
-    });
-    console.log(`> TodoListView -> initialized with ${todoList.length} items`);
+    }
   }
 
   append(id: string) {

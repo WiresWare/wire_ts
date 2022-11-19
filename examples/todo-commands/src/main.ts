@@ -3,7 +3,7 @@ import { Wire } from 'cores.wire';
 import DataKeys from '@/consts/DataKeys';
 
 import WebDatabaseService from '@/service/WebDatabaseService';
-import TodoStorageMiddleware from '@/middleware/TodoStorageMiddleware';
+import StorageMiddleware from '@/middleware/StorageMiddleware';
 
 import TodoInputView from '@/view/TodoInputView';
 import TodoListView from '@/view/TodoListView';
@@ -12,13 +12,19 @@ import CompleteAllView from '@/view/CompleteAllView';
 import ClearCompletedView from '@/view/ClearCompletedView';
 import TodoFilterView from '@/view/TodoFilterView';
 
+import RouteController from '@/controller/RouteController';
+import TodoController from '@/controller/TodoController';
+
 async function main() {
   console.log('Initialize');
 
   Wire.put(new WebDatabaseService());
-  Wire.middleware(await new TodoStorageMiddleware().whenReady);
+  Wire.middleware(await new StorageMiddleware().whenReady);
 
   console.log('> init: ', Wire.data(DataKeys.LIST_OF_IDS).value);
+
+  new TodoController();
+  new RouteController();
 
   new TodoInputView(document.querySelector('.new-todo')!);
   new TodoListView(document.querySelector('.todo-list')!);

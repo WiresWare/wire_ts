@@ -6,7 +6,7 @@ import DataKeys from '@/consts/DataKeys';
 import TodoVO from '@/model/vos/TodoVO';
 import FilterValues from '@/consts/FilterValues';
 
-class TodoStorageMiddleware extends WireWithDatabase implements IWireMiddleware {
+class StorageMiddleware extends WireWithDatabase implements IWireMiddleware {
   constructor() {
     super(Wire.find(WebDatabaseService) as IWireDatabaseService);
     this._whenReady = new Promise((resolve) => {
@@ -14,24 +14,26 @@ class TodoStorageMiddleware extends WireWithDatabase implements IWireMiddleware 
         .init()
         .then(async () => {
           const isListOfIdsExist = await this.exist(DataKeys.LIST_OF_IDS);
-          console.log('> TodoStorageMiddleware -> init: then', isListOfIdsExist);
-          const todoIdsList = [];
+          console.log('> StorageMiddleware -> init: then', { isListOfIdsExist });
+          const listOfTodoIds = [];
+          let notCompletedCount = 0;
           if (isListOfIdsExist) {
             const todoIdsListRaw = await this.retrieve(DataKeys.LIST_OF_IDS);
             for await (const todoId of JSON.parse(todoIdsListRaw)) {
               const rawString = await this.retrieve(todoId);
               const todo = TodoVO.fromJSON(JSON.parse(rawString));
+              if (!todo.completed) notCompletedCount += 1;
               Wire.data(todoId, todo);
-              todoIdsList.push(todoId);
+              listOfTodoIds.push(todoId);
             }
           }
-          Wire.data(DataKeys.LIST_OF_IDS, todoIdsList);
+          Wire.data(DataKeys.LIST_OF_IDS, listOfTodoIds);
+          Wire.data(DataKeys.NOT_COMPLETED_COUNT, notCompletedCount);
         })
         .then(async () => {
-          if (await this.exist(DataKeys.NOT_COMPLETED_COUNT)) {
-            const value = parseInt(await this.retrieve(DataKeys.NOT_COMPLETED_COUNT));
-            Wire.data(DataKeys.NOT_COMPLETED_COUNT, value);
-          } else Wire.data(DataKeys.NOT_COMPLETED_COUNT, 0);
+          const todoIdsListVisibleRaw = JSON.parse(await this.retrieve(DataKeys.LIST_OF_IDS_VISIBLE)) || [];
+          console.log('> StorageMiddleware -> init: then', { todoIdsListVisibleRaw });
+          Wire.data(DataKeys.LIST_OF_IDS_VISIBLE, todoIdsListVisibleRaw);
         })
         .then(async () => {
           if (await this.exist(DataKeys.FILTER)) {
@@ -55,8 +57,8 @@ class TodoStorageMiddleware extends WireWithDatabase implements IWireMiddleware 
 
   async onData(key: string, prevValue?: any, nextValue?: any): Promise<void> {
     console.log(`> StorageMiddleware -> onData:`, { key, prevValue, nextValue });
-    await this.persist(key, nextValue);
-    return Promise.resolve();
+    if (nextValue == null) await this.delete(key);
+    else await this.persist(key, nextValue);
   }
 
   onRemove(): Promise<void> {
@@ -68,4 +70,4 @@ class TodoStorageMiddleware extends WireWithDatabase implements IWireMiddleware 
   }
 }
 
-export default TodoStorageMiddleware;
+export default StorageMiddleware;

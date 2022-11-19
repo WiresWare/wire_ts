@@ -103,12 +103,11 @@ export class WireData implements IWireData {
 
   async remove(clean = false): Promise<void> {
     if (!clean) this._guardian();
-    this._value = null;
     this._lockToken = null;
+    await this.reset();
     this._onRemove!(this._key);
     this._onRemove = undefined;
     this._onReset = undefined;
-    await this.refresh();
     this._listeners.splice(0, this._listeners.length);
   }
 
