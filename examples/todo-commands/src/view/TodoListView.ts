@@ -32,7 +32,6 @@ class TodoListView extends DomElement {
       }
     }
   }
-
   append(id: string) {
     const viewItem = new TodoListItemView(id);
     console.log(`> TodoListView -> append id = ${id}`, viewItem.dom, this.dom);

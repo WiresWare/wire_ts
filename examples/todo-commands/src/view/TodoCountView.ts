@@ -9,8 +9,9 @@ class TodoCountView extends DomElement {
   constructor(dom: ChildNode) {
     super(dom as HTMLElement);
     const countWD = Wire.data(DataKeys.NOT_COMPLETED_COUNT);
-    countWD.subscribe(async (value) => this.updateCount(value));
-    this.updateCount(countWD.value);
+    const update = async () => this.updateCount(countWD.value);
+    countWD.subscribe(update);
+    update().then();
     console.log('> TodoCountView -> initialized');
   }
   updateCount(count: number) {
