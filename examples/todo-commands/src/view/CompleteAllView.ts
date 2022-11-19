@@ -7,25 +7,25 @@ import ViewSignals from '@/consts/ViewSignals';
 import DomElement from '@/view/base/DomElement';
 
 class CompleteAllView extends DomElement {
-  constructor(dom: HTMLElement) {
-    super(dom);
-    const countWD: IWireData = Wire.data(DataKeys.NOT_COMPLETED_COUNT);
-    countWD.subscribe(async (value: number) => this._onWireSignalForced(value === 0));
-    this.dom.onchange = () => {
-      const isChecked = this.checkbox.checked;
-      console.log(`> CompleteAllView -> onchange: ${isChecked}`);
-      Wire.send(ViewSignals.COMPLETE_ALL, isChecked).then();
-    };
-    this._onWireSignalForced(countWD.value === 0);
-    console.log('> CompleteAllView -> initialized');
-  }
-
   get checkbox(): HTMLInputElement {
     return this.dom as HTMLInputElement;
   }
-
-  _onWireSignalForced(data: boolean | null) {
-    console.log(`> CompleteAllView -> onWireSignalForced: checked = ${data}`);
+  constructor(dom: HTMLElement) {
+    super(dom);
+    const countWD = Wire.data(DataKeys.NOT_COMPLETED_COUNT) as IWireData;
+    const update = async () => this.setChecked(countWD.value === 0);
+    countWD.subscribe(update);
+    this.dom.onchange = () => this._onCheckerChange();
+    update().then();
+    console.log('> CompleteAllView -> initialized');
+  }
+  _onCheckerChange() {
+    const isChecked = this.checkbox.checked;
+    console.log(`> CompleteAllView -> _onCheckerChange: ${isChecked}`);
+    Wire.send(ViewSignals.COMPLETE_ALL, isChecked).then();
+  }
+  setChecked(data: boolean | null) {
+    console.log(`> CompleteAllView -> _onWireSignalForced: checked = ${data}`);
     this.checkbox.checked = !!data;
   }
 }

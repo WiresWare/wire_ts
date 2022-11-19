@@ -4,24 +4,30 @@ import ViewSignals from '@/consts/ViewSignals';
 import DataKeys from '@/consts/DataKeys';
 
 import DomElement from '@/view/base/DomElement';
+import FilterValues from '@/consts/FilterValues';
 
 class ClearCompletedView extends DomElement {
   constructor(dom: HTMLElement) {
     super(dom);
-    const listOfTodoIdsWD = Wire.data(DataKeys.LIST_OF_IDS);
-    const notCompletedCountWD = Wire.data(DataKeys.NOT_COMPLETED_COUNT);
-    const updateComponentVisibility = () =>
-      this.setComponentVisibilityFrom(listOfTodoIdsWD.value?.length, notCompletedCountWD.value);
-    notCompletedCountWD.subscribe(updateComponentVisibility);
+    const listWD = Wire.data(DataKeys.LIST_OF_IDS);
+    const countWD = Wire.data(DataKeys.NOT_COMPLETED_COUNT);
+    const filterWD = Wire.data(DataKeys.FILTER);
+
+    const update = async () =>
+      this.setVisibility(countWD.value < listWD.value?.length && filterWD.value !== FilterValues.ACTIVE);
+
+    filterWD.subscribe(update);
+    countWD.subscribe(update);
+
+    update().then();
     this.dom.onclick = () => Wire.send(ViewSignals.CLEAR_COMPLETED);
-    updateComponentVisibility().then();
 
     console.log('> ClearCompletedView -> initialized');
   }
 
-  async setComponentVisibilityFrom(numberOfTodos: number, notCompletedCount: number) {
-    console.log(`> ClearCompletedView -> setComponentVisibilityFrom: ${numberOfTodos} - ${notCompletedCount}`);
-    this.dom.style.display = notCompletedCount >= numberOfTodos ? 'none' : 'block';
+  setVisibility(isVisible: boolean) {
+    console.log(`> ClearCompletedView -> setComponentVisibilityFrom: ${isVisible}`);
+    this.dom.style.display = isVisible ? 'block' : 'none';
   }
 }
 
