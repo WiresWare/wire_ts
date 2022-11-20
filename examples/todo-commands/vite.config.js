@@ -10,4 +10,14 @@ export default defineConfig({
     },
   },
   plugins: [eslint(), removeConsole()],
+  server: {
+    host: '127.0.0.1',
+    port: 8089,
+    // cors: true,
+    // host: 'local.dev',
+    // https: true,
+  },
+  build: {
+    minify: false,
+  },
 });
