@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "cy:open": "yarn dev & cypress open --e2e"
   },
   "author": "Vladimir Cores (Minkin)",
   "license": "ISC",
