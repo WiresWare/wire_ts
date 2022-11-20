@@ -7,8 +7,8 @@ import { WireCommandWithRequiredData, WireCommand } from './command';
 
 import { WireWithDatabase, WireWithWireData, WireWithWhenReady } from './with';
 
-export type { types };
-export type { interfaces };
+export { types };
+export { interfaces };
 export {
   Wire,
   WireData,

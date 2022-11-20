@@ -52,7 +52,8 @@ export class WireCommunicateLayer {
           if (scope != null && wire.scope !== scope) continue;
           noMoreSubscribers = wire.replies > 0 && --wire.replies === 0;
           if (noMoreSubscribers) wiresToRemove.push(wire);
-          await wire.transfer(payload);
+          const resultData = await wire.transfer(payload);
+          if (resultData != null) results.push(resultData);
         }
         if (wiresToRemove.length > 0)
           for await (const wire of wiresToRemove) {
@@ -75,7 +76,7 @@ export class WireCommunicateLayer {
           if (this._wireById.has(wireId)) {
             const wire = this._wireById.get(wireId) as IWire;
             const isWrongScope = withScope && scope !== wire.scope;
-            const isWrongListener = withListener && listener !== wire.listener;
+            const isWrongListener = withListener && !wire.listenerEqual(listener);
             if (isWrongScope || isWrongListener) continue;
             toRemoveList.push(wire);
           }
@@ -101,12 +102,11 @@ export class WireCommunicateLayer {
   }
 
   getBySignal(signal: string): (IWire | undefined)[] {
-    if (this.hasSignal(signal) && this._wireIdsBySignal.get(signal))
-      return (
-        this._wireIdsBySignal.get(signal)!.map((wireId) => {
-          return this._wireById.get(wireId);
-        }) || []
-      );
+    if (this.hasSignal(signal)) {
+      return this._wireIdsBySignal.get(signal)!.map((wireId) => {
+        return this._wireById.get(wireId);
+      });
+    }
     return [];
   }
 
@@ -121,7 +121,7 @@ export class WireCommunicateLayer {
   getByListener(listener: WireListener): Array<IWire> | undefined {
     const result: IWire[] = [];
     this._wireById.forEach((wire) => {
-      if (wire.listener === listener) result.push(wire);
+      if (wire.listenerEqual(listener)) result.push(wire);
     });
     return result;
   }

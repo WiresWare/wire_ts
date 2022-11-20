@@ -39,13 +39,13 @@ export interface IWireDatabaseService {
 
 export interface IWire {
   get signal(): string;
-  get listener(): WireListener | undefined | null;
   get id(): number;
   get scope(): object;
   get replies(): number;
   set replies(value: number);
   get withReplies(): boolean;
 
+  listenerEqual(listener: WireListener): boolean;
   transfer(payload?: any): Promise<void>;
   clear(): void;
 }

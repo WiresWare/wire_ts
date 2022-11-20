@@ -13,7 +13,7 @@ export default defineConfig({
   test: {
     globals: true,
   },
-  plugins: [eslint(), dts({ insertTypesEntry: true }), removeConsole.default()],
+  plugins: [eslint(), dts({ insertTypesEntry: true }), removeConsole()],
   build: {
     outDir: 'dist',
     emptyOutDir: true,

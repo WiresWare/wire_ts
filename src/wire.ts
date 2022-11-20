@@ -51,8 +51,8 @@ export default class Wire implements IWire {
   ///
   /// @private
   private _listener?: WireListener | null | undefined;
-  get listener(): WireListener | undefined | null {
-    return this._listener;
+  listenerEqual(listener: WireListener): boolean {
+    return this._listener == listener;
   }
   ///
   /// [read-only] [internal use]
@@ -114,7 +114,7 @@ export default class Wire implements IWire {
   /// Remove wire object from communication layer, then inform all middlewares with
   /// Returns existence of another wires with that signal.
   static async detach(wire: IWire): Promise<boolean> {
-    return this.remove(wire.signal, wire.scope, wire.listener!);
+    return this.remove(wire.signal, wire.scope);
   }
   /// Create wire object from params and [attach] it to the communication layer
   /// All middleware will be informed from [WireMiddleware.onAdd] before wire is attached to the layer
@@ -157,19 +157,27 @@ export default class Wire implements IWire {
   /// All middleware will be informed from [WireMiddleware.onRemove] after signal removed, only if existed
   /// Returns [bool] telling signal existed in communication layer
   static async remove(signal: string, scope?: object, listener?: WireListener): Promise<boolean> {
-    const existed = await this._COMMUNICATION_LAYER.remove(signal, scope, listener);
-    if (existed) await this._MIDDLEWARE_LAYER.onRemove(signal, scope, listener);
-    return existed;
+    if (signal != null) return this._removeAllBySignal(signal, undefined, listener);
+    if (scope != null) return (await this._removeAllByScope(scope, listener)).length > 0;
+    if (listener != null) return (await this._removeAllByListener(listener)).length > 0;
+    return false;
   }
   static async _removeAllBySignal(signal: string, scope?: object, listener?: WireListener): Promise<boolean> {
     const existed = await this._COMMUNICATION_LAYER.remove(signal, scope, listener);
     if (existed) await this._MIDDLEWARE_LAYER.onRemove(signal, scope, listener);
     return existed;
   }
-  static async _removeAllByScope(scope: object): Promise<Array<boolean>> {
+  static async _removeAllByScope(scope: object, listener?: WireListener): Promise<Array<boolean>> {
     const results: boolean[] = [];
     for await (const wire of this._COMMUNICATION_LAYER.getByScope(scope)!) {
-      results.push(await this._removeAllBySignal(wire.signal, scope));
+      results.push(await this._removeAllBySignal(wire.signal, scope, listener));
+    }
+    return results;
+  }
+  static async _removeAllByListener(listener: WireListener): Promise<Array<boolean>> {
+    const results: boolean[] = [];
+    for await (const wire of this._COMMUNICATION_LAYER.getByListener(listener)!) {
+      results.push(await this._removeAllBySignal(wire.signal, wire.scope, listener));
     }
     return results;
   }
@@ -241,9 +249,8 @@ export default class Wire implements IWire {
       const isValueFunction: boolean = typeof value === 'function';
       console.log(`> Wire.data -> prev = ${prevValue}`);
       const nextValue = isValueFunction ? (value as WireValueFunction)(prevValue) : value;
-      this._MIDDLEWARE_LAYER.onData(key, prevValue, nextValue).then(() => {
-        wireData!.value = nextValue;
-      });
+      this._MIDDLEWARE_LAYER.onData(key, prevValue, nextValue);
+      wireData!.value = nextValue;
     }
     return wireData!;
   }

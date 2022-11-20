@@ -32,5 +32,5 @@
     "examples",
     "dist"
   ],
-  "include": ["src"]
+  "include": ["src", "test"]
 }
