@@ -3,6 +3,12 @@ import { Wire } from 'cores.wire';
 import ViewSignals from '@/consts/ViewSignals';
 import GetterKeys from '@/consts/GetterKeys';
 
+import DataKeys from '@/consts/DataKeys';
+import FilterValues from '@/consts/FilterValues';
+
+import InputDTO from '@/model/dto/InputDTO';
+import EditDTO from '@/model/dto/EditDTO';
+
 import TodoInputCommand from '@/controller/commands/todo/TodoInputCommand';
 import TodoToggleCommand from '@/controller/commands/todo/TodoToggleCommand';
 import TodoEditCommand from '@/controller/commands/todo/TodoEditCommand';
@@ -12,37 +18,31 @@ import CompleteAllTodosCommand from '@/controller/commands/operations/CompleteAl
 import ClearCompletedTodosCommand from '@/controller/commands/operations/ClearCompletedTodosCommand';
 import FilterTodosCommand from '@/controller/commands/operations/FilterTodosCommand';
 import CountCompletedGetter from '@/controller/getters/CountCompletedGetter';
-import DataKeys from '@/consts/DataKeys';
-import FilterValues from '@/consts/FilterValues';
 
 class TodoController {
   constructor() {
-    Wire.addMany(
-      this,
-      new Map(
-        Object.entries({
-          [ViewSignals.INPUT]: (inputDTO) =>
-            new TodoInputCommand(inputDTO).execute().then(async (isNotEmpty) => {
-              if (isNotEmpty) await Wire.send(ViewSignals.CLEAR_INPUT);
-            }),
-          [ViewSignals.TOGGLE]: (id) =>
-            new TodoToggleCommand(id).execute().then(async (isCompleted) => {
-              const filter = Wire.data(DataKeys.FILTER).value;
-              if (FilterValues.shouldFilter(isCompleted, filter)) {
-                return new FilterTodosCommand(filter).execute();
-              }
-            }),
-          [ViewSignals.EDIT]: (editDTO) =>
-            new TodoEditCommand(editDTO).execute().then((isEmpty) => {
-              if (isEmpty) new TodoDeleteCommand(editDTO.id).execute();
-            }),
-          [ViewSignals.DELETE]: (id) => new TodoDeleteCommand(id).execute(),
-          [ViewSignals.COMPLETE_ALL]: (isComplete) => new CompleteAllTodosCommand(isComplete).execute(),
-          [ViewSignals.CLEAR_COMPLETED]: () => new ClearCompletedTodosCommand().execute(),
-          [ViewSignals.FILTER]: (filter) => new FilterTodosCommand(filter).execute(),
-        }),
-      ),
-    ).then(() => {
+    const eventsToWireListener = {
+      [ViewSignals.INPUT]: async (inputDTO: InputDTO) => {
+        const isNotEmpty = await new TodoInputCommand(inputDTO).execute();
+        if (isNotEmpty) await Wire.send(ViewSignals.CLEAR_INPUT);
+      },
+      [ViewSignals.TOGGLE]: async (id: string) => {
+        const isCompleted = await new TodoToggleCommand(id).execute();
+        const filter = Wire.data(DataKeys.FILTER).value;
+        if (FilterValues.shouldFilter(isCompleted, filter)) {
+          return new FilterTodosCommand(filter).execute();
+        }
+      },
+      [ViewSignals.EDIT]: async (editDTO: EditDTO) => {
+        const isEmpty = await new TodoEditCommand(editDTO).execute();
+        if (isEmpty) return new TodoDeleteCommand(editDTO.id).execute();
+      },
+      [ViewSignals.DELETE]: (id: string) => new TodoDeleteCommand(id).execute(),
+      [ViewSignals.COMPLETE_ALL]: (isComplete: boolean) => new CompleteAllTodosCommand(isComplete).execute(),
+      [ViewSignals.CLEAR_COMPLETED]: () => new ClearCompletedTodosCommand().execute(),
+      [ViewSignals.FILTER]: (filter: number) => new FilterTodosCommand(filter).execute(),
+    };
+    Wire.addMany(this, new Map(Object.entries(eventsToWireListener))).then(() => {
       console.log('> TodoController -> READY!');
     });
     console.log('> TodoController -> Prepare getters');
