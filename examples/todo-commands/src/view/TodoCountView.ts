@@ -4,6 +4,7 @@ import DataKeys from '@/consts/DataKeys';
 import GetterKeys from '@/consts/GetterKeys';
 
 import DomElement from '@/view/base/DomElement';
+import { utilStringTodoCount } from '@/utils/stringUtils';
 
 class TodoCountView extends DomElement {
   constructor(dom: ChildNode) {
@@ -17,7 +18,7 @@ class TodoCountView extends DomElement {
   updateCount(count: number) {
     const completedCount: number = Wire.data(GetterKeys.COUNT_COMPLETED).value as number;
     console.log('> TodoCountView -> updateCount', { count, completedCount });
-    this.dom.innerText = `${count.toString()} | ${completedCount.toString()}`;
+    this.dom.innerText = utilStringTodoCount(count, completedCount);
   }
 }
 
