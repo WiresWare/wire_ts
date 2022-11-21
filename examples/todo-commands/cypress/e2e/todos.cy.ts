@@ -1,5 +1,8 @@
 import { utilStringTodoCount } from '@/utils/stringUtils';
 import Dom from '@/consts/Dom';
+import { slowCypressDown } from '../utils/slowDownCypress';
+
+slowCypressDown(100);
 
 describe('Todos different scenarios', () => {
   const TODO_TEXT = 'Write';
@@ -162,6 +165,7 @@ describe('Todos different scenarios', () => {
     checkTodosCount(0, list.length);
     getButtonToggleAll().click();
     checkTodosCount(list.length, 0);
+    list.forEach(deleteTodoFromContainer);
   });
 });
 
