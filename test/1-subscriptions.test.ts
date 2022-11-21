@@ -1,47 +1,51 @@
 import { expect, test, describe } from 'vitest';
+
 import Wire from '../src/wire';
+import { IWire } from '../src/interfaces';
 
 class PutFindTestObject {}
+
+const print = console.log;
 
 describe('1. Subscriptions', async () => {
   const SIGNAL_G1 = 'SIGNAL_G1';
   const SIGNAL_COUNTER = 'SIGNAL_COUNTER';
   const SIGNAL_NOT_REGISTERED = 'SIGNAL_NOT_REGISTERED';
 
-  const SCOPE = Object();
-  const print = console.log;
+  const SCOPE = {};
 
-  const listener_dynamic = async (payload, wid) => {
-    console.log(`> \t WireListener -> data: ${payload} | wid: ${wid} - receives all types of data`);
+  const listener_dynamic = async (payload: any, wid: number) => {
+    print(`> \t WireListener -> data: ${payload} | wid: ${wid} - receives all types of data`);
     return true;
   };
 
   const wireToAttach = new Wire(SCOPE, 'wire_signal_attached', async (payload, wid) => {
-    const wire = Wire.get(null, null, null, wid).pop();
-    console.log(`> \t WireListener on attached wire: "${wire.signal}" with data: ${payload}`);
+    const wire: IWire = Wire.get({ wireId: wid }).pop()!;
+    print(`> \t WireListener on attached wire: "${wire.signal}" with data: ${payload}`);
   });
 
-  console.log('> 1: Setup -> Cleanup everything');
+  print('> 1: Setup -> Cleanup everything');
   await Wire.purge(true);
-  console.log(`> 1: Setup -> Add signal ${SIGNAL_G1} with dynamic WireListener`);
-  console.log('> \t\t Dynamic listener (with specified data type) will react on any signal');
+  print(`> 1: Setup -> Add signal ${SIGNAL_G1} with dynamic WireListener`);
+  print('> \t\t Dynamic listener (with specified data type) will react on any signal');
   await Wire.add(SCOPE, SIGNAL_G1, listener_dynamic);
-  console.log(`> 1: Setup -> Attach pre-created signal ${wireToAttach.signal} with string WireListener`);
+  print(`> 1: Setup -> Attach pre-created signal ${wireToAttach.signal} with string WireListener`);
   Wire.attach(wireToAttach);
 
   test('1.0. Send registered signal', async () => {
+    print('\t Wire.get({ signal: SIGNAL_G1 }):', Wire.get({ signal: SIGNAL_G1 }));
     expect((await Wire.send(SIGNAL_G1, 'payload string')).signalHasNoSubscribers).toBeFalsy();
     expect((await Wire.send(wireToAttach.signal)).signalHasNoSubscribers).toBeFalsy();
   });
   test('1.1. Has signal', async () => {
     print(`> 1.1.1 -> Check if signal (${SIGNAL_G1}) exists in communication layer`);
-    expect(Wire.has(SIGNAL_G1)).toBeTruthy();
+    expect(Wire.has({ signal: SIGNAL_G1 })).toBeTruthy();
     print('> 1.1.2 -> Wire.has(signal: SIGNAL_NOT_REGISTERED) == isFalse');
-    expect(Wire.has(SIGNAL_NOT_REGISTERED)).toBeFalsy();
+    expect(Wire.has({ signal: SIGNAL_NOT_REGISTERED })).toBeFalsy();
     print('> 1.1.3 -> Wire.has(signal: "RANDOM_SIGNAL") == isFalse');
-    expect(Wire.has('RANDOM_SIGNAL')).toBeFalsy();
+    expect(Wire.has({ signal: 'RANDOM_SIGNAL' })).toBeFalsy();
     print('> 1.1.4 -> Wire.has(wire: wireToAttach) == isTrue');
-    expect(Wire.has(null, wireToAttach)).toBeTruthy();
+    expect(Wire.has({ wire: wireToAttach })).toBeTruthy();
   });
   test('1.2. Send unregistered signal', async () => {
     print('> 1.2.1 -> Wire.send(SIGNAL_NOT_REGISTERED) == isTrue');
@@ -76,10 +80,10 @@ describe('1. Subscriptions', async () => {
     };
     await Wire.addMany(scope, new Map(Object.entries(signalsToWireListeners)));
 
-    print('> 1.6.1 -> Check if added signals exist:', Wire.get(SIGNAL_G1));
-    expect(Wire.get(SIGNAL_G1)).toHaveLength(2);
-    expect(Wire.get(SIGNAL_NEW)).toHaveLength(1);
-    expect(Wire.get(SIGNAL_COUNTER)).toHaveLength(1);
+    print('> 1.6.1 -> Check if added signals exist:', Wire.get({ signal: SIGNAL_G1 }));
+    expect(Wire.get({ signal: SIGNAL_G1 })).toHaveLength(2);
+    expect(Wire.get({ signal: SIGNAL_NEW })).toHaveLength(1);
+    expect(Wire.get({ signal: SIGNAL_COUNTER })).toHaveLength(1);
 
     print('> 1.6.2 -> Send signal to verify their work');
     expect((await Wire.send(SIGNAL_G1)).dataList).toHaveLength(2);
@@ -88,17 +92,17 @@ describe('1. Subscriptions', async () => {
     expect((await Wire.send(SIGNAL_COUNTER)).dataList[0]).toBe(1);
 
     print('> 1.6.3 -> Call Wire.removeAllByScope(scope) -> existed == true');
-    expect(await Wire.remove(null, scope)).toBeTruthy();
-    expect(await Wire.remove(null, scope)).toBeFalsy();
+    expect(await Wire.remove({ scope: scope })).toBeTruthy();
+    expect(await Wire.remove({ scope: scope })).toBeFalsy();
 
     print('> 1.6.4 -> Check no signals after removal - returned list is empty');
-    expect(Wire.get(null, scope)).toHaveLength(0);
+    expect(Wire.get({ scope: scope })).toHaveLength(0);
   });
   test('1.7. Remove all by listener', async () => {
     const wire = await Wire.add(new PutFindTestObject(), 'some_random_signal', listener_dynamic);
-    expect(Wire.has(wire.signal)).toBeTruthy();
-    expect(Wire.get(null, null, listener_dynamic)).toHaveLength(2);
-    expect(await Wire.remove(null, null, listener_dynamic)).toBeTruthy();
-    expect(Wire.get(null, null, listener_dynamic)).toHaveLength(0);
+    expect(Wire.has({ signal: wire.signal })).toBeTruthy();
+    expect(Wire.get({ listener: listener_dynamic })).toHaveLength(2);
+    expect(await Wire.remove({ listener: listener_dynamic })).toBeTruthy();
+    expect(Wire.get({ listener: listener_dynamic })).toHaveLength(0);
   });
 });
