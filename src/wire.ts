@@ -109,29 +109,30 @@ export default class Wire implements IWire {
   /// Add wire object to the communication layer
   /// This method won't call middleware
   static attach(wire: IWire): void {
+    console.log('> Wire.attach:', wire.signal);
     this._COMMUNICATION_LAYER.add(wire);
   }
   /// Remove wire object from communication layer, then inform all middlewares with
   /// Returns existence of another wires with that signal.
   static async detach(wire: IWire): Promise<boolean> {
-    return this.remove(wire.signal, wire.scope);
+    return this.remove({ signal: wire.signal, scope: wire.scope });
   }
   /// Create wire object from params and [attach] it to the communication layer
   /// All middleware will be informed from [WireMiddleware.onAdd] before wire is attached to the layer
-  static async add(scope: object, signal: string, listener: WireListener, replies = 0): Promise<IWire> {
+  static add(scope: object, signal: string, listener: WireListener, replies = 0): IWire {
     const wire = new Wire(scope, signal, listener, replies);
-    await this._MIDDLEWARE_LAYER.onAdd(wire);
+    this._MIDDLEWARE_LAYER.onAdd(wire);
     this.attach(wire);
     return wire;
   }
   /// Register many signals at once
-  static async addMany(scope: object, signalToHandlerMap: Map<string, WireListener>) {
-    for await (const [key, value] of signalToHandlerMap) {
-      await Wire.add(scope, key, value);
+  static addMany(scope: object, signalToHandlerMap: Map<string, WireListener>) {
+    for (const [signal, handler] of signalToHandlerMap) {
+      Wire.add(scope, signal, handler);
     }
   }
   /// Check if signal string or wire instance exists in communication layer
-  static has(signal?: string | null, wire?: IWire | null): boolean {
+  static has({ signal, wire }: { signal?: string; wire?: IWire }): boolean {
     if (signal) return this._COMMUNICATION_LAYER.hasSignal(signal);
     if (wire) return this._COMMUNICATION_LAYER.hasWire(wire);
     return false;
@@ -156,20 +157,28 @@ export default class Wire implements IWire {
   /// Remove all wires for specific signal, for more precise target to remove add scope and/or listener
   /// All middleware will be informed from [WireMiddleware.onRemove] after signal removed, only if existed
   /// Returns [bool] telling signal existed in communication layer
-  static async remove(signal: string, scope?: object, listener?: WireListener): Promise<boolean> {
-    if (signal != null) return this._removeAllBySignal(signal, undefined, listener);
-    if (scope != null) return (await this._removeAllByScope(scope, listener)).length > 0;
-    if (listener != null) return (await this._removeAllByListener(listener)).length > 0;
+  static async remove({
+    signal,
+    scope,
+    listener,
+  }: {
+    signal?: string | null;
+    scope?: object | null;
+    listener?: WireListener | null;
+  }): Promise<boolean> {
+    if (signal) return this._removeAllBySignal(signal, undefined, listener);
+    if (scope) return (await this._removeAllByScope(scope, listener)).length > 0;
+    if (listener) return (await this._removeAllByListener(listener)).length > 0;
     return false;
   }
-  static async _removeAllBySignal(signal: string, scope?: object, listener?: WireListener): Promise<boolean> {
+  static async _removeAllBySignal(signal: string, scope?: object, listener?: WireListener | null): Promise<boolean> {
     const existed = await this._COMMUNICATION_LAYER.remove(signal, scope, listener);
-    if (existed) await this._MIDDLEWARE_LAYER.onRemove(signal, scope, listener);
+    if (existed) this._MIDDLEWARE_LAYER.onRemove(signal, scope, listener);
     return existed;
   }
-  static async _removeAllByScope(scope: object, listener?: WireListener): Promise<Array<boolean>> {
+  static async _removeAllByScope(scope: object, listener?: WireListener | null): Promise<Array<boolean>> {
     const results: boolean[] = [];
-    for await (const wire of this._COMMUNICATION_LAYER.getByScope(scope)!) {
+    for (const wire of this._COMMUNICATION_LAYER.getByScope(scope)!) {
       results.push(await this._removeAllBySignal(wire.signal, scope, listener));
     }
     return results;
@@ -191,12 +200,17 @@ export default class Wire implements IWire {
   }
   /// When you need Wires associated with signal or scope or listener
   /// Returns [List<Wire>]
-  static get(
-    signal?: string | null,
-    scope?: object | null,
-    listener?: WireListener | null,
-    wireId?: number | null,
-  ): Array<IWire | undefined> {
+  static get({
+    signal,
+    scope,
+    listener,
+    wireId,
+  }: {
+    signal?: string | null;
+    scope?: object | null;
+    listener?: WireListener | null;
+    wireId?: number | null;
+  }): Array<IWire | undefined> {
     let result = new Array<IWire | undefined>();
     if (signal) {
       const instances = this._COMMUNICATION_LAYER.getBySignal(signal);
@@ -234,7 +248,7 @@ export default class Wire implements IWire {
   /// void remove()
   /// ```
   /// Returns [WireData]
-  static data(key: string, value?: any | null, getter?: WireDataGetter | null | undefined): IWireData {
+  static data(key: string, value?: any | null, getter?: WireDataGetter | null): IWireData {
     console.log(`> Wire.data -> key = ${key}`);
     const wireData: IWireData | undefined = this._DATA_CONTAINER_LAYER.has(key)
       ? this._DATA_CONTAINER_LAYER.get(key)

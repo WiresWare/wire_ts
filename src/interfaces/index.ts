@@ -51,10 +51,10 @@ export interface IWire {
 }
 
 export interface IWireMiddleware {
-  onAdd(wire: IWire): Promise<void>;
-  onSend(signal: string, payload?: any | null, scope?: object | null): Promise<void>;
-  onRemove(signal: string, scope?: object | null, listener?: WireListener | null): Promise<void>;
-  onData(key: string, prevValue?: any | null, nextValue?: any | null): Promise<void>;
+  onAdd(wire: IWire): void;
+  onSend(signal: string, payload?: any | null, scope?: object | null): void;
+  onRemove(signal: string, scope?: object | null, listener?: WireListener | null): void;
+  onData(key: string, prevValue?: any | null, nextValue?: any | null): void;
 }
 
 export interface IWireWithWhenReady {

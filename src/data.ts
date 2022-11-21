@@ -64,7 +64,6 @@ export class WireData implements IWireData {
   get numberOfListeners(): number {
     return this._listeners.length;
   }
-
   /// Prevent any value modifications inside specific of [WireData] instance.
   /// [WireDataLockToken] token should be stored in some controller or responsible
   /// for modification entity. The purpose of this method is to restrict data changes
@@ -74,7 +73,6 @@ export class WireData implements IWireData {
     if (locked) this._lockToken = wireDataLockToken;
     return locked; // throw ERROR__DATA_ALREADY_CLOSED
   }
-
   /// After calling this method with proper token [WireDataLockToken]
   /// changes to the [WireData] value will be allowed from anywhere of the system
   unlock(wireDataLockToken: IWireDataLockToken): boolean {
@@ -82,17 +80,14 @@ export class WireData implements IWireData {
     if (opened) this._lockToken = null;
     return opened; // throw ERROR__DATA_CANNOT_OPEN
   }
-
   async refresh(): Promise<void> {
     console.log(`> WireData(${this.key}) -> refresh()`, this, this._listeners);
     if (this._listeners.length === 0) return;
     const valueForListener = this.value;
     for (const listener of this._listeners) {
-      // console.log('\t\t refresh: ', listener);
       await listener(valueForListener);
     }
   }
-
   async reset(): Promise<void> {
     this._guardian();
     const previousValue = this._value;
@@ -100,7 +95,6 @@ export class WireData implements IWireData {
     this._onReset!(this._key, previousValue);
     await this.refresh();
   }
-
   async remove(clean = false): Promise<void> {
     if (!clean) this._guardian();
     this._lockToken = null;
@@ -110,11 +104,9 @@ export class WireData implements IWireData {
     this._onReset = undefined;
     this._listeners.splice(0, this._listeners.length);
   }
-
   private _guardian(): void {
     if (this.isLocked) throw new Error(this.isGetter ? ERROR__DATA_IS_GETTER : ERROR__DATA_IS_LOCKED);
   }
-
   subscribe(wireDataListener: WireDataListener): IWireData {
     if (this.isGetter) throw new Error(ERROR__SUBSCRIBE_TO_DATA_GETTER);
     if (!this.hasListener(wireDataListener)) {
@@ -122,7 +114,6 @@ export class WireData implements IWireData {
     }
     return this;
   }
-
   unsubscribe(wireDataListener?: WireDataListener): IWireData {
     if (this.isGetter) throw new Error(ERROR__SUBSCRIBE_TO_DATA_GETTER);
     if (wireDataListener) {
@@ -135,7 +126,6 @@ export class WireData implements IWireData {
     }
     return this;
   }
-
   hasListener(listener: WireDataListener): boolean {
     return this.numberOfListeners > 0 && this._listeners.indexOf(listener) > -1;
   }
