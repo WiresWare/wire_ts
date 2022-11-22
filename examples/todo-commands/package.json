@@ -15,7 +15,7 @@
     "@typescript-eslint/eslint-plugin": "^5.42.1",
     "@typescript-eslint/parser": "^5.42.1",
     "@vitest/ui": "^0.24.5",
-    "cores.wire": "^0.0.28",
+    "cores.wire": "^0.0.31",
     "cypress": "^11.1.0",
     "eslint": "^8.27.0",
     "eslint-config-prettier": "^8.5.0",

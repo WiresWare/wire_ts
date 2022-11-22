@@ -596,10 +596,10 @@ core-util-is@1.0.2:
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
   integrity sha512-3lqz5YjWTYnW6dlDa5TLaTCcShfar1e40rmcJVwCBJC6mWlFuj0eCHIElmG1g5kyuJ/GD+8Wn4FFCcz4gJPfaQ==
 
-cores.wire@^0.0.28:
-  version "0.0.28"
-  resolved "https://registry.yarnpkg.com/cores.wire/-/cores.wire-0.0.28.tgz#0a5dfbb0cd76d9b969513135787535f7925450d4"
-  integrity sha512-54CdF2ldWoo3oBSoAXlRMXjKpToHD6EHe/0IadKmKKRoXj0glE7ukK1ma+bQJZSdzN9+7nCjxvwYJ+ab8CgSoA==
+cores.wire@^0.0.31:
+  version "0.0.31"
+  resolved "https://registry.yarnpkg.com/cores.wire/-/cores.wire-0.0.31.tgz#0e920a33369ebff0cf2999b91c6c88b5853f3af1"
+  integrity sha512-QYoEeIRX2pUGwKqhC2R33hsu6cxip//IR/lMf881ZhxvWJnwOM7H4pFVSGZJf4iMBjv0mnp7T8ea1JOJ1PVXYQ==
 
 cross-spawn@^7.0.0, cross-spawn@^7.0.2:
   version "7.0.3"
