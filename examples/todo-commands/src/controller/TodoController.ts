@@ -29,7 +29,7 @@ class TodoController {
       [ViewSignals.TOGGLE]: async (id: string) => {
         const isCompleted = await new TodoToggleCommand(id).execute();
         const filter = Wire.data(DataKeys.FILTER).value;
-        if (FilterValues.shouldFilter(isCompleted, filter)) {
+        if (FilterValues.shouldApplyFilter(isCompleted, filter)) {
           return new FilterTodosCommand(filter).execute();
         }
       },
@@ -42,9 +42,7 @@ class TodoController {
       [ViewSignals.CLEAR_COMPLETED]: () => new ClearCompletedTodosCommand().execute(),
       [ViewSignals.FILTER]: (filter: number) => new FilterTodosCommand(filter).execute(),
     };
-    Wire.addMany(this, new Map(Object.entries(eventsToWireListener))).then(() => {
-      console.log('> TodoController -> READY!');
-    });
+    Wire.addMany(this, new Map(Object.entries(eventsToWireListener)));
     console.log('> TodoController -> Prepare getters');
     Wire.data(GetterKeys.COUNT_COMPLETED, null, new CountCompletedGetter().getter);
     console.log('> TodoController -> initialized');
