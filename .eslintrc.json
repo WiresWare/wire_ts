@@ -42,6 +42,7 @@
         "arrowParens": "always"
       }
     ],
+    "@typescript-eslint/ban-ts-comment": 0,
     "@typescript-eslint/no-non-null-assertion": 0,
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/explicit-function-return-type": 0,
