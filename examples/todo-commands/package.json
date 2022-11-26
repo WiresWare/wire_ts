@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "cy:open": "yarn dev & cypress open --e2e"
+    "cy:open": "yarn dev & cypress open --e2e",
+    "cy:run": "yarn dev & cypress run --e2e"
   },
   "author": "Vladimir Cores (Minkin)",
   "license": "ISC",
@@ -15,7 +16,7 @@
     "@typescript-eslint/eslint-plugin": "^5.42.1",
     "@typescript-eslint/parser": "^5.42.1",
     "@vitest/ui": "^0.24.5",
-    "cores.wire": "^0.0.31",
+    "cores.wire": "^0.0.32",
     "cypress": "^11.1.0",
     "eslint": "^8.27.0",
     "eslint-config-prettier": "^8.5.0",
