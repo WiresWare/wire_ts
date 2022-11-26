@@ -5,7 +5,7 @@
 ///
 
 import { ERROR__ERROR_DURING_PROCESSING_SEND, ERROR__WIRE_ALREADY_REGISTERED } from './const';
-import { IWire, IWireData, IWireMiddleware, IWireSendResults } from './interfaces';
+import { IWire, IWireData, IWireMiddleware, IWireSendError, IWireSendResults } from './interfaces';
 import { WireDataOnReset, WireListener } from './types';
 import { WireData, WireSendResults, WireSendError } from './data';
 
@@ -48,9 +48,7 @@ export class WireCommunicateLayer {
         for await (const wireId of wireIdsList) {
           const wire = this._wireById.get(wireId) as IWire;
           if (isLookingInScope && wire.scope !== scope) continue;
-          const result = await wire.transfer(payload).catch((e) => {
-            return new WireSendError(ERROR__ERROR_DURING_PROCESSING_SEND, e);
-          });
+          const result = await wire.transfer(payload).catch(this._processSendError);
           noMoreSubscribers = wire.replies > 0 && --wire.replies === 0 && (await this._removeWire(wire));
           if (result !== null && result !== undefined) {
             results.push(result);
@@ -60,6 +58,10 @@ export class WireCommunicateLayer {
     }
     return new WireSendResults(results, noMoreSubscribers);
   }
+  private _processSendError(err: any): IWireSendError {
+    return new WireSendError(ERROR__ERROR_DURING_PROCESSING_SEND, err);
+  }
+
   async remove(signal: string, scope?: object, listener?: WireListener | null): Promise<boolean> {
     const exists = this.hasSignal(signal);
     if (exists) {
