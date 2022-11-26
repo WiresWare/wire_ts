@@ -6,7 +6,7 @@
 
 import { ERROR__DATA_IS_GETTER, ERROR__DATA_IS_LOCKED, ERROR__SUBSCRIBE_TO_DATA_GETTER } from './const';
 import { WireDataGetter, WireDataListener, WireDataOnRemove, WireDataOnReset } from './types';
-import { IWireData, IWireDatabaseService, IWireDataLockToken, IWireSendResults } from './interfaces';
+import { IWireData, IWireDatabaseService, IWireDataLockToken, IWireSendResults, IWireSendError } from './interfaces';
 
 export class WireDataLockToken implements IWireDataLockToken {
   equal(token: WireDataLockToken): boolean {
@@ -71,14 +71,14 @@ export class WireData implements IWireData {
   lock(wireDataLockToken: IWireDataLockToken): boolean {
     const locked = !this.isLocked || this._lockToken!.equal(wireDataLockToken);
     if (locked) this._lockToken = wireDataLockToken;
-    return locked; // throw ERROR__DATA_ALREADY_CLOSED
+    return locked;
   }
   /// After calling this method with proper token [WireDataLockToken]
   /// changes to the [WireData] value will be allowed from anywhere of the system
   unlock(wireDataLockToken: IWireDataLockToken): boolean {
     const opened = (this.isLocked && this._lockToken!.equal(wireDataLockToken)) || !this.isLocked;
     if (opened) this._lockToken = null;
-    return opened; // throw ERROR__DATA_CANNOT_OPEN
+    return opened;
   }
   async refresh(): Promise<void> {
     console.log(`> WireData(${this.key}) -> refresh()`, this, this._listeners);
@@ -131,17 +131,35 @@ export class WireData implements IWireData {
   }
 }
 
+export class WireSendError implements IWireSendError {
+  private readonly _error: Error;
+  private readonly _message: string;
+  get message() {
+    return this._message;
+  }
+  get error() {
+    return this._error;
+  }
+  constructor(message: string, error: Error) {
+    this._message = message;
+    this._error = error;
+  }
+}
+
 export class WireSendResults implements IWireSendResults {
   constructor(dataList: Array<any>, noSubscribers = false) {
-    this._dataList = dataList;
+    this._list = dataList;
     this._noSubscribers = noSubscribers;
   }
 
-  private readonly _dataList: Array<any>;
+  private readonly _list: Array<any>;
   private readonly _noSubscribers: boolean;
 
-  get dataList() {
-    return this._dataList;
+  get hasError() {
+    return this._list.some((item) => item instanceof WireSendError);
+  }
+  get list() {
+    return this._list;
   }
   get signalHasNoSubscribers() {
     return this._noSubscribers;

@@ -8,6 +8,11 @@ export interface IWireDataLockToken {
   equal(token: IWireDataLockToken): boolean;
 }
 
+export interface IWireSendError {
+  get error(): Error;
+  get message(): string;
+}
+
 export interface IWireData {
   get isSet(): boolean;
   get isLocked(): boolean;
@@ -80,6 +85,7 @@ export interface IWireWithWireData {
 }
 
 export interface IWireSendResults {
-  get dataList(): Array<any>;
+  get list(): Array<any>;
+  get hasError(): boolean;
   get signalHasNoSubscribers(): boolean;
 }

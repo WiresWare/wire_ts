@@ -63,6 +63,6 @@ describe('6. Chain of commands', async () => {
     print('>\t WireSendResults.signalHasNoSubscribers = ${results.signalHasNoSubscribers}');
     expect(results.signalHasNoSubscribers).toBeFalsy();
     print('>\t WireSendResults.dataList.length = ${results.dataList.length}');
-    expect(results.dataList).toHaveLength(1);
+    expect(results.list).toHaveLength(1);
   });
 });

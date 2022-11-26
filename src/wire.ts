@@ -89,7 +89,7 @@ export default class Wire implements IWire {
     return this._withReplies;
   }
   /// Call associated WireListener with data.
-  async transfer(payload?: any): Promise<void> {
+  async transfer(payload?: any): Promise<any> {
     if (!this._listener) throw new Error(ERROR__LISTENER_IS_NULL);
     // Call a listener in this Wire only in case data type match its listener type.
     // TODO: Find a way of how to filter listeners on payload data type
@@ -280,7 +280,7 @@ export default class Wire implements IWire {
     return instance;
   }
   /// Return an instance of an object by its type, throw an error in case it is not set
-  static find(instanceType: any): any {
+  static find(instanceType: any): any | Error {
     const key = instanceType.name?.toString();
     console.log(`> Wire.find: ${key} (typeof key: ${typeof key})`);
     const wireData = Wire.data(key);

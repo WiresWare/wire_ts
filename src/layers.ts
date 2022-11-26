@@ -4,10 +4,10 @@
 /// License: APACHE LICENSE, VERSION 2.0
 ///
 
-import { ERROR__WIRE_ALREADY_REGISTERED } from './const';
+import { ERROR__ERROR_DURING_PROCESSING_SEND, ERROR__WIRE_ALREADY_REGISTERED } from './const';
 import { IWire, IWireData, IWireMiddleware, IWireSendResults } from './interfaces';
 import { WireDataOnReset, WireListener } from './types';
-import { WireData, WireSendResults } from './data';
+import { WireData, WireSendResults, WireSendError } from './data';
 
 export class WireCommunicateLayer {
   private _wireById = new Map<number, IWire>();
@@ -43,19 +43,19 @@ export class WireCommunicateLayer {
     if (this.hasSignal(signal)) {
       const hasWires = this._wireIdsBySignal.has(signal);
       if (hasWires) {
-        const wiresToRemove: IWire[] = [];
-        for await (const wireId of this._wireIdsBySignal.get(signal)!) {
+        const isLookingInScope = scope != null;
+        const wireIdsList = this._wireIdsBySignal.get(signal)!;
+        for await (const wireId of wireIdsList) {
           const wire = this._wireById.get(wireId) as IWire;
-          if (scope != null && wire.scope !== scope) continue;
-          noMoreSubscribers = wire.replies > 0 && --wire.replies === 0;
-          if (noMoreSubscribers) wiresToRemove.push(wire);
-          const resultData = await wire.transfer(payload);
-          if (resultData != null) results.push(resultData);
-        }
-        if (wiresToRemove.length > 0)
-          for await (const wire of wiresToRemove) {
-            noMoreSubscribers = await this._removeWire(wire);
+          if (isLookingInScope && wire.scope !== scope) continue;
+          const result = await wire.transfer(payload).catch((e) => {
+            return new WireSendError(ERROR__ERROR_DURING_PROCESSING_SEND, e);
+          });
+          noMoreSubscribers = wire.replies > 0 && --wire.replies === 0 && (await this._removeWire(wire));
+          if (result !== null && result !== undefined) {
+            results.push(result);
           }
+        }
       }
     }
     return new WireSendResults(results, noMoreSubscribers);
