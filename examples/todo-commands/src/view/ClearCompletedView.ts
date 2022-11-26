@@ -1,10 +1,10 @@
 import { Wire } from 'cores.wire';
 
-import ViewSignals from '@/consts/ViewSignals';
-import DataKeys from '@/consts/DataKeys';
+import ViewSignals from '@/constants/ViewSignals';
+import DataKeys from '@/constants/DataKeys';
 
-import DomElement from '@/view/base/DomElement';
-import FilterValues from '@/consts/FilterValues';
+import DomElement from './base/DomElement';
+import FilterValues from '@/constants/FilterValues';
 
 class ClearCompletedView extends DomElement {
   constructor(dom: HTMLElement) {

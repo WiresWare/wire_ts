@@ -1,10 +1,10 @@
 import { Wire, WireCommand } from 'cores.wire';
 
-import DataKeys from '@/consts/DataKeys';
+import DataKeys from '@/constants/DataKeys';
 
-import InputDTO from '@/model/dto/InputDTO';
-import TodoVO from '@/model/vos/TodoVO';
-import FilterValues from '@/consts/FilterValues';
+import InputDTO from '@/model/data/dto/InputDTO';
+import TodoVO from '@/model/data/vos/TodoVO';
+import FilterValues from '@/constants/FilterValues';
 
 class TodoInputCommand extends WireCommand<boolean> {
   private readonly _inputDTO: InputDTO;

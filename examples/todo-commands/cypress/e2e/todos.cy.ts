@@ -1,5 +1,5 @@
 import { utilStringTodoCount } from '@/utils/stringUtils';
-import Dom from '@/consts/Dom';
+import Dom from '@/constants/Dom';
 import { slowCypressDown } from '../utils/slowDownCypress';
 
 slowCypressDown(100);

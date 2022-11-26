@@ -1,8 +1,8 @@
 import { Wire } from 'cores.wire';
 
-import DataKeys from '@/consts/DataKeys';
+import DataKeys from '@/constants/DataKeys';
 
-import WebDatabaseService from '@/service/WebDatabaseService';
+import WebDatabaseService from '@/model/service/WebDatabaseService';
 import StorageMiddleware from '@/middleware/StorageMiddleware';
 
 import TodoInputView from '@/view/TodoInputView';

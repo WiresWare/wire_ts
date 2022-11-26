@@ -1,5 +1,5 @@
 import { Wire, WireCommand } from 'cores.wire';
-import DataKeys from '@/consts/DataKeys';
+import DataKeys from '@/constants/DataKeys';
 
 class TodoToggleCommand extends WireCommand<boolean> {
   private readonly _todoId: string;

@@ -1,5 +1,5 @@
 import { Wire, WireCommand } from 'cores.wire';
-import DataKeys from '@/consts/DataKeys';
+import DataKeys from '@/constants/DataKeys';
 
 class TodoDeleteCommand extends WireCommand<void> {
   private readonly _todoId: string;

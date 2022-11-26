@@ -1,23 +1,23 @@
 import { Wire } from 'cores.wire';
 
-import ViewSignals from '@/consts/ViewSignals';
-import GetterKeys from '@/consts/GetterKeys';
+import ViewSignals from '@/constants/ViewSignals';
+import GetterKeys from '@/constants/GetterKeys';
 
-import DataKeys from '@/consts/DataKeys';
-import FilterValues from '@/consts/FilterValues';
+import DataKeys from '@/constants/DataKeys';
+import FilterValues from '@/constants/FilterValues';
 
-import InputDTO from '@/model/dto/InputDTO';
-import EditDTO from '@/model/dto/EditDTO';
+import InputDTO from '@/model/data/dto/InputDTO';
+import EditDTO from '@/model/data/dto/EditDTO';
 
-import TodoInputCommand from '@/controller/commands/todo/TodoInputCommand';
-import TodoToggleCommand from '@/controller/commands/todo/TodoToggleCommand';
-import TodoEditCommand from '@/controller/commands/todo/TodoEditCommand';
+import TodoInputCommand from './commands/todo/TodoInputCommand';
+import TodoToggleCommand from './commands/todo/TodoToggleCommand';
+import TodoEditCommand from './commands/todo/TodoEditCommand';
 
-import TodoDeleteCommand from '@/controller/commands/todo/TodoDeleteCommand';
-import CompleteAllTodosCommand from '@/controller/commands/operations/CompleteAllTodosCommand';
-import ClearCompletedTodosCommand from '@/controller/commands/operations/ClearCompletedTodosCommand';
-import FilterTodosCommand from '@/controller/commands/operations/FilterTodosCommand';
-import CountCompletedGetter from '@/controller/getters/CountCompletedGetter';
+import TodoDeleteCommand from './commands/todo/TodoDeleteCommand';
+import CompleteAllTodosCommand from './commands/operations/CompleteAllTodosCommand';
+import ClearCompletedTodosCommand from './commands/operations/ClearCompletedTodosCommand';
+import FilterTodosCommand from './commands/operations/FilterTodosCommand';
+import CountCompletedGetter from './getters/CountCompletedGetter';
 
 class TodoController {
   constructor() {

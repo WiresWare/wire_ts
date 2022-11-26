@@ -1,10 +1,10 @@
 import { Wire, WireWithDatabase } from 'cores.wire';
 import { IWireDatabaseService, IWireMiddleware } from 'cores.wire/dist/interfaces';
 
-import WebDatabaseService from '@/service/WebDatabaseService';
-import DataKeys from '@/consts/DataKeys';
-import TodoVO from '@/model/vos/TodoVO';
-import FilterValues from '@/consts/FilterValues';
+import WebDatabaseService from '@/model/service/WebDatabaseService';
+import DataKeys from '@/constants/DataKeys';
+import TodoVO from '@/model/data/vos/TodoVO';
+import FilterValues from '@/constants/FilterValues';
 
 class StorageMiddleware extends WireWithDatabase implements IWireMiddleware {
   constructor() {

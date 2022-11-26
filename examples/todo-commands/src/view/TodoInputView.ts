@@ -1,8 +1,8 @@
 import { Wire } from 'cores.wire';
 
-import DomElement from '@/view/base/DomElement';
-import ViewSignals from '@/consts/ViewSignals';
-import InputDTO from '@/model/dto/InputDTO';
+import DomElement from './base/DomElement';
+import ViewSignals from '@/constants/ViewSignals';
+import InputDTO from '@/model/data/dto/InputDTO';
 
 class TodoInputView extends DomElement {
   constructor(dom: HTMLElement) {

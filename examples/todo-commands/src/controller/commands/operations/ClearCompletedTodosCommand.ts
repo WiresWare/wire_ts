@@ -1,6 +1,6 @@
 import { Wire, WireCommand } from 'cores.wire';
 
-import DataKeys from '@/consts/DataKeys';
+import DataKeys from '@/constants/DataKeys';
 
 class ClearCompletedTodosCommand extends WireCommand<void> {
   async execute() {

@@ -1,8 +1,8 @@
 import { Wire } from 'cores.wire';
 
-import DataKeys from '@/consts/DataKeys';
+import DataKeys from '@/constants/DataKeys';
 
-import DomElement from '@/view/base/DomElement';
+import DomElement from './base/DomElement';
 
 const SELECTED_CLASS = 'selected';
 

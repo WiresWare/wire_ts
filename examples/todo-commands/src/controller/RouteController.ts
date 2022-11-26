@@ -1,6 +1,6 @@
-import FilterValues from '@/consts/FilterValues';
+import FilterValues from '@/constants/FilterValues';
 import { Wire } from 'cores.wire';
-import ViewSignals from '@/consts/ViewSignals';
+import ViewSignals from '@/constants/ViewSignals';
 
 class RouteController {
   constructor() {

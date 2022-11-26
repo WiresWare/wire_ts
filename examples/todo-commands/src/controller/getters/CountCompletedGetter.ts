@@ -1,5 +1,5 @@
 import { Wire } from 'cores.wire';
-import DataKeys from '@/consts/DataKeys';
+import DataKeys from '@/constants/DataKeys';
 
 const listOfAllTodosWireData = Wire.data(DataKeys.LIST_OF_IDS);
 const notCompletedCountWireData = Wire.data(DataKeys.NOT_COMPLETED_COUNT);

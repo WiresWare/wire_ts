@@ -1,5 +1,5 @@
 import { Wire, WireCommand } from 'cores.wire';
-import EditDTO from '@/model/dto/EditDTO';
+import EditDTO from '@/model/data/dto/EditDTO';
 
 class TodoEditCommand extends WireCommand<boolean> {
   private readonly _editDTO: EditDTO;

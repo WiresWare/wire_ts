@@ -1,6 +1,6 @@
 import { Wire, WireCommand } from 'cores.wire';
-import DataKeys from '@/consts/DataKeys';
-import FilterValues from '@/consts/FilterValues';
+import DataKeys from '@/constants/DataKeys';
+import FilterValues from '@/constants/FilterValues';
 
 class FilterTodosCommand extends WireCommand<void> {
   private readonly _filter: number;

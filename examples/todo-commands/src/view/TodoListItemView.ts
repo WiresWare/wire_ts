@@ -1,11 +1,11 @@
 import { Wire } from 'cores.wire';
 import { IWireData } from 'cores.wire/dist/interfaces';
-
-import DomElement from '@/view/base/DomElement';
-import ViewSignals from '@/consts/ViewSignals';
-import TodoVO from '@/model/vos/TodoVO';
-import EditDTO from '@/model/dto/EditDTO';
 import { WireDataListener } from 'cores.wire/dist/types';
+
+import DomElement from './base/DomElement';
+import ViewSignals from '@/constants/ViewSignals';
+import TodoVO from '@/model/data/vos/TodoVO';
+import EditDTO from '@/model/data/dto/EditDTO';
 
 const createWithClass = (tag: string, className: string) => {
   const result = document.createElement(tag);
@@ -27,7 +27,7 @@ class TodoListItemView extends DomElement {
     this.dom.id = id;
 
     this.lblContent = createWithClass('label', 'todo-content') as HTMLLabelElement;
-    this.btnDelete = createWithClass('btn', 'destroy') as HTMLButtonElement;
+    this.btnDelete = createWithClass('button', 'destroy') as HTMLButtonElement;
     this.inpEdit = createWithClass('input', 'edit') as HTMLInputElement;
     this.inpToggle = createWithClass('input', 'toggle') as HTMLInputElement;
     this.inpToggle.type = 'checkbox';
@@ -36,6 +36,15 @@ class TodoListItemView extends DomElement {
     this.container.append(this.inpToggle);
     this.container.append(this.lblContent);
     this.container.append(this.btnDelete);
+
+    /*
+    <div class="view">
+      <input class="toggle"/>
+      <label class="todo-content"></label>
+      <input class="edit"/>
+      <button class="destroy"/>
+    </div>
+    * */
 
     this.dom.append(this.inpEdit);
     this.dom.append(this.container);

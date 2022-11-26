@@ -1,10 +1,10 @@
 import { Wire } from 'cores.wire';
 import { IWireData } from 'cores.wire/dist/interfaces';
 
-import DataKeys from '@/consts/DataKeys';
-import ViewSignals from '@/consts/ViewSignals';
+import DataKeys from '@/constants/DataKeys';
+import ViewSignals from '@/constants/ViewSignals';
 
-import DomElement from '@/view/base/DomElement';
+import DomElement from './base/DomElement';
 
 class CompleteAllView extends DomElement {
   get checkbox(): HTMLInputElement {

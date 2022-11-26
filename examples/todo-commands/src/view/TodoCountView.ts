@@ -1,9 +1,9 @@
 import { Wire } from 'cores.wire';
 
-import DataKeys from '@/consts/DataKeys';
-import GetterKeys from '@/consts/GetterKeys';
+import DataKeys from '@/constants/DataKeys';
+import GetterKeys from '@/constants/GetterKeys';
 
-import DomElement from '@/view/base/DomElement';
+import DomElement from './base/DomElement';
 import { utilStringTodoCount } from '@/utils/stringUtils';
 
 class TodoCountView extends DomElement {
