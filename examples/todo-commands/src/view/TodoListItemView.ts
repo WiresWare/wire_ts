@@ -1,6 +1,5 @@
 import { Wire } from 'cores.wire';
-import { IWireData } from 'cores.wire/dist/interfaces';
-import { WireDataListener } from 'cores.wire/dist/types';
+import type { IWireData, WireDataListener } from 'cores.wire';
 
 import DomElement from './base/DomElement';
 import ViewSignals from '@/constants/ViewSignals';

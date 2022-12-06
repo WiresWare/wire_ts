@@ -1,5 +1,5 @@
 import { Wire, WireWithDatabase } from 'cores.wire';
-import { IWireDatabaseService, IWireMiddleware } from 'cores.wire/dist/interfaces';
+import type { IWireDatabaseService, IWireMiddleware } from 'cores.wire';
 
 import WebDatabaseService from '@/model/service/WebDatabaseService';
 import DataKeys from '@/constants/DataKeys';

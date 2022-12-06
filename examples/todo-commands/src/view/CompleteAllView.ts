@@ -1,5 +1,5 @@
 import { Wire } from 'cores.wire';
-import { IWireData } from 'cores.wire/dist/interfaces';
+import type { IWireData } from 'cores.wire';
 
 import DataKeys from '@/constants/DataKeys';
 import ViewSignals from '@/constants/ViewSignals';
