@@ -1,8 +1,8 @@
 import { Wire } from 'cores.wire';
 
 import DataKeys from '@/constants/DataKeys';
-import DomElement from './base/DomElement';
-import TodoListItemView from './TodoListItemView';
+import DomElement from '@/view/base/DomElement';
+import TodoListItemView from '@/view/TodoListItemView';
 
 class TodoListView extends DomElement {
   private listOfVisibleTodoIds: Array<string>;

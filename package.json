@@ -1,6 +1,6 @@
 {
   "name": "cores.wire",
-  "version": "1.0.0",
+  "version": "1.0.13",
   "type": "module",
   "author": {
     "email": "vladimir.cores@gmail.com",
@@ -23,13 +23,14 @@
     "dev": "vite",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "build": "vite build",
+    "build": "tsc --declaration --emitDeclarationOnly && vite build && cp -r src/** dist",
     "preview": "vite preview",
     "coverage": "vitest run --coverage",
     "webstorm-integration": "vitest --watch --reporter=dot --reporter=json --outputFile=.vitest-result.json"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.19.1",
+    "@types/node": "^18.11.11",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
     "@vitest/ui": "^0.24.5",

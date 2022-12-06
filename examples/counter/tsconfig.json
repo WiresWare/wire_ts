@@ -22,5 +22,7 @@
     "allowJs": true
   },
   "exclude": ["node_modules"],
-  "include": ["src", "cypress", "tests", "main.ts", "cypress.config.ts"]
+  "include": [
+    "src"
+  ]
 }

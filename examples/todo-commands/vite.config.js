@@ -1,5 +1,5 @@
 import { resolve } from 'path';
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import eslint from 'vite-plugin-eslint';
 import removeConsole from 'vite-plugin-remove-console';
 
@@ -20,4 +20,5 @@ export default defineConfig({
   build: {
     minify: false,
   },
+  test: {},
 });
