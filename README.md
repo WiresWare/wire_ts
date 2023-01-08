@@ -8,6 +8,67 @@ It has two layers:
 - **Communication Layer** - consists of "signals" (string keys) with associated handlers bound to specific scope - instances of `Wire` object. This layer has main methods: `Wire.add` and `Wire.send`.
 - **Data Container Layer** - it is a key-value in-memory map, where each value is an instance of `WireData` - observer that holds dynamic value and can be subscribed for updates, its main method: `Wire.data`.
 
+## Usage:
+
+Steps from diagram's description above. It's example of counter web-application (see folder `./examples/counter`).
+
+#### Steps: 1, 4, 6 - "box" that processes signals:
+Adding wires and `WireListener`s to the system. In response, it's immediately set new value to data-container layer from function that do decision-making `Wire.data(CounterDataKeys.COUNT, (oldValue) => newValue)`.
+
+```typescript
+class CounterController {
+  constructor() {
+    // 1. scope, string key, handler function
+    Wire.add(this, CounterSignals.INCREASE, (payload: any, wid: number) => {
+      // 4. handler function process signal async. 
+      // New value could be function or plain value
+      Wire.data(CounterDataKeys.COUNT, (value: any): number => {
+        const count = value as number;
+        // 6. Update data
+        return (count ?? 0) + 1;
+      });
+    });
+    // Handler for CounterSignals.DECREASE see in the source code
+  }
+}
+```
+
+Since there is no Model "box" in counter example, the controller updates data by itself in steps 4 and 6.
+
+#### Steps: 2, 7 - View subscribes to data changes and knows how to update itself:
+
+```typescript
+class CounterView extends DomElement {
+  constructor(component: HTMLElement) {
+    super(component);
+    const counter = Wire.data(CounterDataKeys.COUNT);
+    counter.subscribe(async (value: number) => this.render(value));
+    this.render(counter.value);
+  }
+
+  render(count: number) {
+    this.dom.innerHTML = `${count}`;
+  }
+}
+```
+
+#### Step: 3 - another View translate UI event to a signal:
+```typescript
+class CounterButton extends DomElement {
+  constructor(component: HTMLElement, signal: string) {
+    super(component);
+    component.onclick = async () => {
+      this.button.disabled = true;
+      await Wire.send(signal);
+      this.button.disabled = false;
+    };
+  }
+  get button(): HTMLButtonElement {
+    return this.dom as HTMLButtonElement;
+  }
+}
+```
+
 # WIRE API
 ### Wire (main static methods):
 ```
@@ -51,14 +112,23 @@ type WireListener = (payload: any, wireId: number) => void;
 It is a data container that holds dynamic value. WireData can be subscribed (and unsubscribed). It is associated with string key and retrieved from in-memory map with `Wire.data(key)`. WireData **can't** be null and `Wire.data(key)` will always return WireData instance, but its **initial value can be null** (if first call does not have value, e.g.`Wire.data(key, null)`), to check this initial null value WireData has special property `isSet`, which is `false` until not null value won't be set for the first time. To remove value from Data Container Layer use method `remove()` - it emits null value before remove subscribers and WireData instance, use `isSet` property to distinguish between newly created (false) and removed.
 
 ```
-WireData subscribe(WireDataListener<T> listener)
-WireData unsubscribe(WireDataListener<T> listener)
-void refresh()
-void remove()
-dynamic get value
-bool lock(WireDataLockToken token)
-bool unlock(WireDataLockToken token)
-bool get WireData.isLocked
+subscribe(listener: WireDataListener): WireData
+unsubscribe(listener: WireDataListener): WireData
+
+refresh(): void
+remove(): void
+
+get value(): any | null | undefined
+set value(input: any | null | undefined)
+
+lock(token: WireDataLockToken): boolean
+unlock(token: WireDataLockToken): boolean
+
+get isLocked(): boolean
+get isGetter(): boolean
+get isSet(): boolean
+
+get numberOfListeners(): number
 ```
 
 ### WireDataListener<T>:
