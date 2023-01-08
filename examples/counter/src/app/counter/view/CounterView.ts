@@ -6,9 +6,11 @@ class CounterView extends DomElement {
   constructor(component: HTMLElement) {
     super(component);
     console.log('> CounterView -> constructor', { component });
-    const counterWireData = Wire.data(CounterDataKeys.COUNT);
-    counterWireData.subscribe(async (value: number) => this.render(value));
-    this.render(counterWireData.value);
+    const counter = Wire.data(CounterDataKeys.COUNT);
+    counter.subscribe(async (value: number) => {
+      this.render(value);
+    });
+    this.render(counter.value);
   }
 
   render(count: number) {

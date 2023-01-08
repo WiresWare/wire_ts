@@ -4,7 +4,7 @@ import CounterDataKeys from '@/constants/CounterDataKeys';
 
 class CounterController {
   constructor() {
-    Wire.add(this, CounterSignals.INCREASE, (payload: any, wireId) => {
+    Wire.add(this, CounterSignals.INCREASE, async (payload: any, wireId) => {
       console.log(`> CounterController: INCREASE -> handle: wireId = ${wireId}; payload = ${payload}`);
       Wire.data(CounterDataKeys.COUNT, (value: any): number => {
         const count = value as number;
@@ -14,10 +14,10 @@ class CounterController {
 
     Wire.add(this, CounterSignals.DECREASE, (payload: any, wireId) => {
       console.log(`> CounterController: DECREASE -> handle: wireId = ${wireId}; payload = ${payload}`);
-      const countWireData = Wire.data(CounterDataKeys.COUNT);
-      const count = countWireData.value as number;
-      const nextCount = (count ?? 0) > 0 ? count! - 1 : 0;
-      Wire.data(CounterDataKeys.COUNT, nextCount);
+      const count = Wire.data(CounterDataKeys.COUNT);
+      const currentValue = count.value as number;
+      const nextValue = (currentValue ?? 0) > 0 ? currentValue! - 1 : 0;
+      Wire.data(CounterDataKeys.COUNT, nextValue);
     });
   }
 }
