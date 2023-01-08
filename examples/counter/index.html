@@ -2,23 +2,38 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link
-      rel="icon"
-      type="image/svg+xml"
-      href="/vite.svg"
-    />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0"
-    />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Wire Counter Example</title>
+    <style>
+      .app {
+        text-align: center;
+      }
+      .counter {
+        font-weight: bold;
+        font-size: 2rem;
+        padding: 1rem 0;
+        color: black;
+      }
+      button {
+        padding: 0.5rem;
+        border-radius: 2rem;
+        border: black solid 1px;
+      }
+    </style>
   </head>
   <body>
-    <div id="app">
-      <h1>Wire Counter Example</h1>
-      <div id="ctrCounter"></div>
-      <button id="btnIncrease">Increase</button>
-      <button id="btnDecrease">Decrease</button>
+    <div id="app" class="app">
+      <h1 style="font-weight: lighter">
+        Wire Counter Example
+      </h1>
+      <div class="counter" id="ctrCounter"></div>
+      <button id="btnIncrease" style="margin-right: 1rem">
+        Increase
+      </button>
+      <button id="btnDecrease">
+        Decrease
+      </button>
     </div>
     <script
       type="module"
