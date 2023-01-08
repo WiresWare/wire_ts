@@ -42,7 +42,7 @@ export default class Wire implements IWire {
   ///
   /// @private
   private readonly _signal: string;
-  get signal() {
+  get signal(): string {
     return this._signal;
   }
   ///
@@ -88,7 +88,7 @@ export default class Wire implements IWire {
   get withReplies(): boolean {
     return this._withReplies;
   }
-  /// Call associated WireListener with data.
+  // Call associated WireListener with payload.
   async transfer(payload?: any): Promise<any> {
     if (!this._listener) throw new Error(ERROR__LISTENER_IS_NULL);
     // Call a listener in this Wire only in case data type match its listener type.
@@ -97,6 +97,7 @@ export default class Wire implements IWire {
     // if (filterByPayloadType)
     return this._listener(payload, this._id);
   }
+  // Remove references from listener and scope (makes them undefined). However, the [Wire] object will still present in the communication layer. To completely remove the object use Wire.detach(Wire) or Wire.remove({ signal, scope, listener }).
   clear(): void {
     this._scope = undefined;
     this._listener = undefined;
