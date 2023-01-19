@@ -34,7 +34,7 @@ export class WireData implements IWireData {
   /// This property needed to distinguish between newly created and not set WireData which has value of null at the beginning
   /// And with WireData at time when it's removed, because when removing the value also set to null
   get isSet(): boolean {
-    return !!this._value;
+    return this._value !== undefined && this._value !== null;
   }
   get isLocked(): boolean {
     return !!this._lockToken;
