@@ -164,7 +164,7 @@ export class WireMiddlewaresLayer {
     return this._process((m: IWireMiddleware) => m.onData(key, prevValue, nextValue));
   }
   onReset(key: string, prevValue: any) {
-    return this._process((m: IWireMiddleware) => m.onData(key, prevValue, null));
+    return this.onData(key, prevValue, undefined);
   }
   onRemove(signal: string, scope?: object, listener?: WireListener | null) {
     return this._process((m: IWireMiddleware) => m.onRemove(signal, scope, listener));
