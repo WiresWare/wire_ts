@@ -9,7 +9,7 @@ class CounterView {
     const render = async (count: number) => {
       component.innerHTML = `
         ${count}
-        <sup style='font-size: 0.5em; color: gray;'>
+        <sup style='font-size: 0.5em; color: lightgrey;'>
           ${previous ?? "-"}
         </sup>
       `;
