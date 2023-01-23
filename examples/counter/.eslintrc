@@ -15,15 +15,13 @@
   },
   "plugins": [
     "import",
-    "@typescript-eslint",
-    "prettier"
+    "@typescript-eslint"
   ],
   "extends": [
     "eslint:recommended",
     "plugin:import/recommended",
     "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
-    "prettier"
+    "plugin:@typescript-eslint/recommended"
   ],
   "settings": {
     "import/parsers": {
@@ -43,10 +41,11 @@
     }
   },
   "rules": {
-    "prettier/prettier": "error",
     "node/no-missing-require": "off",
     "node/no-extraneous-require": "off",
     "node/no-extraneous-import": "off",
-    "@typescript-eslint/no-non-null-assertion": 0
+    "@typescript-eslint/no-non-null-assertion": 0,
+    "comma-dangle": ["error", "always-multiline"],
+    "semi": ["error", "always"]
   }
 }
