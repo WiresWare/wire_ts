@@ -22,26 +22,17 @@
   "extends": [
     "eslint:recommended",
     "plugin:import/recommended",
-    "plugin:@typescript-eslint/recommended",
-    "prettier"
+    "plugin:@typescript-eslint/recommended"
   ],
   "plugins": [
     "import",
-    "@typescript-eslint",
-    "prettier"
+    "@typescript-eslint"
   ],
   "rules": {
-    "prettier/prettier": [
-      "error",
-      {
-        "printWidth": 120,
-        "singleQuote": true,
-        "singleAttributePerLine": true,
-        "trailingComma": "all",
-        "bracketSpacing": true,
-        "arrowParens": "always"
-      }
-    ],
+    "quotes": ["error", "single"],
+    "comma-dangle": ["error", "always-multiline"],
+    "semi": ["error", "always"],
+    "no-trailing-spaces": "error",
     "@typescript-eslint/ban-ts-comment": 0,
     "@typescript-eslint/no-non-null-assertion": 0,
     "@typescript-eslint/no-unused-vars": "error",
