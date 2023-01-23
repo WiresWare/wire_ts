@@ -87,7 +87,7 @@ class TodoListItemView extends DomElement {
     console.log(`> TodoListItemView(${this.dom.id}) -> removeDom`);
     this.dom.remove();
   }
-  _onDomRemoved(e: any) {
+  _onDomRemoved(e: Event) {
     const isDomRemoved = e.target === this.dom;
     console.log(`> TodoListItemView(${this.dom.id}) -> _onDomRemoved`, { isDomRemoved, e });
     if (isDomRemoved) this.cleanup();
