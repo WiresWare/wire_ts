@@ -25,10 +25,11 @@ async function main() {
   new CounterController();
 
   new CounterView($('ctrCounter')! as HTMLElement);
-  new CounterButton($('btnIncrease')!, CounterSignals.INCREASE);
-  new CounterButton($('btnDecrease')!, CounterSignals.DECREASE);
+  new CounterButton($('btnIncrease')! as HTMLButtonElement, CounterSignals.INCREASE);
+  new CounterButton($('btnDecrease')! as HTMLButtonElement, CounterSignals.DECREASE);
 }
 
 main().then(() => {
   console.log('APPLICATION READY!');
+  document.querySelector('#loading')?.remove();
 });
