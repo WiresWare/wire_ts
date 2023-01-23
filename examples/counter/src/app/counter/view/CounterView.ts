@@ -4,9 +4,16 @@ import CounterDataKeys from '@/constants/CounterDataKeys';
 class CounterView {
   constructor(component: HTMLElement) {
     console.log('> CounterView -> constructor', { component });
+    let previous: number;
     const count = Wire.data(CounterDataKeys.COUNT);
     const render = async (count: number) => {
-      component.innerHTML = `${count}`;
+      component.innerHTML = `
+        ${count}
+        <sup style='font-size: 0.5em; color: gray;'>
+          ${previous ?? "-"}
+        </sup>
+      `;
+      previous = count;
     };
     count.subscribe(render);
     render(count.value);
