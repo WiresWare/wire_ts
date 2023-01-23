@@ -1,18 +1,15 @@
-import DomElement from '@/components/base/DomElement';
 import { Wire } from 'cores.wire';
 
-class CounterButton extends DomElement {
-  constructor(component: HTMLElement, signal: string) {
-    super(component);
-    console.log('> CounterButton -> constructor', { component });
-    this.button.onclick = async () => {
-      this.button.disabled = true;
-      await Wire.send(signal);
-      this.button.disabled = false;
+class CounterButton {
+  constructor(button: HTMLButtonElement, signal: string) {
+    button.onclick = () => {
+      button.disabled = true;
+      // There is no payload since the signal defines
+      // only operation (for general purpose button)
+      Wire.send(signal).finally(() => {
+        button.disabled = false;
+      });
     };
-  }
-  get button(): HTMLButtonElement {
-    return this.dom as HTMLButtonElement;
   }
 }
 
