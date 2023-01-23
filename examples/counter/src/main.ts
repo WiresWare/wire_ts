@@ -15,7 +15,8 @@ const $ = document.getElementById.bind(document);
 
 async function main() {
   const dbService: IWireDatabaseService = new WebDatabaseService();
-  const initialCountValue = parseInt(await dbService.retrieve(CounterDataKeys.COUNT)) || 0;
+  const counterValueRaw = await dbService.retrieve(CounterDataKeys.COUNT);
+  const initialCountValue = parseInt(counterValueRaw) || 0;
 
   console.log('> initialCountValue', initialCountValue);
 
@@ -24,7 +25,7 @@ async function main() {
 
   new CounterController();
 
-  new CounterView($('ctrCounter')! as HTMLElement);
+  new CounterView($('viewCounter')! as HTMLElement);
   new CounterButton($('btnIncrease')! as HTMLButtonElement, CounterSignals.INCREASE);
   new CounterButton($('btnDecrease')! as HTMLButtonElement, CounterSignals.DECREASE);
 }
