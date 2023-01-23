@@ -5,7 +5,7 @@ class CounterButton extends DomElement {
   constructor(component: HTMLElement, signal: string) {
     super(component);
     console.log('> CounterButton -> constructor', { component });
-    component.onclick = async () => {
+    this.button.onclick = async () => {
       this.button.disabled = true;
       await Wire.send(signal);
       this.button.disabled = false;
