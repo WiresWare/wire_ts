@@ -109,7 +109,7 @@ type WireListener = (payload: any, wireId: number) => void;
 ```
 
 ### WireData<T>:
-It is a data container that holds dynamic value. WireData can be subscribed (and unsubscribed). It is associated with string key and retrieved from in-memory map with `Wire.data(key)`. WireData **can't** be null and `Wire.data(key)` will always return WireData instance, but its **initial value can be null** (if first call does not have value, e.g.`Wire.data(key, null)`), to check this initial null value WireData has special property `isSet`, which is `false` until not null value won't be set for the first time. To remove value from Data Container Layer use method `remove()` - it emits null value before remove subscribers and WireData instance, use `isSet` property to distinguish between newly created (false) and removed.
+It is a data container that holds dynamic value. WireData can be subscribed (and unsubscribed). It is associated with string key and return `WireData` (instance from in-memory map) when call `Wire.data(key)`. `Wire.data(key)` will always return `WireData` instance, but its **initial value can be null** (if first call does not set value, e.g.`Wire.data(key, null)`), Property `isSet` of `WireData` checks when `!!this._value`. To remove value from Data Container Layer use method `remove()` which set value to `undefined` then synchronously inform middlewares with call on `onData(key, prevValue, undefined)`, after which the instance will be removed from data layer and all listeners cleaned up.
 
 ```
 subscribe(listener: WireDataListener): WireData
