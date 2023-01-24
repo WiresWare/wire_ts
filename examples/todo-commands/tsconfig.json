@@ -5,7 +5,7 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["vite/client", "cores.wire/dist/", "cypress"],
+    "types": ["vite/client", "wire-ts/dist/", "cypress"],
     "useDefineForClassFields": true,
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],

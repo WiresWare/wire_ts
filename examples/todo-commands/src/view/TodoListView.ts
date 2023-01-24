@@ -1,4 +1,4 @@
-import { Wire } from 'cores.wire';
+import { Wire } from 'wire-ts';
 
 import DataKeys from '@/constants/DataKeys';
 import DomElement from '@/view/base/DomElement';

@@ -1,4 +1,4 @@
-import { Wire } from 'cores.wire';
+import { Wire } from 'wire-ts';
 import DataKeys from '@/constants/DataKeys';
 
 const listOfAllTodos = Wire.data(DataKeys.LIST_OF_IDS);

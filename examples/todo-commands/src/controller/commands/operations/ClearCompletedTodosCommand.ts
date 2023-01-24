@@ -1,4 +1,4 @@
-import { Wire, WireCommand } from 'cores.wire';
+import { Wire, WireCommand } from 'wire-ts';
 
 import DataKeys from '@/constants/DataKeys';
 

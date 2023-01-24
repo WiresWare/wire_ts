@@ -1,5 +1,5 @@
-import { Wire } from 'cores.wire';
-import type { IWireData, WireDataListener } from 'cores.wire';
+import { Wire } from 'wire-ts';
+import type { IWireData, WireDataListener } from 'wire-ts';
 
 import DomElement from './base/DomElement';
 import ViewSignals from '@/constants/ViewSignals';

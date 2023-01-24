@@ -1,5 +1,5 @@
-import { Wire } from 'cores.wire';
-import type { IWireData } from 'cores.wire';
+import { Wire } from 'wire-ts';
+import type { IWireData } from 'wire-ts';
 
 import DataKeys from '@/constants/DataKeys';
 import ViewSignals from '@/constants/ViewSignals';

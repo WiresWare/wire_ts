@@ -1,4 +1,4 @@
-import { Wire, WireCommand } from 'cores.wire';
+import { Wire, WireCommand } from 'wire-ts';
 import EditDTO from '@/model/data/dto/EditDTO';
 
 class TodoEditCommand extends WireCommand<boolean> {

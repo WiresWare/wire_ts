@@ -1,5 +1,5 @@
 import FilterValues from '@/constants/FilterValues';
-import { Wire } from 'cores.wire';
+import { Wire } from 'wire-ts';
 import ViewSignals from '@/constants/ViewSignals';
 
 class RouteController {
