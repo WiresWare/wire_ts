@@ -1,4 +1,4 @@
-import { Wire } from 'cores.wire';
+import { Wire } from 'wire-ts';
 import CounterSignals from '@/constants/CounterSignals';
 import CounterDataKeys from '@/constants/CounterDataKeys';
 

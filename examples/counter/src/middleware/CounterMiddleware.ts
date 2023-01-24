@@ -1,6 +1,6 @@
 import CounterDataKeys from '@/constants/CounterDataKeys';
-import { WireWithDatabase } from 'cores.wire';
-import type { IWireMiddleware, IWireDatabaseService } from 'cores.wire';
+import { WireWithDatabase } from 'wire-ts';
+import type { IWireMiddleware, IWireDatabaseService } from 'wire-ts';
 
 class CounterMiddleware extends WireWithDatabase implements IWireMiddleware {
   constructor(dbService: IWireDatabaseService) {

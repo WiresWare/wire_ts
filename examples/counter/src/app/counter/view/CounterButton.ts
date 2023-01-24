@@ -1,4 +1,4 @@
-import { Wire } from 'cores.wire';
+import { Wire } from 'wire-ts';
 
 class CounterButton {
   constructor(button: HTMLButtonElement, signal: string) {

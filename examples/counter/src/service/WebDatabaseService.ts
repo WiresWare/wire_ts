@@ -1,4 +1,4 @@
-import { WireDatabaseService } from 'cores.wire';
+import { WireDatabaseService } from 'wire-ts';
 
 class WebDatabaseService implements WireDatabaseService {
   async delete(key: string): Promise<void> {

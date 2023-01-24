@@ -1,4 +1,4 @@
-import { Wire } from 'cores.wire';
+import { Wire } from 'wire-ts';
 
 import CounterSignals from '@/constants/CounterSignals';
 import CounterDataKeys from '@/constants/CounterDataKeys';
@@ -9,7 +9,7 @@ import CounterController from '@/app/counter/controller/CounterController';
 import CounterView from '@/app/counter/view/CounterView';
 import CounterButton from '@/app/counter/view/CounterButton';
 import CounterMiddleware from '@/middleware/CounterMiddleware';
-import type { IWireDatabaseService } from 'cores.wire';
+import type { IWireDatabaseService } from 'wire-ts';
 
 const $ = document.getElementById.bind(document);
 
