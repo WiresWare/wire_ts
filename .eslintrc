@@ -29,7 +29,7 @@
     "@typescript-eslint"
   ],
   "rules": {
-    "quotes": ["error", "single"],
+    "quotes": ["error", "single", { "allowTemplateLiterals": true }],
     "comma-dangle": ["error", "always-multiline"],
     "semi": ["error", "always"],
     "no-trailing-spaces": "error",
