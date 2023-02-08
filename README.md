@@ -8,7 +8,7 @@ It has two layers:
 - **Communication Layer** - consists of "signals" (string keys) with associated handlers bound to specific scope - instances of `Wire` object. This layer has main methods: `Wire.add` and `Wire.send`.
 - **Data Container Layer** - it is a key-value in-memory map, where each value is an instance of `WireData` - observer that holds dynamic value and can be subscribed for updates, its main method: `Wire.data`.
 
-Read the article on Medium: (Wire of Strings API)[https://medium.com/@vladimir.cores/wire-of-strings-api-c4cc1f05cbc6]
+Read the article on Medium: [Wire of Strings API](https://medium.com/@vladimir.cores/wire-of-strings-api-c4cc1f05cbc6)
 
 ## Installation:
 ```
