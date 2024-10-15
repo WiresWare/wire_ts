@@ -9,6 +9,9 @@
   "files": [
     "dist"
   ],
+  "repository": {
+    "url": "https://github.com/WiresWare/wire_ts"
+  },
   "main": "./dist/wire.umd.js",
   "module": "./dist/wire.es.js",
   "exports": {
