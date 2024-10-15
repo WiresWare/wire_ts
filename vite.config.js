@@ -15,7 +15,10 @@ export default defineConfig({
   },
   plugins: [
     eslint(),
-    // dts({ insertTypesEntry: false }),
+    dts({
+      insertTypesEntry: true,
+      rollupTypes: true,
+    }),
     removeConsole()
   ],
   build: {
