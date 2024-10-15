@@ -3,8 +3,8 @@
   "version": "1.1.1",
   "type": "module",
   "author": {
-    "email": "vladimir.cores@gmail.com",
-    "name": "Vladimir Cores (Minkin)"
+    "email": "vladimir.minkin@gmail.com",
+    "name": "Vladimir Minkin"
   },
   "files": [
     "dist"
