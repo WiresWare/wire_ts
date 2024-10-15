@@ -8,7 +8,9 @@ export default defineConfig({
       '@': resolve(__dirname, './src'),
     },
   },
-  plugins: [eslint()],
+  plugins: [
+    // eslint()
+  ],
   server: {
     host: '127.0.0.1',
     port: 8089,

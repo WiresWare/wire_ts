@@ -42,7 +42,7 @@ class TodoController {
       [ViewSignals.CLEAR_COMPLETED]: () => new ClearCompletedTodosCommand().execute(),
       [ViewSignals.FILTER]: (filter: number) => new FilterTodosCommand(filter).execute(),
     };
-    Wire.addMany(this, new Map(Object.entries(eventsToWireListener)));
+    Wire.many(this, new Map(Object.entries(eventsToWireListener)));
     console.log('> TodoController -> Prepare getters');
     Wire.data(GetterKeys.COUNT_COMPLETED, null, new CountCompletedGetter().getter);
     console.log('> TodoController -> initialized');
