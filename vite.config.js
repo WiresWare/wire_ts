@@ -27,7 +27,7 @@ export default defineConfig({
     emptyOutDir: true,
     copyPublicDir: false,
     target: 'esnext',
-    minify: false,
+    minify: true,
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'wire',

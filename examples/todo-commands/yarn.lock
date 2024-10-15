@@ -2693,10 +2693,10 @@ which@^2.0.1:
   dependencies:
     isexe "^2.0.0"
 
-wire-ts@1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/wire-ts/-/wire-ts-1.1.1.tgz#eeed04e1183c52a439d9c22c18d1d285afb871b4"
-  integrity sha512-RwjXc1oywBYI9lBO5Lsip6evoA0mLPeeyxIHnKqkz0lvmuGtB6+VSmEilWY6S7NLIlnIzZBz+msdzdM3N3I9cw==
+wire-ts@1.1.11:
+  version "1.1.11"
+  resolved "https://registry.yarnpkg.com/wire-ts/-/wire-ts-1.1.11.tgz#04fc01297c07fa02b7e7a93ee80747ed22afb5b7"
+  integrity sha512-329ngXqplY/buaDMnFRyULd80loJAwR7760cXiPPogY887x0ec5gpaQfMZxgC6ZW7sN+bX9V+QlefEBMVwuK+w==
 
 word-wrap@^1.2.3:
   version "1.2.3"
