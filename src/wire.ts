@@ -215,19 +215,19 @@ export default class Wire implements IWire {
     let result = new Array<IWire | undefined>();
     if (signal) {
       const instances = this._COMMUNICATION_LAYER.getBySignal(signal);
-      instances && (result = [...result, ...instances]);
+      if (instances) (result = [...result, ...instances]);
     }
     if (scope) {
       const instances = this._COMMUNICATION_LAYER.getByScope(scope);
-      instances && (result = [...result, ...instances]);
+      if (instances) (result = [...result, ...instances]);
     }
     if (listener) {
       const instances = this._COMMUNICATION_LAYER.getByListener(listener);
-      instances && (result = [...result, ...instances]);
+      if (instances) (result = [...result, ...instances]);
     }
     if (wireId) {
       const instance = this._COMMUNICATION_LAYER.getByWID(wireId);
-      instance && result.push(instance);
+      if (instance) result.push(instance);
     }
     return result;
   }
