@@ -1,6 +1,6 @@
 {
   "name": "wire-ts",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "type": "module",
   "author": {
     "email": "vladimir.cores@gmail.com",
@@ -12,13 +12,14 @@
   "repository": {
     "url": "https://github.com/WiresWare/wire_ts"
   },
-  "main": "./dist/wire.umd.js",
-  "module": "./dist/wire.es.js",
+  "main": "./dist/wire.js",
+  "module": "./dist/wire.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/wire.es.js",
-      "require": "./dist/wire.umd.js"
+      "import": "./dist/wire.js",
+      "require": "./dist/wire.js"
     }
   },
   "license": "MIT",
@@ -26,7 +27,7 @@
     "dev": "vite",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "build": "tsc --declaration --emitDeclarationOnly && vite build && cp -r src/** dist",
+    "build": "tsc --declaration --emitDeclarationOnly && vite build",
     "preview": "vite preview",
     "coverage": "vitest run --coverage",
     "webstorm-integration": "vitest --watch --reporter=dot --reporter=json --outputFile=.vitest-result.json"

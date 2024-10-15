@@ -16,6 +16,7 @@ export default defineConfig({
   plugins: [
     eslint(),
     dts({
+      include: ['src/**/*.ts'],
       insertTypesEntry: true,
       rollupTypes: true,
     }),
@@ -30,8 +31,12 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'wire',
-      formats: ['es', 'umd'],
-      fileName: (format) => `wire.${format}.js`,
+      formats: ['es'],
+      // fileName: (format) => `wire.${format}.js`,
+      fileName: 'wire',
+    },
+    rollupOptions: {
+      external: [/^node:.*/,],
     },
     write: true,
   },

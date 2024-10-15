@@ -24,7 +24,7 @@ export default class Wire implements IWire {
     static attach(wire: IWire): void;
     static detach(wire: IWire): Promise<boolean>;
     static add(scope: object, signal: string, listener: WireListener, replies?: number): IWire;
-    static addMany(scope: object, signalToHandlerMap: Map<string, WireListener>): void;
+    static many(scope: object, signalToHandlerMapOrObject: Map<string, WireListener> | Record<string, WireListener>): void;
     static has({ signal, wire }: {
         signal?: string;
         wire?: IWire;
