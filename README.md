@@ -82,7 +82,7 @@ class CounterButton extends DomElement {
 ### Wire (main static methods):
 ```
 static add(scope: object, signal: string, listener: WireListener, replies = 0): IWire
-static addMany(scope: object, signalToHandlerMap: Map<string, WireListener>)
+static many(scope: object, signalToHandlerMap: Map<string, WireListener>)
 static async send(signal: string, payload?: any | null, scope?: object | null): Promise<IWireSendResults>
 static data(key: string, value?: any | null, getter?: WireDataGetter | null): IWireData
 ```

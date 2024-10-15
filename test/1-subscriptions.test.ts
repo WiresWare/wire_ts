@@ -104,7 +104,7 @@ describe('1. Subscriptions', async () => {
         return 1;
       },
     };
-    await Wire.addMany(scope, new Map(Object.entries(signalsToWireListeners)));
+    await Wire.many(scope, new Map(Object.entries(signalsToWireListeners)));
 
     print('> 1.6.1 -> Check if added signals exist:', Wire.get({ signal: SIGNAL_G1 }));
     expect(Wire.get({ signal: SIGNAL_G1 })).toHaveLength(3);

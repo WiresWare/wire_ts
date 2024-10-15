@@ -127,7 +127,7 @@ export default class Wire implements IWire {
     return wire;
   }
   /// Register many signals at once
-  static addMany(scope: object, signalToHandlerMap: Map<string, WireListener>) {
+  static many(scope: object, signalToHandlerMap: Map<string, WireListener>) {
     for (const [signal, handler] of signalToHandlerMap) {
       Wire.add(scope, signal, handler);
     }

@@ -32,7 +32,7 @@ describe('6. Chain of commands', async () => {
   const scope1 = {};
   const scope2 = {};
 
-  Wire.addMany(
+  Wire.many(
     scope1,
     new Map(
       Object.entries({
