@@ -1,13 +1,13 @@
 {
   "outDir": "dist",
   "declaration": true,
-  "useDefineForClassFields": true,
   "types": [
     "chrome",
     "node"
   ],
   "emitDeclarationOnly": true,
   "compilerOptions": {
+    "useDefineForClassFields": true,
     "rootDir": ".",
     "baseUrl": ".",
     "paths": {
@@ -17,7 +17,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "strict": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
