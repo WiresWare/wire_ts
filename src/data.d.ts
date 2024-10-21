@@ -43,6 +43,7 @@ export declare class WireSendResults implements IWireSendResults {
     private readonly _noSubscribers;
     get hasError(): boolean;
     get list(): any[];
+    get errors(): WireSendError[];
     get signalHasNoSubscribers(): boolean;
 }
 export declare class WireDatabaseService implements IWireDatabaseService {

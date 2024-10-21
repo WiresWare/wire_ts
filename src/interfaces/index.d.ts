@@ -72,5 +72,6 @@ export interface IWireWithWireData {
 export interface IWireSendResults {
     get list(): Array<any>;
     get hasError(): boolean;
+    get errors(): Array<IWireSendError>;
     get signalHasNoSubscribers(): boolean;
 }

@@ -20,10 +20,23 @@ import {
 } from './interfaces';
 
 import Wire from './wire';
-import { WireData, WireDataLockToken, WireDatabaseService, WireSendResults } from './data';
-import { WireCommandWithRequiredData, WireCommand } from './command';
+import {
+  WireData,
+  WireDataLockToken,
+  WireDatabaseService,
+  WireSendError,
+  WireSendResults,
+} from './data';
+import {
+  WireCommandWithRequiredData,
+  WireCommand,
+} from './command';
 
-import { WireWithDatabase, WireWithWireData, WireWithWhenReady } from './with';
+import {
+  WireWithDatabase,
+  WireWithWireData,
+  WireWithWhenReady,
+} from './with';
 export type {
   IWire,
   IWireCommand,
@@ -48,6 +61,7 @@ export {
   WireCommand,
   WireCommandWithRequiredData,
   WireDataLockToken,
+  WireSendError,
   WireSendResults,
   WireWithDatabase,
   WireWithWireData,

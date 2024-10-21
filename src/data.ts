@@ -161,6 +161,9 @@ export class WireSendResults implements IWireSendResults {
   get list() {
     return this._list;
   }
+  get errors() {
+    return this._list.filter((item) => item instanceof WireSendError);
+  }
   get signalHasNoSubscribers() {
     return this._noSubscribers;
   }
