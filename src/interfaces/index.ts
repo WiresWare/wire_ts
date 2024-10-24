@@ -13,14 +13,14 @@ export interface IWireSendError {
   get message(): string;
 }
 
-export interface IWireData {
+export interface IWireData<T> {
   get isSet(): boolean;
   get isLocked(): boolean;
   get isGetter(): boolean;
   get key(): string;
-  get value(): any | null | undefined;
-  set value(input: any | null | undefined);
-  set getter(value: WireDataGetter);
+  get value(): T | null | undefined;
+  set value(input: T | null | undefined);
+  set getter(value: WireDataGetter<T>);
 
   lock(token: IWireDataLockToken): boolean;
   unlock(token: IWireDataLockToken): boolean;
@@ -29,8 +29,8 @@ export interface IWireData {
   reset(): Promise<void>;
   remove(clean?: boolean | false): Promise<void>;
 
-  subscribe(listener: WireDataListener): IWireData;
-  unsubscribe(listener?: WireDataListener): IWireData;
+  subscribe(listener: WireDataListener): IWireData<T>;
+  unsubscribe(listener?: WireDataListener): IWireData<T>;
   hasListener(listener: WireDataListener): boolean;
 }
 
@@ -73,8 +73,8 @@ export interface IWireWithDatabase {
   delete(key: string): Promise<void>;
 }
 
-export interface IWireWithWireData {
-  getData(dataKey: string): IWireData;
+export interface IWireWithWireData<T> {
+  getData(dataKey: string): IWireData<T>;
   has(dataKey: string): boolean;
   hasNot(dataKey: string): boolean;
   get(dataKey: string): Promise<any>;

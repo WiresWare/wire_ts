@@ -14,7 +14,7 @@ export class WireDataLockToken implements IWireDataLockToken {
   }
 }
 
-export class WireData implements IWireData {
+export class WireData<T> implements IWireData<T> {
   constructor(key: string, onRemove: WireDataOnRemove, onReset: WireDataOnReset) {
     this._key = key;
     this._onRemove = onRemove;
@@ -22,11 +22,11 @@ export class WireData implements IWireData {
   }
 
   private readonly _key: string;
-  private _value?: any | null | undefined = undefined;
+  private _value?: T | null | undefined = undefined;
 
   private _onRemove?: WireDataOnRemove = undefined;
   private _onReset?: WireDataOnReset = undefined;
-  private _getter?: WireDataGetter = undefined;
+  private _getter?: WireDataGetter<T> = undefined;
   private _lockToken?: IWireDataLockToken | null = undefined;
 
   private readonly _listeners = new Array<WireDataListener>();
@@ -47,9 +47,9 @@ export class WireData implements IWireData {
   }
   get value(): any | null | undefined {
     console.log(`> WireData(${this.key}) -> get value (isGetter: ${this.isGetter}) = ${this._value}`);
-    return this.isGetter ? (this._getter as WireDataGetter)(this) : this._value;
+    return this.isGetter ? (this._getter as WireDataGetter<T>)(this) : this._value;
   }
-  set value(input: any | null | undefined) {
+  set value(input: T | null | undefined) {
     console.log(
       `> WireData(${this.key}) -> set value: ${input} (typeof value ${typeof input}) : isLocked = ${this.isLocked}`,
     );
@@ -57,7 +57,7 @@ export class WireData implements IWireData {
     this._value = input;
     this.refresh();
   }
-  set getter(value: WireDataGetter) {
+  set getter(value: WireDataGetter<T>) {
     console.log(`> WireData(${this.key}) -> set getter`, value);
     this._getter = value;
   }
@@ -85,7 +85,8 @@ export class WireData implements IWireData {
     if (this._listeners.length === 0) return;
     const valueForListener = this.value;
     for (const listener of this._listeners) {
-      await listener(valueForListener);
+      const result = listener(valueForListener);
+      if (result instanceof Promise) { await result; }
     }
   }
   async reset(): Promise<void> {
@@ -107,14 +108,14 @@ export class WireData implements IWireData {
   private _guardian(): void {
     if (this.isLocked) throw new Error(this.isGetter ? ERROR__DATA_IS_GETTER : ERROR__DATA_IS_LOCKED);
   }
-  subscribe(wireDataListener: WireDataListener): IWireData {
+  subscribe(wireDataListener: WireDataListener): IWireData<T> {
     if (this.isGetter) throw new Error(ERROR__SUBSCRIBE_TO_DATA_GETTER);
     if (!this.hasListener(wireDataListener)) {
       this._listeners.push(wireDataListener);
     }
     return this;
   }
-  unsubscribe(wireDataListener?: WireDataListener): IWireData {
+  unsubscribe(wireDataListener?: WireDataListener): IWireData<T> {
     if (this.isGetter) throw new Error(ERROR__SUBSCRIBE_TO_DATA_GETTER);
     if (wireDataListener) {
       if (this.hasListener(wireDataListener)) {

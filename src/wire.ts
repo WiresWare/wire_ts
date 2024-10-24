@@ -253,9 +253,9 @@ export default class Wire implements IWire {
   /// void remove()
   /// ```
   /// Returns [WireData]
-  static data(key: string, value?: any | null, getter?: WireDataGetter | null): IWireData {
+  static data<T>(key: string, value?: any | null, getter?: WireDataGetter<T> | null): IWireData<T> {
     console.log(`> Wire.data -> key = ${key}`);
-    const wireData: IWireData | undefined = this._DATA_CONTAINER_LAYER.has(key)
+    const wireData: IWireData<T> | undefined = this._DATA_CONTAINER_LAYER.has(key)
       ? this._DATA_CONTAINER_LAYER.get(key)
       : this._DATA_CONTAINER_LAYER.create(key, this._MIDDLEWARE_LAYER.onReset.bind(this._MIDDLEWARE_LAYER));
     if (getter) {
