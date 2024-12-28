@@ -37,8 +37,8 @@ export class WireWithDatabase extends WireWithWhenReady implements IWireWithData
   }
 }
 
-export class WireWithWireData implements IWireWithWireData {
-  getData(dataKey: string): IWireData {
+export class WireWithWireData<T> implements IWireWithWireData<T> {
+  getData(dataKey: string): IWireData<T> {
     return Wire.data(dataKey);
   }
   has(dataKey: string): boolean {

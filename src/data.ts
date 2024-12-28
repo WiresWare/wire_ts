@@ -55,7 +55,7 @@ export class WireData<T> implements IWireData<T> {
     );
     this._guardian();
     this._value = input;
-    this.refresh();
+    queueMicrotask(this.refresh.bind(this));
   }
   set getter(value: WireDataGetter<T>) {
     console.log(`> WireData(${this.key}) -> set getter`, value);
@@ -84,7 +84,7 @@ export class WireData<T> implements IWireData<T> {
     console.log(`> WireData(${this.key}) -> refresh()`, this, this._listeners);
     if (this._listeners.length === 0) return;
     const valueForListener = this.value;
-    for (const listener of this._listeners) {
+    for await(const listener of this._listeners) {
       const result = listener(valueForListener);
       if (result instanceof Promise) { await result; }
     }
@@ -120,6 +120,7 @@ export class WireData<T> implements IWireData<T> {
     if (wireDataListener) {
       if (this.hasListener(wireDataListener)) {
         const listenerIndex = this._listeners.indexOf(wireDataListener);
+        console.log(`> WireData(${this.key}) -> unsubscribe:`, listenerIndex);
         this._listeners.splice(listenerIndex, 1);
       }
     } else {

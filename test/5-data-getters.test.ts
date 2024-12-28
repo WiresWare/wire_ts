@@ -20,8 +20,8 @@ describe('5. Data getters', async () => {
     print(`> $DATA_KEY_USER_VO -> updated: ${value}`);
   });
 
-  const wireDataGetter: WireDataGetter = (that: IWireData) => {
-    const wireData = Wire.data(DATA_KEY_USER_VO);
+  const wireDataGetter: WireDataGetter<object> = (that: IWireData<object>) => {
+    const wireData = Wire.data<object>(DATA_KEY_USER_VO);
     const userVO = wireData.value!;
     print(`> $GET__USER_FULL_NAME -> get: ${that.key} isSet ${that.isSet}`);
     return nameFormatter(userVO);
@@ -36,7 +36,7 @@ describe('5. Data getters', async () => {
     expect(Wire.data(GETTER__USER_FULL_NAME).value).toBe(nameFormatter(dataUserVO));
 
     const wireData = Wire.data(DATA_KEY_USER_VO);
-    const userVO = wireData.value;
+    const userVO = wireData.value as any;
     userVO['lastName'] = 'Cores';
     Wire.data(DATA_KEY_USER_VO, userVO);
 
