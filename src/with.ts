@@ -37,39 +37,46 @@ export class WireWithDatabase extends WireWithWhenReady implements IWireWithData
   }
 }
 
-export class WireWithWireData<T> implements IWireWithWireData<T> {
+export class WireWithWireData<T = any> implements IWireWithWireData<T> {
   getData(dataKey: string): IWireData<T> {
-    return Wire.data(dataKey);
+    return Wire.data<T>(dataKey);
   }
+
   has(dataKey: string): boolean {
-    return Wire.data(dataKey).isSet;
+    return Wire.data<T>(dataKey).isSet;
   }
+
   hasNot(dataKey: string): boolean {
     return !this.has(dataKey);
   }
-  async get(dataKey: string): Promise<any> {
+
+  async get(dataKey: string): Promise<T> {
     return new Promise((resolve, rejects) => {
       if (this.has(dataKey)) {
-        resolve(this.getData(dataKey).value);
+        resolve(this.getData(dataKey).value as T);
       } else {
         rejects(`Error: missing data on key - ${dataKey}`);
       }
     });
   }
-  async getMany(many: string[]): Promise<Map<string, any>> {
-    const result = new Map();
+
+  async getMany(many: string[]): Promise<Map<string, T>> {
+    const result = new Map<string, T>();
     for await (const item of many) {
       result.set(item, await this.get(item));
     }
     return result;
   }
-  async update(dataKey: string, data: any, refresh = true): Promise<void> {
-    if (data != null) Wire.data(dataKey, data);
+
+  async update(dataKey: string, data: T, refresh = true): Promise<void> {
+    if (data != null) Wire.data<T>(dataKey, data);
     else if (refresh) await this.getData(dataKey).refresh();
   }
+
   async reset(dataKey: string): Promise<void> {
     if (this.has(dataKey)) await this.getData(dataKey).reset();
   }
+
   async remove(dataKey: string): Promise<void> {
     if (this.has(dataKey)) await this.getData(dataKey).remove(false);
   }

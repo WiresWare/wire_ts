@@ -7,12 +7,12 @@ export class WireCommand<T> implements IWireCommand {
   }
 }
 
-export class WireCommandWithRequiredData extends WireWithWireData implements IWireCommand {
-  get whenReady(): Promise<Map<string, any>> {
+export class WireCommandWithRequiredData<T = any> extends WireWithWireData<T> implements IWireCommand {
+  get whenReady(): Promise<Map<string, T>> {
     return this._whenRequiredDataReady;
   }
-  private readonly _whenRequiredDataReady: Promise<Map<string, any>>;
-  constructor(requiredDataKeys: any[] = []) {
+  private readonly _whenRequiredDataReady: Promise<Map<string, T>>;
+  constructor(requiredDataKeys: string[] = []) {
     super();
     this._whenRequiredDataReady = new Promise((resolve) => {
       this.getMany(requiredDataKeys).then(resolve);

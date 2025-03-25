@@ -184,28 +184,32 @@ export class WireMiddlewaresLayer {
   }
 }
 
-export class WireDataContainerLayer<T> {
-  private _dataMap = new Map<string, IWireData<T>>();
+export class WireDataContainerLayer {
+  private _dataMap = new Map<string, IWireData<any>>();
 
   has(key: string): boolean {
     const result = this._dataMap.has(key);
     console.log(`> Wire -> _DATA_CONTAINER_LAYER: has ${key} = ${result}`);
     return result!;
   }
-  get(key: string): IWireData<T> | undefined {
-    return this._dataMap.get(key)!;
+
+  get<T>(key: string): IWireData<T> | undefined {
+    return this._dataMap.get(key) as IWireData<T> | undefined;
   }
-  create(key: string, onReset: WireDataOnReset): IWireData<T> {
+
+  create<T>(key: string, onReset: WireDataOnReset): IWireData<T> {
     console.log(`> Wire -> _DATA_CONTAINER_LAYER: create ${key}`);
     const wireData = new WireData<T>(key, (key) => this.remove(key), onReset);
     this._dataMap.set(key, wireData);
     return wireData;
   }
+
   remove(key: string): boolean {
     return this._dataMap.delete(key);
   }
+
   async clear(): Promise<void> {
-    const wireDataToRemove: IWireData<T>[] = [];
+    const wireDataToRemove: IWireData<any>[] = [];
     this._dataMap.forEach((wireData) => {
       wireDataToRemove.push(wireData);
     });

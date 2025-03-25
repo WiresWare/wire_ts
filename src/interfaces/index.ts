@@ -73,13 +73,13 @@ export interface IWireWithDatabase {
   delete(key: string): Promise<void>;
 }
 
-export interface IWireWithWireData<T> {
+export interface IWireWithWireData<T = any> {
   getData(dataKey: string): IWireData<T>;
   has(dataKey: string): boolean;
   hasNot(dataKey: string): boolean;
-  get(dataKey: string): Promise<any>;
-  getMany(many: string[]): Promise<Map<string, any>>;
-  update(dataKey: string, data: any, refresh: boolean): Promise<void>;
+  get(dataKey: string): Promise<T>;
+  getMany(many: string[]): Promise<Map<string, T>>;
+  update(dataKey: string, data: T, refresh: boolean): Promise<void>;
   reset(dataKey: string): Promise<void>;
   remove(dataKey: string): Promise<void>;
 }

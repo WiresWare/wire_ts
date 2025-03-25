@@ -253,11 +253,11 @@ export default class Wire implements IWire {
   /// void remove()
   /// ```
   /// Returns [WireData]
-  static data<T>(key: string, value?: any | null, getter?: WireDataGetter<T> | null): IWireData<T> {
+  static data<T>(key: string, value?: T | null, getter?: WireDataGetter<T> | null): IWireData<T> {
     console.log(`> Wire.data -> key = ${key}`);
     const wireData: IWireData<T> | undefined = this._DATA_CONTAINER_LAYER.has(key)
       ? this._DATA_CONTAINER_LAYER.get(key)
-      : this._DATA_CONTAINER_LAYER.create(key, this._MIDDLEWARE_LAYER.onReset.bind(this._MIDDLEWARE_LAYER));
+      : this._DATA_CONTAINER_LAYER.create<T>(key, this._MIDDLEWARE_LAYER.onReset.bind(this._MIDDLEWARE_LAYER));
     if (getter) {
       wireData!.getter = getter!;
       wireData!.lock(new WireDataLockToken());
@@ -269,7 +269,7 @@ export default class Wire implements IWire {
       console.log(`> Wire.data -> prev = ${prevValue}`);
       const nextValue = isValueFunction ? (value as WireValueFunction)(prevValue) : value;
       this._MIDDLEWARE_LAYER.onData(key, prevValue, nextValue);
-      wireData!.value = nextValue;
+      wireData!.value = nextValue as T;
     }
     return wireData!;
   }
