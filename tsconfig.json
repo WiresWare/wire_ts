@@ -1,10 +1,7 @@
 {
   "outDir": "dist",
   "declaration": true,
-  "types": [
-    "chrome",
-    "node"
-  ],
+  "types": ["chrome", "node"],
   "emitDeclarationOnly": true,
   "compilerOptions": {
     "useDefineForClassFields": true,
@@ -17,7 +14,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "strict": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -26,12 +23,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
-    "skipLibCheck": false,
+    "skipLibCheck": false
   },
-  "exclude": [
-    "node_modules",
-    "examples",
-    "dist"
-  ],
+  "exclude": ["node_modules", "examples", "dist"],
   "include": ["src", "test"]
 }
