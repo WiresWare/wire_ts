@@ -6,7 +6,7 @@ import InputDTO from '@/model/data/dto/InputDTO';
 import TodoVO from '@/model/data/vos/TodoVO';
 import FilterValues from '@/constants/FilterValues';
 
-class TodoInputCommand extends WireCommand<boolean> {
+class TodoCreateCommand extends WireCommand<boolean> {
   private readonly _inputDTO: InputDTO;
   constructor(inputDTO: InputDTO) {
     super();
@@ -24,13 +24,16 @@ class TodoInputCommand extends WireCommand<boolean> {
       const newTodoVO = new TodoVO(newTodoId, text, note, new Date(), completed);
 
       const listOfTodoIds = Wire.data(DataKeys.LIST_OF_IDS).value;
+
       const listOfVisibleTodoIds = Wire.data(DataKeys.LIST_OF_IDS_VISIBLE).value;
+
       const currentCount = Wire.data(DataKeys.NOT_COMPLETED_COUNT).value;
       const currentFilter = Wire.data(DataKeys.FILTER).value;
 
       const notCompletedCount = currentCount + (completed ? 0 : 1);
 
       listOfTodoIds.push(newTodoVO.id);
+
       if (currentFilter !== FilterValues.COMPLETED) {
         listOfVisibleTodoIds.push(newTodoVO.id);
       }
@@ -57,4 +60,4 @@ class TodoInputCommand extends WireCommand<boolean> {
   }
 }
 
-export default TodoInputCommand;
+export default TodoCreateCommand;

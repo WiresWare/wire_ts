@@ -11,7 +11,9 @@ class TodoListView extends DomElement {
     super(dom);
     const listOfVisibleTodoIdsWD = Wire.data(DataKeys.LIST_OF_IDS_VISIBLE);
     this.listOfVisibleTodoIds = listOfVisibleTodoIdsWD.value;
-    listOfVisibleTodoIdsWD.subscribe(async (list) => this.onListUpdated(list));
+    listOfVisibleTodoIdsWD.subscribe(async (list) => {
+      this.onListUpdated(list);
+    });
     console.log(`> TodoListView -> initialized with ${this.listOfVisibleTodoIds.length} items`);
     this.renderList();
   }

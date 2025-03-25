@@ -30,6 +30,7 @@ class TodoListItemView extends DomElement {
     this.inpEdit = createWithClass('input', 'edit') as HTMLInputElement;
     this.inpToggle = createWithClass('input', 'toggle') as HTMLInputElement;
     this.inpToggle.type = 'checkbox';
+
     this.container = createWithClass('div', 'view') as HTMLDivElement;
 
     this.container.append(this.inpToggle);
@@ -49,6 +50,7 @@ class TodoListItemView extends DomElement {
     this.dom.append(this.container);
 
     this.dom.addEventListener('DOMNodeRemoved', (e) => this._onDomRemoved(e));
+
     this.inpToggle.onclick = () => Wire.send(ViewSignals.TOGGLE, id);
     this.btnDelete.onclick = () => Wire.send(ViewSignals.DELETE, id);
     this.inpEdit.onkeydown = (e) => this._onInputEditKeyboardKey(e.key);

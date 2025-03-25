@@ -1,44 +1,57 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <title>Wire Todo Example</title>
-</head>
-<!-- Include global variables first -->
-<link rel="stylesheet" href="/styles/index.css">
-<link rel="stylesheet" href="/styles/overlay.css">
-<body>
-<div id="loading"><div id="spinner"></div></div>
-<section class="todoapp">
-  <header class="header">
-    <h1>Todos</h1>
-    <input id="inputTodo" class="new-todo" placeholder="What needs to be done?" autofocus/>
-  </header>
-  <section class="main">
-    <input id="toggle-all" class="toggle-all" type="checkbox">
-    <label for="toggle-all">Mark all as complete</label>
-    <ul id="containerTodos" class="todo-list"></ul>
-  </section>
-  <footer class="footer">
-    <span class="todo-count"><strong id="todosCount">0</strong> <small>(left | completed)</small></span>
-    <ul class="filters">
-      <li id="filterAll">
-        <a class="selected" href="#/">All</a>
-      </li>
-      <li id="filterActive">
-        <a href="#/active">Active</a>
-      </li>
-      <li id="filterCompleted">
-        <a href="#/completed">Completed</a>
-      </li>
-    </ul>
-    <button id="buttonClearCompleted" class="clear-completed">Clear completed</button>
-  </footer>
-</section>
-<footer class="info">
-  <p>Double-click to edit a todo</p>
-  <p>Created by <a href="https://github.com/vladimircores">Vladimir Cores (Minkin)</a></p>
-  <p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
-</footer>
-</body>
-<script type="module" src="src/main.ts"></script>
+  </head>
+  <!-- Include global variables first -->
+  <link rel="stylesheet" href="styles/index.css" />
+  <link rel="stylesheet" href="styles/overlay.css" />
+  <body>
+    <div id="loading"><div id="spinner"></div></div>
+    <section class="todoapp">
+      <header class="header">
+        <h1>Todos</h1>
+        <input
+          id="inputTodo"
+          class="new-todo"
+          placeholder="What needs to be done?"
+          autofocus
+        />
+      </header>
+      <section class="main">
+        <input id="toggle-all" class="toggle-all" type="checkbox" />
+        <label for="toggle-all">Mark all as complete</label>
+        <ul id="containerTodos" class="todo-list"></ul>
+      </section>
+      <footer class="footer">
+        <span class="todo-count">
+          <strong id="todosCount">0</strong>
+          <small>(left | completed)</small>
+        </span>
+        <ul class="filters">
+          <li id="filterAll">
+            <a class="selected" href="#/">All</a>
+          </li>
+          <li id="filterActive">
+            <a href="#/active">Active</a>
+          </li>
+          <li id="filterCompleted">
+            <a href="#/completed">Completed</a>
+          </li>
+        </ul>
+        <button id="buttonClearCompleted" class="clear-completed">
+          Clear completed
+        </button>
+      </footer>
+    </section>
+    <footer class="info">
+      <p>Double-click to edit a todo</p>
+      <p>
+        Created by
+        <a href="https://github.com/vladimircores">Vladimir Cores (Minkin)</a>
+      </p>
+      <p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
+    </footer>
+  </body>
+  <script type="module" src="src/main.ts"></script>
 </html>

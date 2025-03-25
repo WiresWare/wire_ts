@@ -8,15 +8,16 @@ class TodoInputView extends DomElement {
   constructor(dom: HTMLElement) {
     super(dom);
     Wire.add(this, ViewSignals.CLEAR_INPUT, async () => {
+      console.log('> TodoInputView -> ViewSignals.CLEAR_INPUT');
       (dom as HTMLInputElement).value = '';
     });
     (this.dom as HTMLInputElement).value = '';
     this.dom.onkeyup = async (e) => {
       const isEnterPressed = e.key === 'Enter';
       if (isEnterPressed) {
-        console.log('> TodoInputView -> onkeyup:', { isEnterPressed });
         const text = (this.dom as HTMLInputElement).value;
         const payload = new InputDTO(text, '');
+        console.log('> TodoInputView -> onkeyup:', { isEnterPressed, text });
         await Wire.send(ViewSignals.INPUT, payload);
       }
     };

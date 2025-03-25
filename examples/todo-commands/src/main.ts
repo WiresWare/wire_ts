@@ -26,9 +26,9 @@ async function main() {
   new TodoController();
   new RouteController();
 
-  new TodoInputView(document.querySelector('.new-todo')!);
-  new TodoListView(document.querySelector('.todo-list')!);
-  new TodoCountView(document.querySelector('.todo-count')!.firstChild!);
+  new TodoInputView(document.querySelector('#inputTodo')!);
+  new TodoListView(document.querySelector('#containerTodos')!);
+  new TodoCountView(document.querySelector('#todosCount')!);
   new CompleteAllView(document.querySelector('.toggle-all')!);
   new TodoFilterView(document.querySelector('.filters')!);
   new ClearCompletedView(document.querySelector('.clear-completed')!);

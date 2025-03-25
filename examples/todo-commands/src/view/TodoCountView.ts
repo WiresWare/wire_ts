@@ -17,8 +17,9 @@ class TodoCountView extends DomElement {
   }
   updateCount(count: number) {
     const completedCount: number = Wire.data(GetterKeys.COUNT_COMPLETED).value as number;
+    const text = utilStringTodoCount(count, completedCount);
     console.log('> TodoCountView -> updateCount', { count, completedCount });
-    this.dom.innerText = utilStringTodoCount(count, completedCount);
+    this.dom.innerText = text;
   }
 }
 

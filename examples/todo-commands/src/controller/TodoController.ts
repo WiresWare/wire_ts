@@ -9,7 +9,7 @@ import FilterValues from '@/constants/FilterValues';
 import InputDTO from '@/model/data/dto/InputDTO';
 import EditDTO from '@/model/data/dto/EditDTO';
 
-import TodoInputCommand from './commands/todo/TodoInputCommand';
+import TodoCreateCommand from './commands/todo/TodoCreateCommand';
 import TodoToggleCommand from './commands/todo/TodoToggleCommand';
 import TodoEditCommand from './commands/todo/TodoEditCommand';
 
@@ -23,7 +23,7 @@ class TodoController {
   constructor() {
     const eventsToWireListener = {
       [ViewSignals.INPUT]: async (inputDTO: InputDTO) => {
-        const isNotEmpty = await new TodoInputCommand(inputDTO).execute();
+        const isNotEmpty = await new TodoCreateCommand(inputDTO).execute();
         if (isNotEmpty) await Wire.send(ViewSignals.CLEAR_INPUT);
       },
       [ViewSignals.TOGGLE]: async (id: string) => {
@@ -42,8 +42,10 @@ class TodoController {
       [ViewSignals.CLEAR_COMPLETED]: () => new ClearCompletedTodosCommand().execute(),
       [ViewSignals.FILTER]: (filter: number) => new FilterTodosCommand(filter).execute(),
     };
+
     Wire.many(this, new Map(Object.entries(eventsToWireListener)));
     console.log('> TodoController -> Prepare getters');
+
     Wire.data(GetterKeys.COUNT_COMPLETED, null, new CountCompletedGetter().getter);
     console.log('> TodoController -> initialized');
   }
