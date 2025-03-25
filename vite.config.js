@@ -2,25 +2,22 @@ import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import eslint from 'vite-plugin-eslint';
 import dts from 'vite-plugin-dts';
+import tsconfigPaths from 'vite-tsconfig-paths';
 import removeConsole from 'vite-plugin-remove-console';
 
 export default defineConfig({
-  resolve: {
-    alias: {
-      '@': resolve(__dirname, 'src'),
-    },
-  },
   test: {
     globals: true,
   },
   plugins: [
+    tsconfigPaths(),
     eslint(),
     dts({
       include: ['src/**/*.ts'],
       insertTypesEntry: true,
       rollupTypes: true,
     }),
-    removeConsole()
+    removeConsole(),
   ],
   build: {
     outDir: 'dist',
@@ -36,7 +33,7 @@ export default defineConfig({
       fileName: 'wire',
     },
     rollupOptions: {
-      external: [/^node:.*/,],
+      external: [/^node:.*/],
     },
     write: true,
   },
