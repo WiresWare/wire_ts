@@ -157,22 +157,22 @@ export class WireMiddlewaresLayer {
   add(middleware: IWireMiddleware): void {
     this._MIDDLEWARE_LIST.push(middleware);
   }
-  clear() {
+  clear(): void {
     this._MIDDLEWARE_LIST.splice(0, this._MIDDLEWARE_LIST.length);
   }
-  onData(key: string, prevValue: any, nextValue: any) {
+  onData(key: string, prevValue: any, nextValue: any): void {
     return this._process((m: IWireMiddleware) => m.onData(key, prevValue, nextValue));
   }
-  onReset(key: string, prevValue: any) {
+  onReset(key: string, prevValue: any): void {
     return this.onData(key, prevValue, undefined);
   }
-  onRemove(signal: string, scope?: object, listener?: WireListener | null) {
+  onRemove(signal: string, scope?: object, listener?: WireListener | null): void {
     return this._process((m: IWireMiddleware) => m.onRemove(signal, scope, listener));
   }
-  onSend(signal: string, payload: any) {
+  onSend(signal: string, payload: any): void {
     return this._process((m: IWireMiddleware) => m.onSend(signal, payload));
   }
-  onAdd(wire: IWire) {
+  onAdd(wire: IWire): void {
     return this._process((m: IWireMiddleware) => m.onAdd(wire));
   }
   _process(p: (mw: IWireMiddleware) => void): void {

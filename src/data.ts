@@ -45,7 +45,7 @@ export class WireData<T> implements IWireData<T> {
   get key(): string {
     return this._key;
   }
-  get value(): any | null | undefined {
+  get value(): T | null | undefined {
     console.log(`> WireData(${this.key}) -> get value (isGetter: ${this.isGetter}) = ${this._value}`);
     return this.isGetter ? (this._getter as WireDataGetter<T>)(this) : this._value;
   }
@@ -136,10 +136,10 @@ export class WireData<T> implements IWireData<T> {
 export class WireSendError implements IWireSendError {
   private readonly _error: Error;
   private readonly _message: string;
-  get message() {
+  get message(): string {
     return this._message;
   }
-  get error() {
+  get error(): Error {
     return this._error;
   }
   constructor(message: string, error: Error) {
@@ -157,16 +157,16 @@ export class WireSendResults implements IWireSendResults {
   private readonly _list: Array<any>;
   private readonly _noSubscribers: boolean;
 
-  get hasError() {
+  get hasError(): boolean {
     return this._list.some((item) => item instanceof WireSendError);
   }
-  get list() {
+  get list(): any[] {
     return this._list;
   }
-  get errors() {
+  get errors(): WireSendError[] {
     return this._list.filter((item) => item instanceof WireSendError);
   }
-  get signalHasNoSubscribers() {
+  get signalHasNoSubscribers(): boolean {
     return this._noSubscribers;
   }
 }

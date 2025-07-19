@@ -18,7 +18,7 @@ export default tseslint.config(
       '@typescript-eslint/ban-ts-comment': 0,
       '@typescript-eslint/no-non-null-assertion': 0,
       '@typescript-eslint/no-unused-vars': 'error',
-      '@typescript-eslint/explicit-function-return-type': 0,
+      '@typescript-eslint/explicit-function-return-type': 2,
       '@typescript-eslint/no-explicit-any': 0,
     },
   },
@@ -33,6 +33,6 @@ export default tseslint.config(
     },
     linterOptions: {
       reportUnusedDisableDirectives: true,
-    }
-  }
+    },
+  },
 );
