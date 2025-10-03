@@ -33,4 +33,10 @@ describe('7. Test multiple subscription yo WireData', async () => {
     expect(wd.value).toEqual(TEST_VALUE_2);
     expect(wd.hasListener(callback_2)).toEqual(true);
   });
+
+  test('7.2 Unsubscribe one check other subscriptions', async () => {
+    wd.unsubscribe(callback_1);
+    expect(wd.hasListener(callback_1)).toEqual(false);
+    expect(wd.hasListener(callback_2)).toEqual(true);
+  });
 });
