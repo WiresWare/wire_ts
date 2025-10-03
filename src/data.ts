@@ -29,6 +29,8 @@ export class WireData<T> implements IWireData<T> {
   private _getter?: WireDataGetter<T> = undefined;
   private _lockToken?: IWireDataLockToken | null = undefined;
 
+  private _refreshQueue: Promise<any>[] = [];
+
   private readonly _listeners = new Array<WireDataListener>();
 
   /// This property needed to distinguish between newly created and not set WireData which has value of null at the beginning
@@ -55,7 +57,12 @@ export class WireData<T> implements IWireData<T> {
     );
     this._guardian();
     this._value = input;
-    queueMicrotask(this.refresh.bind(this));
+    const promise = this.refresh()
+      .finally(() => {
+        const index = this._refreshQueue.indexOf(promise);
+        if (index !== -1) this._refreshQueue.splice(index, 1);
+      });
+    this._refreshQueue.push(promise);
   }
   set getter(value: WireDataGetter<T>) {
     console.log(`> WireData(${this.key}) -> set getter`, value);
@@ -81,10 +88,11 @@ export class WireData<T> implements IWireData<T> {
     return opened;
   }
   async refresh(): Promise<void> {
-    console.log(`> WireData(${this.key}) -> refresh()`, this, this._listeners);
+    console.log(`> WireData(${this.key}) -> refresh()`, this);
     if (this._listeners.length === 0) return;
+    const listeners = [...this._listeners];
     const valueForListener = this.value;
-    for await(const listener of this._listeners) {
+    for await(const listener of listeners) {
       const result = listener(valueForListener);
       if (result instanceof Promise) { await result; }
     }
@@ -100,6 +108,7 @@ export class WireData<T> implements IWireData<T> {
     if (!clean) this._guardian();
     this._lockToken = null;
     await this.reset();
+    this._refreshQueue = [];
     this._onRemove!(this._key);
     this._onRemove = undefined;
     this._onReset = undefined;
@@ -110,18 +119,32 @@ export class WireData<T> implements IWireData<T> {
   }
   subscribe(wireDataListener: WireDataListener): IWireData<T> {
     if (this.isGetter) throw new Error(ERROR__SUBSCRIBE_TO_DATA_GETTER);
+    console.log(`> WireData(${this.key}) -> subscribe:`, { wireDataListener, hasListener: this.hasListener(wireDataListener) });
     if (!this.hasListener(wireDataListener)) {
       this._listeners.push(wireDataListener);
     }
     return this;
   }
-  unsubscribe(wireDataListener?: WireDataListener): IWireData<T> {
+  async unsubscribe(wireDataListener?: WireDataListener): Promise<IWireData<T>> {
     if (this.isGetter) throw new Error(ERROR__SUBSCRIBE_TO_DATA_GETTER);
     if (wireDataListener) {
       if (this.hasListener(wireDataListener)) {
-        const listenerIndex = this._listeners.indexOf(wireDataListener);
-        console.log(`> WireData(${this.key}) -> unsubscribe:`, listenerIndex);
-        this._listeners.splice(listenerIndex, 1);
+        const remove = async(): Promise<void> => {
+          const listenerIndex = this._listeners.indexOf(wireDataListener);
+          console.log(`> WireData(${this.key}) -> unsubscribe:`, {
+            listener: wireDataListener,
+            at: listenerIndex,
+          });
+          this._listeners.splice(listenerIndex, 1);
+        };
+        console.log(`> WireData(${this.key}) -> unsubscribe:`, this._refreshQueue);
+        const numberToRefreshes = this._refreshQueue.length;
+        if (numberToRefreshes > 0) {
+          const lastRefreshIndex = numberToRefreshes - 1;
+          await this._refreshQueue[lastRefreshIndex].finally(remove);
+        } else {
+          await remove();
+        }
       }
     } else {
       this._listeners.splice(0, this.numberOfListeners);

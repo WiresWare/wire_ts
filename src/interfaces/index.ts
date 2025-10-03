@@ -30,7 +30,7 @@ export interface IWireData<T> {
   remove(clean?: boolean | false): Promise<void>;
 
   subscribe(listener: WireDataListener): IWireData<T>;
-  unsubscribe(listener?: WireDataListener): IWireData<T>;
+  unsubscribe(listener?: WireDataListener): Promise<IWireData<T>>;
   hasListener(listener: WireDataListener): boolean;
 }
 
