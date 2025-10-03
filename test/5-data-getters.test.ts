@@ -14,7 +14,7 @@ describe('5. Data getters', async () => {
     lastName: 'Ware',
   };
 
-  const nameFormatter = (userVO: any) => `${userVO['firstName']} ${userVO['lastName']}`;
+  const nameFormatter = (userVO: any): string => `${userVO['firstName']} ${userVO['lastName']}`;
 
   Wire.data(DATA_KEY_USER_VO, dataUserVO).subscribe(async (value: any) => {
     print(`> $DATA_KEY_USER_VO -> updated: ${value}`);

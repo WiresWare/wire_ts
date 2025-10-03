@@ -12,7 +12,7 @@ describe('2. Purge and remove', async () => {
   const SIGNAL_G2_2 = 'G2_SIGNAL_SUBSCRIPTION_2';
   const SCOPE = {};
 
-  const listener = async (data: any, wid: number) => {
+  const listener = async (data: any, wid: number): Promise<void> => {
     const wire = Wire.get({ wireId: wid }).shift() as IWire;
     print(`2. -> Response on ${wire.signal} with data: ${data}`);
   };

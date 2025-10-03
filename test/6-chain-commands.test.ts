@@ -11,7 +11,7 @@ class ChainFirstCommand extends WireCommand<string> {
     super();
     this.value = value;
   }
-  async execute() {
+  async execute(): Promise<string> {
     return `${this.value} | First Command`;
   }
 }
@@ -22,7 +22,7 @@ class ChainSecondCommand extends WireCommand<string> {
     super();
     this.value = value;
   }
-  async execute() {
+  async execute(): Promise<string> {
     return `${this.value} | Second Command`;
   }
 }

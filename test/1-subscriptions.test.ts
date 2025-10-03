@@ -17,7 +17,7 @@ describe('1. Subscriptions', async () => {
 
   const SCOPE = {};
 
-  const listener_dynamic = async (payload: any, wid: number) => {
+  const listener_dynamic = async (payload: any, wid: number): Promise<boolean> => {
     print(`> \t WireListener -> data: ${payload} | wid: ${wid} - receives all types of data`);
     return true;
   };
@@ -91,15 +91,15 @@ describe('1. Subscriptions', async () => {
     const scope = new PutFindTestObject();
     const SIGNAL_NEW = 'SIGNAL_NEW';
     const signalsToWireListeners = {
-      SIGNAL_G1: async () => {
+      SIGNAL_G1: async (): Promise<boolean> => {
         print('> $TEST_CASE_1_6 -> Hello from $SIGNAL_G1');
         return false;
       },
-      SIGNAL_NEW: async () => {
+      SIGNAL_NEW: async (): Promise<string> => {
         print('> $TEST_CASE_1_6 -> Hello from $SIGNAL_NEW');
         return SIGNAL_NEW;
       },
-      SIGNAL_COUNTER: async () => {
+      SIGNAL_COUNTER: async (): Promise<number> => {
         print('> $TEST_CASE_1_6 -> Hello from $SIGNAL_COUNTER');
         return 1;
       },

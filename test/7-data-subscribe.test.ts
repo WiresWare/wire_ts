@@ -7,11 +7,13 @@ const print = console.log;
 describe('7. Test multiple subscription yo WireData', async () => {
   const WIRE_DATA_KEY = 'wire_data_key';
 
-  const callback_1 = async(v: any) => {
+  const callback_1 = async(v: any): Promise<void> => {
     wd.unsubscribe(callback_1);
-    print('>\t Wire.data -> subscribe 1:', v);
+    print('>\t Wire.data -> callback_1:', v);
   };
-  const callback_2 = async(v: any) => { print('>\t Wire.data -> subscribe 2:', v); };
+  const callback_2 = async(v: any): Promise<void> => {
+    print('>\t Wire.data -> callback_2:', v);
+  };
 
   const wd = Wire.data(WIRE_DATA_KEY);
   wd.subscribe(callback_1);
