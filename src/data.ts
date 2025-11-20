@@ -57,7 +57,7 @@ export class WireData<T> implements IWireData<T> {
     );
     this._guardian();
     this._value = input;
-    const promise = this.refresh()
+    const promise = this.refresh(this._value)
       .finally(() => {
         const index = this._refreshQueue.indexOf(promise);
         if (index !== -1) this._refreshQueue.splice(index, 1);
@@ -87,14 +87,15 @@ export class WireData<T> implements IWireData<T> {
     if (opened) this._lockToken = null;
     return opened;
   }
-  async refresh(): Promise<void> {
+  async refresh(value: T | undefined | null): Promise<void> {
     console.log(`> WireData(${this.key}) -> refresh()`, this);
     if (this._listeners.length === 0) return;
     const listeners = [...this._listeners];
-    const valueForListener = this.value;
-    for await(const listener of listeners) {
-      const result = listener(valueForListener);
-      if (result instanceof Promise) { await result; }
+    for await (const listener of listeners) {
+      const result = listener(value);
+      if (result instanceof Promise) {
+        await result;
+      }
     }
   }
   async reset(): Promise<void> {
@@ -102,7 +103,7 @@ export class WireData<T> implements IWireData<T> {
     const previousValue = this._value;
     this._value = undefined;
     this._onReset!(this._key, previousValue);
-    await this.refresh();
+    await this.refresh(this._value);
   }
   async remove(clean = false): Promise<void> {
     if (!clean) this._guardian();
