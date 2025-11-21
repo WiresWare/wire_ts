@@ -9,7 +9,7 @@ describe('8. Test intermediate values', () => {
       receivedValues.push(value);
     });
 
-    const valuesToSet = [1, 2, 3, 4, 5];
+    const valuesToSet = [1, new Set([1, 2, 3]), [4, 5, 6], { a: 1, b: 'hello' }, 5];
     for (const value of valuesToSet) {
       wd.value = value;
     }
