@@ -7,3 +7,7 @@ export type WireDataListener<T> = (value: WireDataValue<T>) => Promise<void> | v
 export type WireDataGetter<T> = (that: IWireData<T>) => any;
 export type WireDataOnRemove = (key: string) => boolean;
 export type WireDataOnReset = (that: string, param: any) => any;
+export enum WireDataListenersExecutionMode {
+  SEQUENTIAL = 'sequential',
+  PARALLEL = 'parallel',
+}
