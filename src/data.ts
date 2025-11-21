@@ -5,7 +5,14 @@
 ///
 
 import { ERROR__DATA_IS_GETTER, ERROR__DATA_IS_LOCKED, ERROR__SUBSCRIBE_TO_DATA_GETTER } from './const';
-import { WireDataGetter, WireDataListener, WireDataOnRemove, WireDataOnReset, WireDataValue } from './types';
+import {
+  WireDataListenersExecutionMode,
+  WireDataGetter,
+  WireDataListener,
+  WireDataOnRemove,
+  WireDataOnReset,
+  WireDataValue,
+} from './types';
 import { IWireData, IWireDatabaseService, IWireDataLockToken, IWireSendResults, IWireSendError } from './interfaces';
 
 export class WireDataLockToken implements IWireDataLockToken {
@@ -28,6 +35,7 @@ export class WireData<T> implements IWireData<T> {
   private _onReset?: WireDataOnReset = undefined;
   private _getter?: WireDataGetter<T> = undefined;
   private _lockToken?: IWireDataLockToken | null = undefined;
+  private _listenersExecutionMode: WireDataListenersExecutionMode = 'sequential';
 
   private _refreshQueue: Promise<any>[] = [];
 
@@ -68,6 +76,12 @@ export class WireData<T> implements IWireData<T> {
     console.log(`> WireData(${this.key}) -> set getter`, value);
     this._getter = value;
   }
+  get listenersExecutionMode(): WireDataListenersExecutionMode {
+    return this._listenersExecutionMode;
+  }
+  set listenersExecutionMode(mode: WireDataListenersExecutionMode) {
+    this._listenersExecutionMode = mode;
+  }
   get numberOfListeners(): number {
     return this._listeners.length;
   }
@@ -91,10 +105,14 @@ export class WireData<T> implements IWireData<T> {
     console.log(`> WireData(${this.key}) -> refresh()`, this);
     if (this._listeners.length === 0) return;
     const listeners = [...this._listeners];
-    for await (const listener of listeners) {
-      const result = listener(value);
-      if (result instanceof Promise) {
-        await result;
+    if (this._listenersExecutionMode === 'parallel') {
+      await Promise.allSettled(listeners.map((listener) => listener(value)));
+    } else {
+      for await (const listener of listeners) {
+        const result = listener(value);
+        if (result instanceof Promise) {
+          await result;
+        }
       }
     }
   }
