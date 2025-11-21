@@ -1,4 +1,4 @@
-import { WireDataGetter, WireDataListener, WireListener } from '../types';
+import { WireDataGetter, WireDataListener, WireDataValue, WireListener } from '../types';
 
 export interface IWireCommand {
   execute(): Promise<any | null>;
@@ -18,20 +18,20 @@ export interface IWireData<T> {
   get isLocked(): boolean;
   get isGetter(): boolean;
   get key(): string;
-  get value(): T | null | undefined;
-  set value(input: T | null | undefined);
+  get value(): WireDataValue<T>;
+  set value(input: WireDataValue<T>);
   set getter(value: WireDataGetter<T>);
 
   lock(token: IWireDataLockToken): boolean;
   unlock(token: IWireDataLockToken): boolean;
 
-  refresh(value: T | undefined | null): Promise<void>;
+  refresh(value: WireDataValue<T>): Promise<void>;
   reset(): Promise<void>;
   remove(clean?: boolean | false): Promise<void>;
 
-  subscribe(listener: WireDataListener): IWireData<T>;
-  unsubscribe(listener?: WireDataListener): Promise<IWireData<T>>;
-  hasListener(listener: WireDataListener): boolean;
+  subscribe(listener: WireDataListener<T>): IWireData<T>;
+  unsubscribe(listener?: WireDataListener<T>): Promise<IWireData<T>>;
+  hasListener(listener: WireDataListener<T>): boolean;
 }
 
 export interface IWireDatabaseService {
