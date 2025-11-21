@@ -35,7 +35,7 @@ export class WireData<T> implements IWireData<T> {
   private _onReset?: WireDataOnReset = undefined;
   private _getter?: WireDataGetter<T> = undefined;
   private _lockToken?: IWireDataLockToken | null = undefined;
-  private _listenersExecutionMode: WireDataListenersExecutionMode = 'sequential';
+  private _listenersExecutionMode: WireDataListenersExecutionMode = WireDataListenersExecutionMode.SEQUENTIAL;
 
   private _refreshQueue: Promise<any>[] = [];
 
@@ -105,7 +105,7 @@ export class WireData<T> implements IWireData<T> {
     console.log(`> WireData(${this.key}) -> refresh()`, this);
     if (this._listeners.length === 0) return;
     const listeners = [...this._listeners];
-    if (this._listenersExecutionMode === 'parallel') {
+    if (this._listenersExecutionMode === WireDataListenersExecutionMode.PARALLEL) {
       await Promise.allSettled(listeners.map((listener) => listener(value)));
     } else {
       for await (const listener of listeners) {

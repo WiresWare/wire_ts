@@ -1,10 +1,11 @@
 import { expect, test, describe } from 'vitest';
 import Wire from '../src/wire';
+import { WireDataListenersExecutionMode } from '../src/types';
 
 describe('9. Test listeners execution mode', () => {
   test('9.1 Sequential execution should be the default', async () => {
     const wd = Wire.data('sequential_execution');
-    expect(wd.listenersExecutionMode).toEqual('sequential');
+    expect(wd.listenersExecutionMode).toEqual(WireDataListenersExecutionMode.SEQUENTIAL);
   });
 
   test('9.2 Listeners should execute sequentially', async () => {
@@ -30,7 +31,7 @@ describe('9. Test listeners execution mode', () => {
 
   test('9.3 Listeners should execute in parallel', async () => {
     const wd = Wire.data('parallel_execution_test');
-    wd.listenersExecutionMode = 'parallel';
+    wd.listenersExecutionMode = WireDataListenersExecutionMode.PARALLEL;
     const executionOrder: number[] = [];
 
     wd.subscribe(async () => {
@@ -52,7 +53,7 @@ describe('9. Test listeners execution mode', () => {
 
   test('9.4 All listeners should execute in parallel even if one fails', async () => {
     const wd = Wire.data('parallel_error_test');
-    wd.listenersExecutionMode = 'parallel';
+    wd.listenersExecutionMode = WireDataListenersExecutionMode.PARALLEL;
     let executed = false;
 
     wd.subscribe(async () => {
