@@ -253,7 +253,7 @@ export default class Wire implements IWire {
   /// void remove()
   /// ```
   /// Returns [WireData]
-  static data<T>(key: string, value?: T | null, getter?: WireDataGetter<T> | null): IWireData<T> {
+  static data<T>(key: string, value?: T | WireValueFunction<T> | null, getter?: WireDataGetter<T> | null): IWireData<T> {
     console.log(`> Wire.data -> key = ${key}`);
     const wireData: IWireData<T> | undefined = this._DATA_CONTAINER_LAYER.has(key)
       ? this._DATA_CONTAINER_LAYER.get(key)
@@ -267,7 +267,7 @@ export default class Wire implements IWire {
       const prevValue = wireData!.isSet ? wireData!.value : null;
       const isValueFunction: boolean = typeof value === 'function';
       console.log(`> Wire.data -> prev = ${prevValue}`);
-      const nextValue = isValueFunction ? (value as WireValueFunction)(prevValue) : value;
+      const nextValue = isValueFunction ? (value as WireValueFunction<T>)(prevValue) : value;
       this._MIDDLEWARE_LAYER.onData(key, prevValue, nextValue);
       wireData!.value = nextValue as T;
     }

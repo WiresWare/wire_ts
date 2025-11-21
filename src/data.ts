@@ -5,7 +5,7 @@
 ///
 
 import { ERROR__DATA_IS_GETTER, ERROR__DATA_IS_LOCKED, ERROR__SUBSCRIBE_TO_DATA_GETTER } from './const';
-import { WireDataGetter, WireDataListener, WireDataOnRemove, WireDataOnReset } from './types';
+import { WireDataGetter, WireDataListener, WireDataOnRemove, WireDataOnReset, WireDataValue } from './types';
 import { IWireData, IWireDatabaseService, IWireDataLockToken, IWireSendResults, IWireSendError } from './interfaces';
 
 export class WireDataLockToken implements IWireDataLockToken {
@@ -22,7 +22,7 @@ export class WireData<T> implements IWireData<T> {
   }
 
   private readonly _key: string;
-  private _value?: T | null | undefined = undefined;
+  private _value: WireDataValue<T> = undefined;
 
   private _onRemove?: WireDataOnRemove = undefined;
   private _onReset?: WireDataOnReset = undefined;
@@ -31,7 +31,7 @@ export class WireData<T> implements IWireData<T> {
 
   private _refreshQueue: Promise<any>[] = [];
 
-  private readonly _listeners = new Array<WireDataListener>();
+  private readonly _listeners = new Array<WireDataListener<T>>();
 
   /// This property needed to distinguish between newly created and not set WireData which has value of null at the beginning
   /// And with WireData at time when it's removed, because when removing the value also set to null
@@ -47,11 +47,11 @@ export class WireData<T> implements IWireData<T> {
   get key(): string {
     return this._key;
   }
-  get value(): T | null | undefined {
+  get value(): WireDataValue<T> {
     console.log(`> WireData(${this.key}) -> get value (isGetter: ${this.isGetter}) = ${this._value}`);
     return this.isGetter ? (this._getter as WireDataGetter<T>)(this) : this._value;
   }
-  set value(input: T | null | undefined) {
+  set value(input: WireDataValue<T>) {
     console.log(
       `> WireData(${this.key}) -> set value: ${input} (typeof value ${typeof input}) : isLocked = ${this.isLocked}`,
     );
@@ -87,7 +87,7 @@ export class WireData<T> implements IWireData<T> {
     if (opened) this._lockToken = null;
     return opened;
   }
-  async refresh(value: T | undefined | null): Promise<void> {
+  async refresh(value: WireDataValue<T>): Promise<void> {
     console.log(`> WireData(${this.key}) -> refresh()`, this);
     if (this._listeners.length === 0) return;
     const listeners = [...this._listeners];
@@ -118,7 +118,7 @@ export class WireData<T> implements IWireData<T> {
   private _guardian(): void {
     if (this.isLocked) throw new Error(this.isGetter ? ERROR__DATA_IS_GETTER : ERROR__DATA_IS_LOCKED);
   }
-  subscribe(wireDataListener: WireDataListener): IWireData<T> {
+  subscribe(wireDataListener: WireDataListener<T>): IWireData<T> {
     if (this.isGetter) throw new Error(ERROR__SUBSCRIBE_TO_DATA_GETTER);
     console.log(`> WireData(${this.key}) -> subscribe:`, { wireDataListener, hasListener: this.hasListener(wireDataListener) });
     if (!this.hasListener(wireDataListener)) {
@@ -126,7 +126,7 @@ export class WireData<T> implements IWireData<T> {
     }
     return this;
   }
-  async unsubscribe(wireDataListener?: WireDataListener): Promise<IWireData<T>> {
+  async unsubscribe(wireDataListener?: WireDataListener<T>): Promise<IWireData<T>> {
     if (this.isGetter) throw new Error(ERROR__SUBSCRIBE_TO_DATA_GETTER);
     if (wireDataListener) {
       if (this.hasListener(wireDataListener)) {
@@ -152,7 +152,7 @@ export class WireData<T> implements IWireData<T> {
     }
     return this;
   }
-  hasListener(listener: WireDataListener): boolean {
+  hasListener(listener: WireDataListener<T>): boolean {
     return this.numberOfListeners > 0 && this._listeners.indexOf(listener) > -1;
   }
 }
