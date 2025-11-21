@@ -25,7 +25,7 @@ export interface IWireData<T> {
   lock(token: IWireDataLockToken): boolean;
   unlock(token: IWireDataLockToken): boolean;
 
-  refresh(): Promise<void>;
+  refresh(value: T | undefined | null): Promise<void>;
   reset(): Promise<void>;
   remove(clean?: boolean | false): Promise<void>;
 
