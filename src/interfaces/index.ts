@@ -1,4 +1,10 @@
-import { WireDataGetter, WireDataListener, WireDataValue, WireListener } from '../types';
+import {
+  WireDataListenersExecutionMode,
+  WireDataGetter,
+  WireDataListener,
+  WireDataValue,
+  WireListener,
+} from '../types';
 
 export interface IWireCommand {
   execute(): Promise<any | null>;
@@ -21,6 +27,8 @@ export interface IWireData<T> {
   get value(): WireDataValue<T>;
   set value(input: WireDataValue<T>);
   set getter(value: WireDataGetter<T>);
+  get listenersExecutionMode(): WireDataListenersExecutionMode;
+  set listenersExecutionMode(mode: WireDataListenersExecutionMode);
 
   lock(token: IWireDataLockToken): boolean;
   unlock(token: IWireDataLockToken): boolean;
