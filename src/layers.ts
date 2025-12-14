@@ -6,7 +6,7 @@
 
 import { ERROR__ERROR_DURING_PROCESSING_SEND, ERROR__WIRE_ALREADY_REGISTERED } from './const';
 import { IWire, IWireData, IWireMiddleware, IWireSendError, IWireSendResults } from './interfaces';
-import { WireDataOnReset, WireListener } from './types';
+import { WireDataOnListenerError, WireDataOnReset, WireListener } from './types';
 import { WireData, WireSendResults, WireSendError } from './data';
 
 export class WireCommunicateLayer {
@@ -175,6 +175,9 @@ export class WireMiddlewaresLayer {
   onAdd(wire: IWire): void {
     return this._process((m: IWireMiddleware) => m.onAdd(wire));
   }
+  onListenerError(error: Error, key: string, value: any): void {
+    return this._process((m: IWireMiddleware) => m.onListenerError(error, key, value));
+  }
   _process(p: (mw: IWireMiddleware) => void): void {
     if (this._MIDDLEWARE_LIST.length > 0) {
       for (const mw of this._MIDDLEWARE_LIST) {
@@ -197,9 +200,9 @@ export class WireDataContainerLayer {
     return this._dataMap.get(key) as IWireData<T> | undefined;
   }
 
-  create<T>(key: string, onReset: WireDataOnReset): IWireData<T> {
+  create<T>(key: string, onReset: WireDataOnReset, onListenerError: WireDataOnListenerError): IWireData<T> {
     console.log(`> Wire -> _DATA_CONTAINER_LAYER: create ${key}`);
-    const wireData = new WireData<T>(key, (key) => this.remove(key), onReset);
+    const wireData = new WireData<T>(key, (key) => this.remove(key), onReset, onListenerError);
     this._dataMap.set(key, wireData);
     return wireData;
   }

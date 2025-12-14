@@ -22,10 +22,16 @@ export class WireDataLockToken implements IWireDataLockToken {
 }
 
 export class WireData<T> implements IWireData<T> {
-  constructor(key: string, onRemove: WireDataOnRemove, onReset: WireDataOnReset) {
+  constructor(
+    key: string,
+    onRemove: WireDataOnRemove,
+    onReset: WireDataOnReset,
+    onListenerError: WireDataOnListenerError,
+  ) {
     this._key = key;
     this._onRemove = onRemove;
     this._onReset = onReset;
+    this._onListenerError = onListenerError;
   }
 
   private readonly _key: string;
@@ -33,6 +39,7 @@ export class WireData<T> implements IWireData<T> {
 
   private _onRemove?: WireDataOnRemove = undefined;
   private _onReset?: WireDataOnReset = undefined;
+  private _onListenerError?: WireDataOnListenerError = undefined;
   private _getter?: WireDataGetter<T> = undefined;
   private _lockToken?: IWireDataLockToken | null = undefined;
   private _listenersExecutionMode: WireDataListenersExecutionMode = WireDataListenersExecutionMode.SEQUENTIAL;
@@ -106,12 +113,21 @@ export class WireData<T> implements IWireData<T> {
     if (this._listeners.length === 0) return;
     const listeners = [...this._listeners];
     if (this._listenersExecutionMode === WireDataListenersExecutionMode.PARALLEL) {
-      await Promise.allSettled(listeners.map((listener) => listener(value)));
+      const results = await Promise.allSettled(listeners.map((listener) => listener(value)));
+      results.forEach((result) => {
+        if (result.status === 'rejected') {
+          this._onListenerError!(result.reason, this.key, value);
+        }
+      });
     } else {
       for await (const listener of listeners) {
-        const result = listener(value);
-        if (result instanceof Promise) {
-          await result;
+        try {
+          const result = listener(value);
+          if (result instanceof Promise) {
+            await result;
+          }
+        } catch (error: any) {
+          this._onListenerError!(error, this.key, value);
         }
       }
     }
@@ -131,6 +147,7 @@ export class WireData<T> implements IWireData<T> {
     this._onRemove!(this._key);
     this._onRemove = undefined;
     this._onReset = undefined;
+    this._onListenerError = undefined;
     this._listeners.splice(0, this._listeners.length);
   }
   private _guardian(): void {

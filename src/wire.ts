@@ -257,7 +257,11 @@ export default class Wire implements IWire {
     console.log(`> Wire.data -> key = ${key}`);
     const wireData: IWireData<T> | undefined = this._DATA_CONTAINER_LAYER.has(key)
       ? this._DATA_CONTAINER_LAYER.get(key)
-      : this._DATA_CONTAINER_LAYER.create<T>(key, this._MIDDLEWARE_LAYER.onReset.bind(this._MIDDLEWARE_LAYER));
+      : this._DATA_CONTAINER_LAYER.create<T>(
+          key,
+          this._MIDDLEWARE_LAYER.onReset.bind(this._MIDDLEWARE_LAYER),
+          this._MIDDLEWARE_LAYER.onListenerError.bind(this._MIDDLEWARE_LAYER),
+        );
     if (getter) {
       wireData!.getter = getter!;
       wireData!.lock(new WireDataLockToken());
