@@ -26,12 +26,12 @@ export class WireData<T> implements IWireData<T> {
     key: string,
     onRemove: WireDataOnRemove,
     onReset: WireDataOnReset,
-    onListenerError: WireDataOnListenerError,
+    onError: WireDataOnError,
   ) {
     this._key = key;
     this._onRemove = onRemove;
     this._onReset = onReset;
-    this._onListenerError = onListenerError;
+    this._onError = onError;
   }
 
   private readonly _key: string;
