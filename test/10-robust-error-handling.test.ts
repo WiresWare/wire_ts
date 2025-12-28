@@ -12,9 +12,9 @@ describe('10. Robust Error Handling', () => {
   test('10.1 All listeners should execute in SEQUENTIAL mode even if one fails', async () => {
     const wd = Wire.data('sequential_error_test');
 
-    const secondListenerPromise = new Promise<boolean>(resolve => {
+    const secondListenerPromise = new Promise<boolean>((resolve) => {
       wd.subscribe(() => {
-        throw new Error('Test Error');
+        return Promise.reject(new Error('Test Error'));
       });
 
       wd.subscribe(() => {
@@ -49,7 +49,7 @@ describe('10. Robust Error Handling', () => {
 
     const wd = Wire.data('sequential_error_middleware_test');
     wd.subscribe(() => {
-      throw error;
+      return Promise.reject(error);
     });
 
     wd.value = 'test';
@@ -80,7 +80,7 @@ describe('10. Robust Error Handling', () => {
     const wd = Wire.data('parallel_error_middleware_test');
     wd.listenersExecutionMode = WireDataListenersExecutionMode.PARALLEL;
     wd.subscribe(() => {
-      throw error;
+      return Promise.reject(error);
     });
 
     wd.value = 'test';

@@ -126,16 +126,9 @@ export class WireData<T> implements IWireData<T> {
       });
     } else {
       for await (const listener of listeners) {
-        try {
-          const result = listener(value);
-          if (result instanceof Promise) {
-            await result.catch((error: any) => {
-              this._onError!(error, this.key, value);
-            });
-          }
-        } catch (error: any) {
+        await Promise.resolve(listener(value)).catch((error: any) => {
           this._onError!(error, this.key, value);
-        }
+        });
       }
     }
   }
