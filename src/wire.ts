@@ -155,9 +155,9 @@ export default class Wire implements IWire {
   /// Remove all entities from Communication Layer and Data Container Layer
   /// @param [withMiddleware] used to remove all middleware
   static async purge(withMiddleware = false): Promise<void> {
+    if (withMiddleware) this._MIDDLEWARE_LAYER.clear();
     await this._COMMUNICATION_LAYER.clear();
     await this._DATA_CONTAINER_LAYER.clear();
-    if (withMiddleware) this._MIDDLEWARE_LAYER.clear();
   }
   /// Remove all wires for specific signal, for more precise target to remove add scope and/or listener
   /// All middleware will be informed from [WireMiddleware.onRemove] after signal removed, only if existed
@@ -257,7 +257,11 @@ export default class Wire implements IWire {
     console.log(`> Wire.data -> key = ${key}`);
     const wireData: IWireData<T> | undefined = this._DATA_CONTAINER_LAYER.has(key)
       ? this._DATA_CONTAINER_LAYER.get(key)
-      : this._DATA_CONTAINER_LAYER.create<T>(key, this._MIDDLEWARE_LAYER.onReset.bind(this._MIDDLEWARE_LAYER));
+      : this._DATA_CONTAINER_LAYER.create<T>(
+          key,
+          this._MIDDLEWARE_LAYER.onReset.bind(this._MIDDLEWARE_LAYER),
+          this._MIDDLEWARE_LAYER.onError.bind(this._MIDDLEWARE_LAYER),
+        );
     if (getter) {
       wireData!.getter = getter!;
       wireData!.lock(new WireDataLockToken());
