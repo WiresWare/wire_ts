@@ -12,10 +12,8 @@ describe('10. Robust Error Handling', () => {
   test('10.1 All listeners should execute in SEQUENTIAL mode even if one fails', async () => {
     const wd = Wire.data('sequential_error_test');
 
-    const secondListenerPromise = new Promise<boolean>((resolve) => {
-      wd.subscribe(() => {
-        return Promise.reject(new Error('Test Error'));
-      });
+    const secondListenerPromise = new Promise<boolean>(resolve => {
+      wd.subscribe(() => Promise.reject(new Error('Test Error')));
 
       wd.subscribe(() => {
         resolve(true); // Signal that the second listener was executed
@@ -37,7 +35,7 @@ describe('10. Robust Error Handling', () => {
         onData: vi.fn(),
         onRemove: vi.fn(),
         onSend: vi.fn(),
-        onError: (err, key, value) => {
+        onDataError: (err, key, value) => {
           expect(err).toEqual(error);
           expect(key).toEqual('sequential_error_middleware_test');
           expect(value).toEqual('test');
@@ -48,9 +46,7 @@ describe('10. Robust Error Handling', () => {
     });
 
     const wd = Wire.data('sequential_error_middleware_test');
-    wd.subscribe(() => {
-      return Promise.reject(error);
-    });
+    wd.subscribe(() => Promise.reject(error));
 
     wd.value = 'test';
 
@@ -67,7 +63,7 @@ describe('10. Robust Error Handling', () => {
         onData: vi.fn(),
         onRemove: vi.fn(),
         onSend: vi.fn(),
-        onError: (err, key, value) => {
+        onDataError: (err, key, value) => {
           expect(err).toEqual(error);
           expect(key).toEqual('parallel_error_middleware_test');
           expect(value).toEqual('test');
