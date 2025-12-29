@@ -121,13 +121,14 @@ export class WireData<T> implements IWireData<T> {
             this._onError!(result.reason, this.key, value);
           }
         }))
-        .catch(() => {});
+        .catch((error) => { this._onError!(error, this.key, value); });
     } else {
       for await (const listener of listeners) {
         if (this.hasListener(listener)) {
-          await Promise.resolve(listener(value)).catch((error: any) => {
-            this._onError!(error, this.key, value);
-          });
+          await Promise.resolve(listener(value))
+            .catch((error: any) => {
+              this._onError!(error, this.key, value);
+            });
         }
       }
     }
