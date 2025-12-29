@@ -260,7 +260,7 @@ export default class Wire implements IWire {
       : this._DATA_CONTAINER_LAYER.create<T>(
           key,
           this._MIDDLEWARE_LAYER.onReset.bind(this._MIDDLEWARE_LAYER),
-          this._MIDDLEWARE_LAYER.onError.bind(this._MIDDLEWARE_LAYER),
+          this._MIDDLEWARE_LAYER.onDataError.bind(this._MIDDLEWARE_LAYER),
         );
     if (getter) {
       wireData!.getter = getter!;

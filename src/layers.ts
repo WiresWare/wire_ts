@@ -175,8 +175,8 @@ export class WireMiddlewaresLayer {
   onAdd(wire: IWire): void {
     return this._process((m: IWireMiddleware) => m.onAdd(wire));
   }
-  onError(error: Error, key: string, value: any): void {
-    return this._process((m: IWireMiddleware) => m.onError(error, key, value));
+  onDataError(error: Error, key: string, value: any): void {
+    return this._process((m: IWireMiddleware) => m.onDataError(error, key, value));
   }
   _process(p: (mw: IWireMiddleware) => void): void {
     if (this._MIDDLEWARE_LIST.length > 0) {
