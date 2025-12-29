@@ -38,7 +38,7 @@ export interface IWireData<T> {
   remove(clean?: boolean | false): Promise<void>;
 
   subscribe(listener: WireDataListener<T>): IWireData<T>;
-  unsubscribe(listener?: WireDataListener<T>): Promise<IWireData<T>>;
+  unsubscribe(listener?: WireDataListener<T>, immediate?: boolean): Promise<IWireData<T>>;
   hasListener(listener: WireDataListener<T>): boolean;
 }
 
