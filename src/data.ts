@@ -126,9 +126,11 @@ export class WireData<T> implements IWireData<T> {
       });
     } else {
       for await (const listener of listeners) {
-        await Promise.resolve(listener(value)).catch((error: any) => {
-          this._onError!(error, this.key, value);
-        });
+        if (this.hasListener(listener)) {
+          await Promise.resolve(listener(value)).catch((error: any) => {
+            this._onError!(error, this.key, value);
+          });
+        }
       }
     }
   }
@@ -161,11 +163,11 @@ export class WireData<T> implements IWireData<T> {
     }
     return this;
   }
-  async unsubscribe(wireDataListener?: WireDataListener<T>): Promise<IWireData<T>> {
+  async unsubscribe(wireDataListener?: WireDataListener<T>, immediate = false): Promise<IWireData<T>> {
     if (this.isGetter) throw new Error(ERROR__SUBSCRIBE_TO_DATA_GETTER);
     if (wireDataListener) {
       if (this.hasListener(wireDataListener)) {
-        const remove = async(): Promise<void> => {
+        const remove = async (): Promise<void> => {
           const listenerIndex = this._listeners.indexOf(wireDataListener);
           console.log(`> WireData(${this.key}) -> unsubscribe:`, {
             listener: wireDataListener,
@@ -174,9 +176,10 @@ export class WireData<T> implements IWireData<T> {
           this._listeners.splice(listenerIndex, 1);
         };
         console.log(`> WireData(${this.key}) -> unsubscribe:`, this._refreshQueue);
-        const numberToRefreshes = this._refreshQueue.length;
-        if (numberToRefreshes > 0) {
-          const lastRefreshIndex = numberToRefreshes - 1;
+        const isRefreshing = this._refreshQueue.length > 0;
+        const shouldWaitForRefresh = isRefreshing && !immediate;
+        if (shouldWaitForRefresh) {
+          const lastRefreshIndex = this._refreshQueue.length - 1;
           await this._refreshQueue[lastRefreshIndex].finally(remove);
         } else {
           await remove();
