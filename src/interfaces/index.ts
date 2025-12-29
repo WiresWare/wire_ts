@@ -68,7 +68,7 @@ export interface IWireMiddleware {
   onSend(signal: string, payload?: any | null, scope?: object | null): void;
   onRemove(signal: string, scope?: object | null, listener?: WireListener | null): void;
   onData(key: string, prevValue?: any | null, nextValue?: any | null): void;
-  onError(error: Error, key: string, value: any): void;
+  onDataError(error: Error, key: string, value: any): void;
 }
 
 export interface IWireWithWhenReady {

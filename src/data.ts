@@ -114,21 +114,20 @@ export class WireData<T> implements IWireData<T> {
     if (this._listeners.length === 0) return;
     const listeners = [...this._listeners];
     if (this._listenersExecutionMode === WireDataListenersExecutionMode.PARALLEL) {
-      const results = await Promise.allSettled(
-        listeners.map(async (listener) => {
-          return listener(value);
-        }),
-      );
-      results.forEach((result) => {
-        if (result.status === 'rejected') {
-          this._onError!(result.reason, this.key, value);
-        }
-      });
+      await Promise.allSettled(listeners.map(async (listener) => listener(value)))
+        .then((results) => results.forEach((result) => {
+          console.log(`> WireData(${this.key}) -> refresh: result =`, result);
+          if (result.status === 'rejected') {
+            this._onError!(result.reason, this.key, value);
+          }
+        }))
+        .catch(() => {});
     } else {
       for await (const listener of listeners) {
-        await Promise.resolve(listener(value)).catch((error: any) => {
-          this._onError!(error, this.key, value);
-        });
+        await Promise.resolve(listener(value))
+          .catch((error: any) => {
+            this._onError!(error, this.key, value);
+          });
       }
     }
   }
