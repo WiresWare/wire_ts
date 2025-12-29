@@ -1,0 +1,7 @@
+{
+  "hidden_files": ["**/*.d.ts"],
+  "file_scan_exclusions": ["**/*.d.ts", ".git"],
+  "project_panel": {
+    "hide_gitignore": true,
+  },
+}

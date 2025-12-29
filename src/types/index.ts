@@ -6,8 +6,10 @@ export type WireValueFunction<T> = (prevValue: WireDataValue<T>) => void;
 export type WireDataListener<T> = (value: WireDataValue<T>) => Promise<void> | void;
 export type WireDataGetter<T> = (that: IWireData<T>) => any;
 export type WireDataOnRemove = (key: string) => boolean;
-export type WireDataOnReset = (that: string, param: any) => any;
+export type WireDataOnReset = (key: string, param: any) => void;
+export type WireDataOnError = (error: Error, key: string, value: any) => void;
+
 export enum WireDataListenersExecutionMode {
-  SEQUENTIAL = 'sequential',
-  PARALLEL = 'parallel',
+  SEQUENTIAL,
+  PARALLEL,
 }

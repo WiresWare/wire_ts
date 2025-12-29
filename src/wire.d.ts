@@ -1,5 +1,5 @@
 import { IWire, IWireData, IWireDataLockToken, IWireMiddleware, IWireSendResults } from './interfaces';
-import { WireDataGetter, WireListener } from './types';
+import { WireDataGetter, WireListener, WireValueFunction } from './types';
 export default class Wire implements IWire {
     constructor(scope: object, signal: string, listener: WireListener, replies?: number);
     static _INDEX: number;
@@ -46,7 +46,7 @@ export default class Wire implements IWire {
         listener?: WireListener | null;
         wireId?: number | null;
     }): Array<IWire | undefined>;
-    static data<T>(key: string, value?: T | null, getter?: WireDataGetter<T> | null): IWireData<T>;
+    static data<T>(key: string, value?: T | WireValueFunction<T> | null, getter?: WireDataGetter<T> | null): IWireData<T>;
     static put(instance: object, lock?: IWireDataLockToken): any;
     static find(instanceType: any): any | Error;
 }

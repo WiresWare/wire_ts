@@ -26,6 +26,10 @@ class TestWireMiddleware implements IWireMiddleware {
   onSend(signal: string, payload?: any, scope?: object | null): void {
     console.log(`> TestWireMiddleware -> onRemove: signal = ${signal} | ${payload} | ${scope}`);
   }
+
+  onDataError(error: Error, key: string, value: any): void {
+    console.log(`> TestWireMiddleware -> onDataError: error = ${error} | ${key} | ${value}`);
+  }
 }
 
 export default TestWireMiddleware;

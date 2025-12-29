@@ -1,4 +1,4 @@
-import { WireDataGetter, WireDataListener, WireListener } from '../types';
+import { WireDataListenersExecutionMode, WireDataGetter, WireDataListener, WireDataValue, WireListener } from '../types';
 export interface IWireCommand {
     execute(): Promise<any | null>;
 }
@@ -14,17 +14,19 @@ export interface IWireData<T> {
     get isLocked(): boolean;
     get isGetter(): boolean;
     get key(): string;
-    get value(): T | null | undefined;
-    set value(input: T | null | undefined);
+    get value(): WireDataValue<T>;
+    set value(input: WireDataValue<T>);
     set getter(value: WireDataGetter<T>);
+    get listenersExecutionMode(): WireDataListenersExecutionMode;
+    set listenersExecutionMode(mode: WireDataListenersExecutionMode);
     lock(token: IWireDataLockToken): boolean;
     unlock(token: IWireDataLockToken): boolean;
-    refresh(): Promise<void>;
+    refresh(value: WireDataValue<T>): Promise<void>;
     reset(): Promise<void>;
     remove(clean?: boolean | false): Promise<void>;
-    subscribe(listener: WireDataListener): IWireData<T>;
-    unsubscribe(listener?: WireDataListener): Promise<IWireData<T>>;
-    hasListener(listener: WireDataListener): boolean;
+    subscribe(listener: WireDataListener<T>): IWireData<T>;
+    unsubscribe(listener?: WireDataListener<T>, immediate?: boolean): Promise<IWireData<T>>;
+    hasListener(listener: WireDataListener<T>): boolean;
 }
 export interface IWireDatabaseService {
     init(key?: string | undefined): Promise<boolean>;
@@ -49,6 +51,7 @@ export interface IWireMiddleware {
     onSend(signal: string, payload?: any | null, scope?: object | null): void;
     onRemove(signal: string, scope?: object | null, listener?: WireListener | null): void;
     onData(key: string, prevValue?: any | null, nextValue?: any | null): void;
+    onDataError(error: Error, key: string, value: any): void;
 }
 export interface IWireWithWhenReady {
     whenReady: Promise<boolean>;

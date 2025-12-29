@@ -1,5 +1,5 @@
 import { IWire, IWireData, IWireMiddleware, IWireSendResults } from './interfaces';
-import { WireDataOnReset, WireListener } from './types';
+import { WireDataOnError, WireDataOnReset, WireListener } from './types';
 export declare class WireCommunicateLayer {
     private _wireById;
     private _wireIdsBySignal;
@@ -26,13 +26,14 @@ export declare class WireMiddlewaresLayer {
     onRemove(signal: string, scope?: object, listener?: WireListener | null): void;
     onSend(signal: string, payload: any): void;
     onAdd(wire: IWire): void;
+    onDataError(error: Error, key: string, value: any): void;
     _process(p: (mw: IWireMiddleware) => void): void;
 }
 export declare class WireDataContainerLayer {
     private _dataMap;
     has(key: string): boolean;
     get<T>(key: string): IWireData<T> | undefined;
-    create<T>(key: string, onReset: WireDataOnReset): IWireData<T>;
+    create<T>(key: string, onReset: WireDataOnReset, onError: WireDataOnError): IWireData<T>;
     remove(key: string): boolean;
     clear(): Promise<void>;
 }

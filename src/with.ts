@@ -70,7 +70,7 @@ export class WireWithWireData<T = any> implements IWireWithWireData<T> {
 
   async update(dataKey: string, data: T, refresh = true): Promise<void> {
     if (data != null) Wire.data<T>(dataKey, data);
-    else if (refresh) await this.getData(dataKey).refresh();
+    else if (refresh) await this.getData(dataKey).refresh(data);
   }
 
   async reset(dataKey: string): Promise<void> {

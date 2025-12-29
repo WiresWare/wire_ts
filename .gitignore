@@ -4,6 +4,7 @@ build
 web_modules
 node_modules
 *.tgz
+**/*.d.ts
 /dist/
 /package-lock.json
 /yarn.lock
